@@ -25,7 +25,7 @@ public class CollisionController : MonoBehaviour // 모노비하비어펀에서 그냥으로 
         }
     }
 
-    public event Action<float, int> OnHealedEvent; // 인트값을 포톤뷰아이디로 받음 수정필요
+    public event Action<float, int> OnHealedEvent; // 인트값을 포톤뷰아이디로 받음 수정필요 - 싱글되면 힐 이벤트가 가능한가? 삭제 고려
 
     public bool CanPayBack; // 피격시 일정 데미지 만큼 회복 재능 페이백
     public bool CanSupport; // 버프 가능 여부 체크 싱글로 되면서 없어질듯함
@@ -123,7 +123,7 @@ public class CollisionController : MonoBehaviour // 모노비하비어펀에서 그냥으로 
                 }
                 */
             //}
-            Destroy(collision.gameObject);
+            Destroy(collision.gameObject);// 포톤 총알 punrpc로 여기서 삭제인데 이거도 제거 해야할거 같은데?
         }
     }
 

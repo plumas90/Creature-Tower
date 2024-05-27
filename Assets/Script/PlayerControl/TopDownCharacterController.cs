@@ -15,7 +15,7 @@ public class TopDownCharacterController : MonoBehaviour
     public event Action OnEndRollEvent;
     public event Action OnReloadEvent;
     public event Action OnEndReloadEvent;
-    public event Action OnStartSkillEvent;
+    //public event Action OnStartSkillEvent;
     public event Action OnSiegeModeEvent;
     public event Action OnFlashEvent;
     public event Action OnAugmentcheck;
