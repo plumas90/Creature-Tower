@@ -1,0 +1,63 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class A2203 : MonoBehaviour
+{
+    private float time = 0;
+    [SerializeField] private int maxtime;//사라지는시간 현재5초
+    [SerializeField] private int healP;
+    private List<PlayerStatControl> target;
+
+    int stack;
+    private void Awake()
+    {
+        target= new List<PlayerStatControl>();
+        healP = 4;
+        maxtime = 5;
+        stack = 0;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        PlayerStatControl handler = collision.gameObject.GetComponent<PlayerStatControl>();
+        if (handler != null) 
+        {
+            target.Add(handler);
+        }    
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        PlayerStatControl handler = collision.gameObject.GetComponent<PlayerStatControl>();
+        if (handler != null)
+        {
+            target.Remove(handler);
+        }
+    }
+    private void FixedUpdate()
+    {
+        time += Time.deltaTime;
+        if (time >= 1f) 
+        {
+            heal();
+            stack++;
+            time = 0f;
+        }
+        if (stack > maxtime) 
+        {
+            Destroy(gameObject);
+        }
+    }
+    private void heal() 
+    {
+        for (int i = 0; i < target.Count; ++i) 
+        {
+            /*if (!target[i].isDie) 
+            {
+                target[i].HPadd(healP);
+            }
+            */
+        }
+    }
+
+}

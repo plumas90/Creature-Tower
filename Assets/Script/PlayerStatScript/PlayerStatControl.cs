@@ -11,19 +11,19 @@ public class PlayerStatControl : MonoBehaviour
 
 
     // 추후 방향성에 따라 안쓸수 있는 이벤트 끝에 ##을 붙여둠
-    //public event Action<float> GetDamege; 피격시 처음 들어온 데미지 처리  = 들어온 데미지
-    //public event Action<float> HitEvent2; //피격 데미지 수치 관련 처리 재능발현으로 실제 데미지 수치 처리를함  = 최종 데미지
-    //public event Action HitEvent; // 피격 발생 여부 처리 이벤트
-    //public event Action OnDieEvent; // 죽었을때 처리 그런데 싱글겜 처리라서 안쓸수도 있음 ##
-    //public event Action OnRegenEvent; // 부활 이벤트 싱글겜이라 이하 생략 ##
-    //public event Action<int> OnRegenCalculateEvent; 죽었을때 셋팅인데 안쓸듯 ##
-    //public event Action OnChangeAmmorEvent; // 방어력 처리 안쓸 가능성 많음 ##
-    //public event Action OnChangeCurHPEvent; // 현재 체력 처리 ex 버서커  
-    //public event Action MoveStartEvent; //  가만히 있는 시간 처리1 ex 가만히 있는 동안 공격력상승 움직이면 취소 
-    //public event Action MoveEndEvent; // 가만히 있는 시간 처리2
-    //public event Action EnemyHitEvent; // 타격 n회시 추가 타격 등 처리 안쓸수 있음 ##
-    //public event Action KillCatchEvent; // 킬 시 공격력 상승 이벤트 등에 사용 초반 보스러쉬 진행시 사용 추후 가능성 있음 x ##
-    //public event Action<float, int> OnDamageReflectEvent;// 데미지 반사 처리 이벤트 구현이 생각보다 힘들고 재밌는 트리 같지가 않음 ##
+    public event Action<float> GetDamege; //피격시 처음 들어온 데미지 처리  = 들어온 데미지
+    public event Action<float> HitEvent2; //피격 데미지 수치 관련 처리 재능발현으로 실제 데미지 수치 처리를함  = 최종 데미지
+    public event Action HitEvent; // 피격 발생 여부 처리 이벤트
+    public event Action OnDieEvent; // 죽었을때 처리 그런데 싱글겜 처리라서 안쓸수도 있음 ##
+    public event Action OnRegenEvent; // 부활 이벤트 싱글겜이라 이하 생략 ##
+    public event Action<int> OnRegenCalculateEvent; //죽었을때 셋팅인데 안쓸듯 ##
+    public event Action OnChangeAmmorEvent; // 방어력 처리 안쓸 가능성 많음 ##
+    public event Action OnChangeCurHPEvent; // 현재 체력 처리 ex 버서커  
+    public event Action MoveStartEvent; //  가만히 있는 시간 처리1 ex 가만히 있는 동안 공격력상승 움직이면 취소 
+    public event Action MoveEndEvent; // 가만히 있는 시간 처리2
+    public event Action EnemyHitEvent; // 타격 n회시 추가 타격 등 처리 안쓸수 있음 ##
+    public event Action KillCatchEvent; // 킬 시 공격력 상승 이벤트 등에 사용 초반 보스러쉬 진행시 사용 추후 가능성 있음 x ##
+    public event Action<float, int> OnDamageReflectEvent;// 데미지 반사 처리 이벤트 구현이 생각보다 힘들고 재밌는 트리 같지가 않음 ##
 
 
     [SerializeField] private PlayerSO playerStats;
