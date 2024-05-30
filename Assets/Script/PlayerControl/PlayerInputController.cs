@@ -14,10 +14,10 @@ public class PlayerInputController : TopDownCharacterController
     public bool IsMove = false;
     PlayerStatControl playerStatControl;
     //PlayerResultController playerResultController; 스테이지 클리어시 보상 선택
-    public bool siegeMode;
-    public bool Flash;
-    public bool cantMove;
-    public bool cantSpacebar;
+    [HideInInspector]public bool siegeMode;
+    [HideInInspector] public bool Flash;
+    [HideInInspector] public bool cantMove;
+    [HideInInspector] public bool cantSpacebar;
 
     private void Awake()
     {
@@ -36,6 +36,8 @@ public class PlayerInputController : TopDownCharacterController
 
         playerInput = GetComponent<PlayerInput>();
         playerInput.actions.FindAction("Move2").Disable(); // 반대로 조작 비활성화
+        playerInput.actions.FindAction("Move").Enable();
+        Debug.Log("시작세 완료");
         //playerInput.actions.FindAction("SiegeMode").Disable(); 시즈모드 비활성화 
         _camera = Camera.main;
 
@@ -51,17 +53,20 @@ public class PlayerInputController : TopDownCharacterController
             {
                 playerInput.actions.FindAction("Move2").Disable();
                 playerInput.actions.FindAction("Move").Disable();
-            }
+            Debug.Log("비정상");
+        }
             else if (playerStatControl.isNoramlMove)
             {
                 playerInput.actions.FindAction("Move2").Disable();
                 playerInput.actions.FindAction("Move").Enable();
+            Debug.Log("정상");
             }
             else
             {
                 playerInput.actions.FindAction("Move2").Enable();
                 playerInput.actions.FindAction("Move").Disable();
-            }
+            Debug.Log("비정상");
+        }
 
             if (playerStatControl.isCanSkill) // 스킬 처리
             {
@@ -102,7 +107,7 @@ public class PlayerInputController : TopDownCharacterController
     }
     public void OnMove(InputValue value) // 움직임 
     {
-        // Debug.Log("OnMove" + value.ToString());
+        Debug.Log("OnMove" + value.ToString());
         Vector2 moveInput = value.Get<Vector2>().normalized;
         CallMoveEvent(moveInput);
     }

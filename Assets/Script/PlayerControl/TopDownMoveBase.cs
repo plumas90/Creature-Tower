@@ -14,12 +14,14 @@ public class TopDownMoveBase : MonoBehaviour
 
     private void Awake()
     {
-        _controller = GetComponent<TopDownCharacterController>();
+        //_controller = GetComponent<TopDownCharacterController>();
+        //if( _controller != null ) { Debug.Log("존재함"); }
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     private void Start()
     {
+        _controller = GetComponent<TopDownCharacterController>();
         _controller.OnMoveEvent += Move;
         _controller.OnRollEvent += Roll;
         _controller.OnLookEvent += MousePos;
@@ -29,6 +31,7 @@ public class TopDownMoveBase : MonoBehaviour
     {
         if (!isRoll)
         {
+            Debug.Log("무브테스트");
             ApplyMovment(_movemewtDirection);
         }
         else
@@ -39,12 +42,15 @@ public class TopDownMoveBase : MonoBehaviour
 
     private void Move(Vector2 direction)
     {
+        //Debug.Log("무브먼트무브테스트");
+        //Debug.Log(direction);
         _movemewtDirection = direction;
     }
 
     private void ApplyMovment(Vector2 direction)
     {
         direction = direction * _controller.playerStatHandler.Speed.total;
+        Debug.Log($" 속도는{_controller.playerStatHandler.Speed.total} 방향으 {direction}");
         _rigidbody2D.velocity = direction;
     }
     private void ApplyRolling(Vector2 direction)

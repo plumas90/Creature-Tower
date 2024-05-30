@@ -1,0 +1,98 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+public enum CharClass
+{
+    Soldier,
+    Shotgun,
+    Sniper,
+}
+
+public class PlayerDataSetting : MonoBehaviour
+    {
+        [Header("PlayerSO")]
+        public PlayerSO soldierSO;
+        public PlayerSO shotGunSO;
+        public PlayerSO sniperSO;
+
+        [Header("Player")]
+        public GameObject playerContainer;
+        public GameObject ownerPlayer;
+
+        [Header("Skills")]
+        [SerializeField] private List<Skill> skillList;
+
+        public void SetClassType(int charType, GameObject playerGo = null)
+        {
+            PlayerStatControl statSO;
+            if (playerGo != null)
+            {
+                statSO = playerGo.GetComponent<PlayerStatControl>();
+            }
+            else
+            {
+                statSO = playerContainer.GetComponentInChildren<PlayerStatControl>();
+            }
+
+            switch (charType)
+            {
+                case (int)CharClass.Soldier:
+                    statSO.CharacterChange(soldierSO);
+                    DelComponent(statSO.gameObject);
+                    statSO.gameObject.AddComponent<Player1Skill>();
+                    break;
+                case (int)CharClass.Shotgun:
+                    statSO.CharacterChange(shotGunSO);
+                    DelComponent(statSO.gameObject);
+                    statSO.gameObject.AddComponent<Player2Skill>();
+                    break;
+                case (int)CharClass.Sniper:
+                    statSO.CharacterChange(sniperSO);
+                    DelComponent(statSO.gameObject);
+                    statSO.gameObject.AddComponent<Player3Skill>();
+                    break;
+            }
+
+            //LobbyManager.Instance.audioLibrary.SetupPlayerSE();
+        }
+
+        public void DelComponent(GameObject GO)
+        {
+
+            GO.GetComponent<PlayerInputController>().SkillReset();
+
+            if (GO.GetComponent<Player1Skill>())
+            {
+                Destroy(GO.GetComponent<Player1Skill>());
+            }
+            if (GO.GetComponent<Player2Skill>())
+            {
+                Destroy(GO.GetComponent<Player2Skill>());
+            }
+            if (GO.GetComponent<Player3Skill>())
+            {
+                Destroy(GO.GetComponent<Player3Skill>());
+            }
+        }
+
+        //public PlayerStatControl GetStatData(int classNum)
+        //{
+            //todo 매니저 에서 플레이어 선택
+            /*
+            PlayerStatControl statSO = LobbyManager.Instance.instantiatedPlayer.GetComponent<PlayerStatControl>();
+            switch (classNum)
+            {
+                case (int)CharClass.Soldier:
+                    statSO.CharacterChange(soldierSO);
+                    break;
+                case (int)CharClass.Shotgun:
+                    statSO.CharacterChange(shotGunSO);
+                    break;
+                case (int)CharClass.Sniper:
+                    statSO.CharacterChange(sniperSO);
+                    break;
+            }
+            */
+            //return statSO;
+        //}
+    }

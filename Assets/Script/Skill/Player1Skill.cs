@@ -21,7 +21,7 @@ public class Player1Skill : Skill
             isLink = true;
             controller.SkillMinusEvent += SkillLinkOff;
             //debuffControl= GetComponent<PlayerStatControl>()._DebuffControl;       
-        skillIcon = icons[0]; // Soldier skill icon
+            //skillIcon = icons[0]; // Soldier skill icon
     }
     public override void SkillStart()
     {

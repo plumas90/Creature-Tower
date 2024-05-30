@@ -28,22 +28,22 @@ public class PlayerStatControl : MonoBehaviour
 
     [SerializeField] private PlayerSO playerStats;
 
-    //PlayerAnimatorController anime;
+    PlayerAnimatorController anime;
 
 
-    public Stats ATK;                 // 공격력
-    public Stats HP;                  // 체력
-    public Stats Speed;               // 이동 속도
-    public Stats AtkSpeed;            // 공격 속도
-    public Stats ReloadCoolTime;      // 장전   쿨 타임
-    public Stats SkillCoolTime;       // 스킬   쿨 타임
-    public Stats RollCoolTime;        // 구르기 쿨 타임
-    public Stats BulletSpread;        // 탄퍼짐
-    public Stats BulletLifeTime;      // 총알 사거리
-    public Stats LaunchVolume;        // 한번의 발사의 발사량
-    public Stats Critical;            // 크리티컬 = 크리티컬 빌드가 재밌을거 같지만 데미지 난이도에 꾀 큰 영향을 줌
-    public Stats AmmoMax;             // 장탄수
-    public float defense; //방어력 중요한건 데미지 배율 이라는거임 기본값 1로 데미지 10 받을시 데미지 x 방어력 배율 = 실제 데미지 같은 느낌
+    [HideInInspector] public Stats ATK;                 // 공격력
+    [HideInInspector] public Stats HP;                  // 체력
+    [HideInInspector] public Stats Speed;               // 이동 속도
+    [HideInInspector] public Stats AtkSpeed;            // 공격 속도
+    [HideInInspector] public Stats ReloadCoolTime;      // 장전   쿨 타임
+    [HideInInspector] public Stats SkillCoolTime;       // 스킬   쿨 타임
+    [HideInInspector] public Stats RollCoolTime;        // 구르기 쿨 타임
+    [HideInInspector] public Stats BulletSpread;        // 탄퍼짐
+    [HideInInspector] public Stats BulletLifeTime;      // 총알 사거리
+    [HideInInspector] public Stats LaunchVolume;        // 한번의 발사의 발사량
+    [HideInInspector] public Stats Critical;            // 크리티컬 = 크리티컬 빌드가 재밌을거 같지만 데미지 난이도에 꾀 큰 영향을 줌
+    [HideInInspector] public Stats AmmoMax;             // 장탄수
+    [HideInInspector] public float defense; //방어력 중요한건 데미지 배율 이라는거임 기본값 1로 데미지 10 받을시 데미지 x 방어력 배율 = 실제 데미지 같은 느낌
 
     //public Sprite indicatorSprite; 모름
     public AudioClip atkClip;
@@ -59,11 +59,11 @@ public class PlayerStatControl : MonoBehaviour
 
     public GameObject _PlayerSprite;
     public GameObject _WeaponSprite;
-    //public PlayerDebuffControl _DebuffControl; //디버프 매니저 만들어야함
+    public PlayerDebuffControl _DebuffControl; //디버프 매니저 만들어야함
 
-    public bool isNoramlMove; //조작 좌우 반전 체크
-    public bool isCanSkill; // 스킬 쿨타임 체크
-    public bool isCanAtk;
+    [HideInInspector] public bool isNoramlMove; //조작 좌우 반전 체크
+    [HideInInspector] public bool isCanSkill; // 스킬 쿨타임 체크
+    [HideInInspector] public bool isCanAtk;
     //public bool isDie; 싱글겜이라 필요없음
     //public bool isRegen; //
     public int RegenHP; // 체젠 증강이 있는데 없애는것도 고려 ex 보스방 전에 밥먹고와서 풀피전
@@ -96,10 +96,10 @@ public class PlayerStatControl : MonoBehaviour
         }
     } 
     */
-    public int MaxSkillStack; //재능발현으로 스킬 스택을 늘렸을때 사용용
-    public int CurSkillStack;
-    public int MaxRollStack;
-    public int CurRollStack;
+    [HideInInspector] public int MaxSkillStack; //재능발현으로 스킬 스택을 늘렸을때 사용용
+    [HideInInspector] public int CurSkillStack;
+    [HideInInspector] public int MaxRollStack;
+    [HideInInspector] public int CurRollStack;
     //public int evasionPersent; 회피 확률 증강
     //public float DamegeTemp; 데미지 저장용
 
@@ -229,8 +229,8 @@ public class PlayerStatControl : MonoBehaviour
         //_DebuffControl = GetComponent<PlayerDebuffControl>();
         //indicatorSprite = playerStats.indicatorSprite;
         atkClip = playerStats.atkClip;
-        reloadStartClip = playerStats.reloadClip[0];
-        reloadFinishClip = playerStats.reloadClip[1];
+        //reloadStartClip = playerStats.reloadClip[0];
+        //reloadFinishClip = playerStats.reloadClip[1];
 
         PlayerStatArray = new Stats[11];
         PlayerStatNameArray = new string[11]

@@ -35,7 +35,7 @@ public class TopDownCharacterController : MonoBehaviour
 
     private void Awake()
     {
-        coolTimeController = GetComponent<CoolTimeController>();
+        //coolTimeController = GetComponent<CoolTimeController>();
     }
     private void Update()
     {
@@ -65,8 +65,8 @@ public class TopDownCharacterController : MonoBehaviour
                 && playerStatHandler.CurAmmo >= 0
                 && playerStatHandler.CanFire
                 && playerStatHandler.CanReload
-                //&& coolTimeController.bulletNum > 0
                 )
+                //&& coolTimeController.bulletNum > 0
             {
                 OnChargeAttackEvent?.Invoke();
             }

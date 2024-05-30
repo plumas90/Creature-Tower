@@ -35,7 +35,6 @@ public class WeaponSystem : MonoBehaviour
     public bool canresurrection;
     public bool sniperAtkBuff;
 
-    public int _viewID;
     // Ãß°¡
     public int bulletNum;
     private CoolTimeController _cool;
@@ -187,7 +186,6 @@ public class WeaponSystem : MonoBehaviour
         _bullet.BulletLifeTime = bulletLifeTime;
         _bullet.targets = _targets;
         _bullet.IsDamage = _isDamage;
-        _bullet.BulletOwner = _viewID;
         _object.GetComponent<SpriteRenderer>().sprite = _controller.playerStatHandler.BulletSprite;
         _bullet.fire = fire;
         _bullet.water = water;
