@@ -77,11 +77,11 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         if (Mathf.Abs(rotY) > 90f)
         {
-            weaponRenderer.sortingOrder = 6;
+            weaponRenderer.sortingOrder = 11;
         }
         else
         {
-            weaponRenderer.sortingOrder = 4;
+            weaponRenderer.sortingOrder = 9;
         }
     }
 
