@@ -38,11 +38,51 @@ public class WeaponSystem : MonoBehaviour
     // 추가
     public int bulletNum;
     private CoolTimeController _cool;
+    public string nameTag;
 
     public WeaponType weaponType;
 
     //public event Action OnFinalDamageEvent;
     //public float finalAttackCoeff;
+    [System.Serializable]
+    public struct Pool
+    {
+        public string tag;
+        public GameObject prefab;
+        public int count;
+    }
+    public List<Pool> pools;
+    public Dictionary<string, Queue<GameObject>> poolDictionary;
+
+    public void StartObjectPOOL()
+    {
+        poolDictionary = new Dictionary<string, Queue<GameObject>>();
+        foreach (var pool in pools)
+        {
+            Queue<GameObject> objectsPool = new Queue<GameObject>();
+            for (int i = 0; i < pool.count; i++)
+            {
+                GameObject obj = Instantiate(pool.prefab);
+                obj.GetComponent<SpriteRenderer>().sprite = playerStatHandler.BulletSprite;
+                obj.SetActive(false);
+                objectsPool.Enqueue(obj);
+            }
+            poolDictionary.Add(pool.tag, objectsPool);
+        }
+        nameTag = pools[0].tag;
+    }
+
+
+
+    public GameObject SpawnFromPool(string tag)
+    {
+        if (!poolDictionary.ContainsKey(tag))
+            return null;
+
+        GameObject obj = poolDictionary[tag].Dequeue();
+        poolDictionary[tag].Enqueue(obj);
+        return obj;
+    }
 
     private void Awake()
     {
@@ -77,11 +117,11 @@ public class WeaponSystem : MonoBehaviour
         _cool = GetComponent<CoolTimeController>();
         _controller.OnAttackEvent += Shooting; // 공격 속도 관련 체크
     }
-
     private void Start()
     {
-
+        StartObjectPOOL();
     }
+
 
     public void Shooting()
     {
@@ -166,11 +206,13 @@ public class WeaponSystem : MonoBehaviour
         {
             bulletPositon = this.gameObject.transform.localPosition;
         }
-        GameObject _object = Instantiate(bullet, bulletPositon, Quaternion.identity); // 총알 생성
+        GameObject _object = SpawnFromPool(nameTag);
+        _object.transform.position = bulletPositon;
+        //GameObject _object = Instantiate(bullet, bulletPositon, Quaternion.identity); // 총알 생성
         _object.transform.rotation = Quaternion.Euler(eulerRotation);
         Bullet _bullet = _object.GetComponent<Bullet>(); //해당 총알에 내 특성 부여 위한 객체 가져오기
 
-        _object.transform.localScale = new Vector2(size, size); //각도 처리
+        _object.transform.localScale = new Vector2(size, size); //크기 처리
         //현재 가까울시/ 멀시 데미지 처리 방식 - 기본 데미지 * 배율 +- 체공시 증감값  == 기본데미지*배율(총알생성시 처리) 총알 체공 증감값(총알 실시간 처리)
         if (locator)
         {
@@ -186,7 +228,7 @@ public class WeaponSystem : MonoBehaviour
         _bullet.BulletLifeTime = bulletLifeTime;
         _bullet.targets = _targets;
         _bullet.IsDamage = _isDamage;
-        _object.GetComponent<SpriteRenderer>().sprite = _controller.playerStatHandler.BulletSprite;
+        //_object.GetComponent<SpriteRenderer>().sprite = _controller.playerStatHandler.BulletSprite;
         _bullet.fire = fire;
         _bullet.water = water;
         _bullet.ice = ice;
@@ -201,6 +243,8 @@ public class WeaponSystem : MonoBehaviour
         {
             _bullet.MissileFire(1);
         }
+        _object.SetActive(true);
+        //Debug.Log($"남은시간 {bulletLifeTime}");
     }
 
         /*[PunRPC] 원본 총알 생성 보관용

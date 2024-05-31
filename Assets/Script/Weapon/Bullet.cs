@@ -55,6 +55,7 @@ public class Bullet : MonoBehaviour
     public void Init()
     {
         BulletLifeTime = UnityEngine.Random.Range(BulletLifeTime * 0.15f, BulletLifeTime * 0.2f);
+        //Debug.Log($"인잇 남은 시간 {BulletLifeTime}");
         //Invoke("Destroy", BulletLifeTime);
         _direction = transform.right;
         //to del 아래
@@ -73,6 +74,7 @@ public class Bullet : MonoBehaviour
         time += Time.deltaTime;
         if (time >= BulletLifeTime)
         {
+            //Debug.Log("시간되서 사라짐");
             Destroy();
         }
         if (locator)
@@ -89,23 +91,10 @@ public class Bullet : MonoBehaviour
 
     public void Destroy()
     {
-        Destroy(gameObject);
-    }
-
-    //아래 3 함수가 아마 반사각 잴때 쓴거 같은데 결국 안썻던거 같은데 남아 있어서 모르겠음 남겨둠
-    private float GetAngle(Vector2 vec1, Vector2 vec2)
-    {
-        float angle = (Mathf.Atan2(vec2.y, vec2.x)) - Mathf.Atan2(vec1.y, vec1.x) * Mathf.Rad2Deg;
-        return angle;
-    }
-    public float CalculateAngle(Vector3 from, Vector3 to)
-    {
-        return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;
-    }
-    public static float GetAngle2(Vector3 from, Vector3 to)
-    {
-        Vector3 v = to - from;
-        return Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
+        //Destroy(gameObject);
+        //Debug.Log("사라짐");
+        time = 0f;
+        gameObject.SetActive(false);
     }
 
 

@@ -31,7 +31,7 @@ public class TopDownMoveBase : MonoBehaviour
     {
         if (!isRoll)
         {
-            Debug.Log("무브테스트");
+            //Debug.Log("무브테스트");
             ApplyMovment(_movemewtDirection);
         }
         else
@@ -50,7 +50,7 @@ public class TopDownMoveBase : MonoBehaviour
     private void ApplyMovment(Vector2 direction)
     {
         direction = direction * _controller.playerStatHandler.Speed.total;
-        Debug.Log($" 속도는{_controller.playerStatHandler.Speed.total} 방향으 {direction}");
+        //Debug.Log($" 속도는{_controller.playerStatHandler.Speed.total} 방향으 {direction}");
         _rigidbody2D.velocity = direction;
     }
     private void ApplyRolling(Vector2 direction)

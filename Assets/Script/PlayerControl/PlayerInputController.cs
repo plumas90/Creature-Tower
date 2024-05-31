@@ -37,7 +37,7 @@ public class PlayerInputController : TopDownCharacterController
         playerInput = GetComponent<PlayerInput>();
         playerInput.actions.FindAction("Move2").Disable(); // 반대로 조작 비활성화
         playerInput.actions.FindAction("Move").Enable();
-        Debug.Log("시작세 완료");
+        //Debug.Log("시작세 완료");
         //playerInput.actions.FindAction("SiegeMode").Disable(); 시즈모드 비활성화 
         _camera = Camera.main;
 
@@ -107,7 +107,7 @@ public class PlayerInputController : TopDownCharacterController
     }
     public void OnMove(InputValue value) // 움직임 
     {
-        Debug.Log("OnMove" + value.ToString());
+        //Debug.Log("OnMove" + value.ToString());
         Vector2 moveInput = value.Get<Vector2>().normalized;
         CallMoveEvent(moveInput);
     }
