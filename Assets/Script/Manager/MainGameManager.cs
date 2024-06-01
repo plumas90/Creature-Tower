@@ -26,7 +26,7 @@ public class MainGameManager : MonoBehaviour
     public Dictionary<int, Transform> playerInfoDictionary;   // 각 플레이어의 viewID를 키로 하고 Trasform을 value로 하는 딕셔너리
 
     [Header("PlayerData")]
-    //public PlayerDataSetting characterSetting; // 플레이어의 정보
+    public PlayerDataSetting characterSetting; // 플레이어의 정보
     public bool isDie; // 플레이어 죽음 여부
     public int Gold;  // 골드
 
@@ -135,7 +135,7 @@ public class MainGameManager : MonoBehaviour
             //이아래 2줄 박민혁이넣음 게임시작시 증강뽑는거에 플레이어값 전달임
             PlayerResultController MakeSetting = InstantiatedPlayer.GetComponent<PlayerResultController>();
             MakeSetting.MakeManager();
-            SyncPlayer();
+            //SyncPlayer();
         }
         else
         {
@@ -152,7 +152,7 @@ public class MainGameManager : MonoBehaviour
         OnStartStateChanged += OnStartStateChangedHandler;
         OnEndStateChanged += OnEndStateChangedHandler;
         OnAugmentListingStateChanged += OnAugmentListingStateChangedHandler;
-        OnOverCheckEvent += OverCheck;
+        //OnOverCheckEvent += OverCheck;
     }
 
     private void Start()
@@ -334,8 +334,8 @@ public class MainGameManager : MonoBehaviour
         */
     }
 
-    public void SendPlayerInfo(int viewID) // playerInfoDictionary 동기화 및 채우기
-    {
+    //public void SendPlayerInfo(int viewID) // playerInfoDictionary 동기화 및 채우기
+    //{
         /*
         GameObject clientPlayer = PhotonView.Find(viewID).gameObject;
         playerInfoDictionary.Add(viewID, clientPlayer.transform);
@@ -347,17 +347,17 @@ public class MainGameManager : MonoBehaviour
             Debug.Log($"{playerInfoDictionary.Count}개의 키 중 {cnt}번째 == {key}");
         }
         */
-    }
+    //}
 
-    private void SendViewID(int viewID)
-    {
+    //private void SendViewID(int viewID)
+    //{
         /*
         PartyViewIDList.Add(viewID);
         */
-    }
+    //}
 
-    private void SyncPlayer() // 플레이어 동기화
-    {
+    //private void SyncPlayer() // 플레이어 동기화
+    //{
         /*
         if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Char_Class", out object classNum))
         {
@@ -366,7 +366,7 @@ public class MainGameManager : MonoBehaviour
             InstantiatedPlayer.GetComponent<PhotonView>().RPC("ApplyClassChange", RpcTarget.Others, (int)classNum, viewID);
         }
         */
-    }
+    //}
 
     private void SpawnMonster() // 몬스터 소환
     {
@@ -410,38 +410,38 @@ public class MainGameManager : MonoBehaviour
         */
     }
 
-    public void DiedAfter() // 사망이후
-    {
+    //public void DiedAfter() // 사망이후
+    //{
         /*
         photonView.RPC("AddPartyDeathCount", RpcTarget.All);
         Debug.Log("MainGameManager : DiedAfter() => PartyDeath : " + PartyDeathCount.ToString());
         OnOverCheckEvent?.Invoke();
         */
-    }
+    //}
 
-    public void OverCheck() 
-    {
+    //public void OverCheck() 
+    //{
         /*
         if (PartyDeathCount == PhotonNetwork.CurrentRoom.PlayerCount)
         {
             photonView.RPC("SetEndState", RpcTarget.All);
         }
         */
-    }
+    //}
     private string GetStageName()
     {
         return $"Stage_{stageData.currentArea}_{stageData.currentStage}";
     }
 
-    public void AddPartyDeathCount()
-    {
-        PartyDeathCount++;
-        OnPlayerDieEvent?.Invoke();
-    }
-    public void RemovePartyDeathCount()
-    {
-        PartyDeathCount--;
-    }
+    //public void AddPartyDeathCount()
+    //{
+    //    PartyDeathCount++;
+    //    OnPlayerDieEvent?.Invoke();
+    //}
+    //public void RemovePartyDeathCount()
+    //{
+    //    PartyDeathCount--;
+    //}
 
 
     public void SetEndState()

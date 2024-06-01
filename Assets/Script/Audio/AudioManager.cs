@@ -21,8 +21,8 @@ public enum BGMList
     Strike_Witches_Get_Bitches,
 }
 
-/*
-public class AudioManager : SingletonPun<AudioManager>
+
+public class AudioManager : MonoBehaviour
 {
     private AudioSource BGMPlayer;
     private GameObject[] SEPlayer;
@@ -45,8 +45,30 @@ public class AudioManager : SingletonPun<AudioManager>
     public AudioLibrary AudioLibrary;
 
     public AudioMixer Mixer { get { return mixer; } }
+    private static AudioManager Instance = null;
 
-    public override void Initialize()
+    void Awake()
+    {
+        if (null == Instance)
+        {
+            //이 클래스 인스턴스가 탄생했을 때 전역변수 instance에 게임매니저 인스턴스가 담겨있지 않다면, 자신을 넣어준다.
+            Instance = this;
+
+            //씬 전환이 되더라도 파괴되지 않게 한다.
+            //gameObject만으로도 이 스크립트가 컴포넌트로서 붙어있는 Hierarchy상의 게임오브젝트라는 뜻이지만, 
+            //나는 헷갈림 방지를 위해 this를 붙여주기도 한다.
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            //만약 씬 이동이 되었는데 그 씬에도 Hierarchy에 GameMgr이 존재할 수도 있다.
+            //그럴 경우엔 이전 씬에서 사용하던 인스턴스를 계속 사용해주는 경우가 많은 것 같다.
+            //그래서 이미 전역변수인 instance에 인스턴스가 존재한다면 자신(새로운 씬의 GameMgr)을 삭제해준다.
+            Destroy(this.gameObject);
+        }
+    }
+
+    public void Initialize()
     {
         InitializeData();
         InitializeObject();
@@ -54,12 +76,11 @@ public class AudioManager : SingletonPun<AudioManager>
         // ADDED
         AudioLibrary = this.gameObject.GetComponent<AudioLibrary>();
 
-        gameObject.AddComponent<PhotonView>();
-        photonView.ViewID = 10;
+        //gameObject.AddComponent<PhotonView>();
+        //photonView.ViewID = 10;
     }
 
-    // Dictinonary�� ����� Ŭ�� �߰�
-    public void InitializeData()
+    public void InitializeData()//딕셔너리 데이터 세팅
     {
         clipDict = new Dictionary<string, AudioClip>();
 
@@ -172,14 +193,15 @@ public class AudioManager : SingletonPun<AudioManager>
                 source.clip = clipDict[clipName];
                 source.loop = false;
 
-                // �Ÿ��� ���� ���� ����
+                //플레이어 위치가 기존 코드는 로비시 로비매니저의 플레이어 위치 게임플레이중일땐 게임매니저한테서 플레이어 위치를 받아옴 멀티
+                //기능이 없기에 로비매니저는 없음 게임매니저 작성후 위치를 받아올것
                 Vector3 vec;
-                if (SceneManager.GetActiveScene().name != "LobbyScene")
-                   vec  = GameManager.Instance.clientPlayer.transform.position - pos;
-                else
-                   vec = LobbyManager.Instance.instantiatedPlayer.transform.position - pos;
-                float volume = Mathf.InverseLerp(Instance.maxLength, Instance.minLength, vec.magnitude);
-                source.volume = volume;
+                //if (SceneManager.GetActiveScene().name != "LobbyScene")
+                //   vec  = GameManager.Instance.clientPlayer.transform.position - pos;
+                //else
+                //   vec = LobbyManager.Instance.instantiatedPlayer.transform.position - pos;
+                //float volume = Mathf.InverseLerp(Instance.maxLength, Instance.minLength, vec.magnitude);
+                //source.volume = volume;
 
                 source.Play();
                 return;
@@ -245,4 +267,4 @@ public class AudioManager : SingletonPun<AudioManager>
         return encodedName;
     }
 }
-*/
+
