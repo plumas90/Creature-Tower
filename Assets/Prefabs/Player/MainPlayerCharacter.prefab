@@ -344,6 +344,7 @@ MonoBehaviour:
   isNoramlMove: 0
   isCanSkill: 0
   isCanAtk: 0
+  isDie: 0
   RegenHP: 0
   CanSpeedBuff: 0
   CanLowSteam: 0
@@ -352,6 +353,8 @@ MonoBehaviour:
   CurSkillStack: 0
   MaxRollStack: 0
   CurRollStack: 0
+  evasionPersent: 0
+  DamegeTemp: 0
   curAmmo: 0
   CanFire: 0
   CanReload: 0

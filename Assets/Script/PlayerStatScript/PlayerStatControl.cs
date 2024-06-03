@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.U2D.Animation;
@@ -64,21 +65,15 @@ public class PlayerStatControl : MonoBehaviour
     [HideInInspector] public bool isNoramlMove; //조작 좌우 반전 체크
     [HideInInspector] public bool isCanSkill; // 스킬 쿨타임 체크
     [HideInInspector] public bool isCanAtk;
-    //public bool isDie; 싱글겜이라 필요없음
+    public bool isDie; //죽음 체크
     //public bool isRegen; //
-    public int RegenHP; // 체젠 증강이 있는데 없애는것도 고려 ex 보스방 전에 밥먹고와서 풀피전
+    public int RegenHP; // 부활시 체력인데 시발 아 뭔지 모르겠음 햇갈려
+
+    #region 쓰레기
+    //아래 사라질것들 목숨은 게임매니저로 사라짐 멀티가 아니니까 킬수 견제 없음
     //public int MaxRegenCoin; //부활 목숨 최대
     //private int curRegenCoin; // 부활 목숨 현재
     //private int kill; // 로아 가족 사진 처럼 게임 클리어시 처치한 몹수 고려
-
-    /* @@@@@@ 알아둬야할 중요한 개념 현준이가 읽었으면 이제 지워도됨
-     스턴이 500초 걸리는 스킬과 스턴이 1초 걸리는 스킬이 있을때 스턴 500초에 맞으면 500초후에 스턴이 풀리게 설정을 해둘거임
-    그런데 이때 스턴 1초 짜리 스킬을 걸면 이 스킬또한 1초후에 스턴이 풀리게 만들거임 이게 겹치면? 499초 스턴이 씹히는거임 
-    버프 , 디버프 때 이미 버프가 걸려있을때 남은 버프시간 과 새로 넣을 버프 지속 시간을 비교해서 처리를 해줘야함 
-     */
-    [HideInInspector] public bool CanSpeedBuff; 
-    [HideInInspector] public bool CanLowSteam;
-    [HideInInspector] public bool CanAtkBuff;
     /*
     public int CurRegenCoin
     {
@@ -96,12 +91,22 @@ public class PlayerStatControl : MonoBehaviour
         }
     } 
     */
+    #endregion
+
+    /* @@@@@@ 알아둬야할 중요한 개념 현준이가 읽었으면 이제 지워도됨
+     스턴이 500초 걸리는 스킬과 스턴이 1초 걸리는 스킬이 있을때 스턴 500초에 맞으면 500초후에 스턴이 풀리게 설정을 해둘거임
+    그런데 이때 스턴 1초 짜리 스킬을 걸면 이 스킬또한 1초후에 스턴이 풀리게 만들거임 이게 겹치면? 499초 스턴이 씹히는거임 
+    버프 , 디버프 때 이미 버프가 걸려있을때 남은 버프시간 과 새로 넣을 버프 지속 시간을 비교해서 처리를 해줘야함 
+     */
+    [HideInInspector] public bool CanSpeedBuff; 
+    [HideInInspector] public bool CanLowSteam;
+    [HideInInspector] public bool CanAtkBuff;
     [HideInInspector] public int MaxSkillStack; //재능발현으로 스킬 스택을 늘렸을때 사용용
     [HideInInspector] public int CurSkillStack;
     [HideInInspector] public int MaxRollStack;
     [HideInInspector] public int CurRollStack;
-    //public int evasionPersent; 회피 확률 증강
-    //public float DamegeTemp; 데미지 저장용
+    public int evasionPersent; //회피 확률 증강
+    public float DamegeTemp;// 데미지 저장용
 
 
     private float curHP;
@@ -184,8 +189,6 @@ public class PlayerStatControl : MonoBehaviour
         LaunchVolume = new Stats(playerStats.launchVolume);
         Critical = new Stats(playerStats.critical);
         AmmoMax = new Stats(playerStats.ammoMax);
-        //MaxRegenCoin = 0;
-        //CurRegenCoin = MaxRegenCoin;
 
         PlayerSprite = playerStats.playerSprite;
         WeaponSprite = playerStats.weaponSprite;
@@ -207,7 +210,11 @@ public class PlayerStatControl : MonoBehaviour
         isNoramlMove = true;
         isCanSkill = true;
         isCanAtk = true;
-        //evasionPersent = 0;
+
+        isDie = false;
+
+        
+        evasionPersent = 0;
         //isRegen = false;
         //ImGhost = false;
 
@@ -347,53 +354,54 @@ public class PlayerStatControl : MonoBehaviour
 
     public void Damage(float damage)
     {
-        CurHP -= damage;
-        //GameManager.Instance?.PlayerDie(); 
+        //CurHP -= damage;
 
-        /*if (!isDie) // 죽어있음 = 멀티 개념 인데 한번 읽어봐서 아 재능을 섞으면 이런 느낌이구나 한번 파악
+        DamegeTemp = damage; //데미지 값 저장
+        GetDamege?.Invoke(DamegeTemp);  //받은 데미지 저장 연동된 효과에 따라 데미지가 달라질 수 있음
+        int a = UnityEngine.Random.Range(1, 101); // 회피값 
+        if (evasionPersent <= a) // 회피 실패시 데미지 처리
         {
-            DamegeTemp = damage; 데미지 값 저장
-            GetDamege?.Invoke(DamegeTemp);  //받은 데미지 저장 
-            int a = UnityEngine.Random.Range(0, 100); // 회피값 
-            if (evasionPersent <= a) // 회피 실패시 데미지 처리
+            //TODO 여기서 IF문 열고 실드 처리
+
+            DamegeTemp = DamegeTemp * defense;
+
+            HitEvent?.Invoke();
+            HitEvent2?.Invoke(DamegeTemp);//이게 값이 필요한경우와 필요 없는경우가 있는데 한개로 할수가 있는지 모르겠음 일단 이렇게함
+                                          // 아직도 가지고 있는 의문임
+
+            if (CurHP - DamegeTemp <= 0) // 데미지 받았을때 죽을걸로 예상될때 처리
             {
-                DamegeTemp = DamegeTemp * defense;
+                CurHP -= DamegeTemp;
+                isDie = true;
 
-                HitEvent?.Invoke();
-                HitEvent2?.Invoke(DamegeTemp);//이게 값이 필요한경우와 필요 없는경우가 있는데 한개로 할수가 있는지 모르겠음 일단 이렇게함
-                                              // 아직도 가지고 있는 의문임
+                //TODO 현재 죽었을대 이벤트 걸린게 없음 모션 변화처리 및 N초후 게임 오버 추가
+                OnDieEvent?.Invoke();
+                
 
-                if (CurHP - DamegeTemp <= 0) // 데미지 받았을때 죽을걸로 예상될때 처리
+                if (GameManager.Instance.Life > 0) // 목숨 부활 처리
                 {
-                    CurHP -= DamegeTemp;
-                    isDie = true;
-                    OnDieEvent?.Invoke();
+                    // TODO 아래껄 함수로 만들고 죽었을때 N초후 부활 상태로 처리 
+                    GameManager.Instance.Life -= 1;
+                    isDie = false;
+                    Regen(HP.total);
 
-                    if (CurRegenCoin > 0) // 목숨 부활 처리
-                    {
-                        CurRegenCoin -= 1;
-                        isDie = false;
-                        Debug.Log($"부활 : {CurRegenCoin}");
-                        Regen(HP.total);
-                        return;
-                    }
+                //죽었을때 게임매니저 측에선 게임이 안끝나는 상태와 특정위치로 부활 처리를 해야한다고 생각함
+                // 게임매니저 상단에 그 현재 맵 정보가 필요 하다고 했는데 부활 위치도 그렇게 해야 할거 같음
+                //GameManager.Instance?.PlayerDie();
+                    return;
+                }
 
-                    TestGameManager.Instance?.DiedAfter();
-                    GameManager.Instance?.PlayerDie();
-                    photonView.RPC("LayerSet", RpcTarget.All);
-                }
-                else
-                {
-                    CurHP -= DamegeTemp;
-                }
+            }
+            else
+            {
+                CurHP -= DamegeTemp;
             }
         }
-        */
+        else 
+        {
+            //회피시 특수 효과 처리 소리랑 시각적 효과 추가 해야할듯
+        }
 
-    }
-    public void LayerSet() //12레이어가 기존에선 죽은 상태였음 스테이지 재시작시 부활 처리하면서 레이어도 바꿔줌 
-    {
-        this.gameObject.layer = 12;
     }
 
     public void HPadd(float addhp) // 힐 
@@ -401,111 +409,37 @@ public class PlayerStatControl : MonoBehaviour
         CurHP += addhp;
     }
 
-    /*public void Regen(float HP) // 체젠 사용할지 모르겠음
+    public void Regen(float HP) // 부활인데
     {
         HPadd(HP);
-        OnRegenEvent?.Invoke();
-        OnRegenCalculateEvent?.Invoke(RegenHP);
-        if (gameObject.GetPhotonView().IsMine)
-        {
+        OnRegenEvent?.Invoke(); //부활 이벤트 EX 부활시 공격력 증가
+        OnRegenCalculateEvent?.Invoke(RegenHP);// 부활시 풀 체력이 아닌대신 목숨여러개 증강용
+
+
+            //죽었을때 조작 다 꺼버리기 세팅 해야함 그런데 부활 지점에서 부활 말고 유령됬다가 부활 하는것도 고려중 이것도 좋을거 같음
             PlayerInputController tempInputControl = this.gameObject.GetComponent<PlayerInputController>();
             tempInputControl.ResetSetting();
-        }
+
         isDie = false;
-        isRegen = true;
-        _DebuffControl.Init(PlayerDebuffControl.buffName.TwoMoon, 5f);
-        photonView.RPC("SendRegenBool", RpcTarget.All, viewID);
-    }*/
-
-    /*
-    public void SendRegenBool(int viewID) //체젠 펀 통신 처리 삭제 예정
-    {
-        PhotonView pv = PhotonView.Find(viewID);
-        pv.GetComponent<PlayerStatHandler>().isRegen = true;
-
-        Invoke("InvokeSetRegenBool", 5f);
+        _DebuffControl.Init(PlayerDebuffControl.buffName.TwoMoon, 5f); //무적 버프5초같은데 버프도 다시 갈아엎어야됨
     }
-
-    private void InvokeSetRegenBool()//불값 통신 처리 삭제 예정
-    {
-        SetRegenBool(viewID);
-    }
-    */
-
-    /*
-    public void SetRegenBool(int viewID) 삭제예정
-    {
-        PhotonView pv = PhotonView.Find(viewID);
-        if (pv.IsMine)
-        {
-            isRegen = false;
-        }
-        else
-        {
-            pv.GetComponent<PlayerStatHandler>().isRegen = false;
-        }
-        // 부활 파티클이 꺼져야 하는 시점
-    }
-    */
-
-    //public void RefillCoin() 목숨 +1 같은거 있으면 쓸거 같긴함
-    //{
-    //    CurRegenCoin = MaxRegenCoin;
-    //}
-    public void PunRpcStartHp() // 시작시 체력값 설정 함수 근데 멀티용으로 짜서 다시 짜야함
-    {
-        /*if (gameObject.GetPhotonView().IsMine)
-        {
-            PlayerInputController tempInputControl = this.gameObject.GetComponent<PlayerInputController>();
-            tempInputControl.ResetSetting();
-            tempInputControl.InputOn();
-        }
-        CurHP = HP.total;
-        this.gameObject.layer = 8;
-        if (ImGhost)
-        {
-           this.gameObject.layer = 13;
-        }
-        if (isDie == true)
-        {
-            isDie = false;
-            anime._animation.SetTrigger("IsRegen");
-        }*/
-    }
-
-
-    /*public void SetSyncHP(int viewID, float _CurHP) // 현재 체력 통신 삭제 예정
-    {
-        PhotonView _PV;
-        _PV = PhotonView.Find(viewID);
-        PlayerStatHandler _PvPlayer = _PV.gameObject.GetComponent<PlayerStatHandler>();
-        _PvPlayer.CurHP = _CurHP;
-
-        if (_PvPlayer.CurHP <= 0)
-        {
-            isDie = true;
-            OnDieEvent?.Invoke();
-            this.gameObject.layer = 12;
-        }
-    }*/
-
     public void MoveStartCall() //움직임감지이벤트
     {
-        //MoveStartEvent?.Invoke();
+        MoveStartEvent?.Invoke();
     }
     public void MoveEndCall() // 움직임 감지이벤트
     {
-        //MoveEndEvent?.Invoke();
+        MoveEndEvent?.Invoke();
     }
 
     public void EnemyHitCall() // 적 타격 이벤트
     {
-        //EnemyHitEvent?.Invoke(); 
+        EnemyHitEvent?.Invoke(); 
     }
     public void KillEvent() // 킬 이벤트
     {
         //kill++;
-        //KillCatchEvent?.Invoke();
+        KillCatchEvent?.Invoke();
     }
     public void RegenHPCalculator(int calHP = 0)
     {
@@ -527,13 +461,6 @@ public class PlayerStatControl : MonoBehaviour
         //    OnDamageReflectEvent?.Invoke(damage, targetID);
         //}
     }
-
-    /*public void thankyouLife(int pvid) //팀 살려주기 멀티용
-    {
-        PhotonView photonView = PhotonView.Find(pvid);
-        WeaponSystem weapon = photonView.gameObject.GetComponent<WeaponSystem>();
-        weapon.canresurrection = false;
-    }*/
 
     public void StartKnockback(Vector3 direction, float distance)
     {
@@ -558,12 +485,6 @@ public class PlayerStatControl : MonoBehaviour
         // 최종 위치에 고정
         transform.position = targetPosition;
     }
-    public void ImLive() // 부활 생존 알림 싱글 삭제 가능성 높음
-    {
-        //Regen(HP.total);
-        //this.gameObject.layer = 8;
-    }
-
     public void SetStatusArray() // 스탯 배열화
     {
         PlayerStatArray = new Stats[11]

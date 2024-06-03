@@ -5,8 +5,7 @@ using UnityEngine;
 public enum BulletTarget
 {
     Player,
-    Enemy,
-    All// 이부분 팀킬먹으면 둘다쳐야해서 올 반영시켜야될듯 다른분들한테 말하기
+    Enemy
 }
 
 public class Bullet : MonoBehaviour
@@ -126,6 +125,7 @@ public class Bullet : MonoBehaviour
             }
             return;
         }
+        /*
         //만약 팀킬이 아닌 몬스터의 총알이라면 몬스터가 아니라면 삭제
         else if (targets.ContainsValue((int)BulletTarget.Player)
             && !targets.ContainsValue((int)BulletTarget.Enemy)
@@ -134,6 +134,7 @@ public class Bullet : MonoBehaviour
             Invoke("Destroy", 0.01f);
             return;
         }
+        */
         //만약 관통인 플레이어의 총알이라면 벽일때삭제
         else if (Penetrate)
         {
