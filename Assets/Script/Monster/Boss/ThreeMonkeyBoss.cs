@@ -56,6 +56,8 @@ public class ThreeMonkeyBoss : BossBase
             transform.Translate(direction * speed * Time.deltaTime);
         }
     }
+    
+    //TODO   레이어 바꾸기 컨 해야됨;
     public override void First()
     {
         GetDirection();

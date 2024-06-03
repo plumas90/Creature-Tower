@@ -19,10 +19,7 @@ public class UIPlayerMiniHUD : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if ((SceneManager.GetActiveScene().name == "Test_DoHyun") || (SceneManager.GetActiveScene().name == "MainGameScene"))
-            InitializeData();
-        else
-            return;
+       InitializeData();
     }
 
     public void InitializeData()
@@ -33,7 +30,7 @@ public class UIPlayerMiniHUD : MonoBehaviour
             var temp = element.GetComponent<UIBase>();
             if (temp != null)
             {
-                Debug.Log("[CheckInterface] Init " + element.GetType());
+                //Debug.Log("[CheckInterface] Init " + element.GetType());
                 temp.Initialize();
             }
         }
@@ -47,9 +44,7 @@ public class UIPlayerMiniHUD : MonoBehaviour
 
     public void InitializeEvent()
     {
-        statHandler.HitEvent += OpenChild<UIPlayerMiniHP>;
         playerController.OnReloadEvent += OpenChild<UIReloadHUD>;
-        playerController.OnEndReloadEvent += OpenChild<UIPlayerMiniHP>;
     }
 
     public void OpenChild<T>() where T : UIBase

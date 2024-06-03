@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class UIReloadHUD: UIBase
 {
     private Slider slider;
-    private GameObject player;
+    public GameObject player;
     private CoolTimeController controller;
     private PlayerStatControl statHandler;
 
