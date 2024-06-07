@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ba4eb04c701308a4ba412892c7fcebec
+guid: 707645df63732864d9a1242107e048b9
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,7 +123,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall
+      name: "\uC67C\uCABD\uC704\uCF54\uB108"
       rect:
         serializedVersion: 2
         x: 0
@@ -137,14 +137,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f15838dd40a172d489bd6b5126d1bea6
-      internalID: 286071157
+      spriteID: 6eae38448694a574292ff8675263ccd4
+      internalID: 921408457
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LeftWall
+      name: "\uC624\uB978\uCABD\uC704\uCF54\uB108"
       rect:
         serializedVersion: 2
         x: 33
@@ -158,77 +158,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ca0b99e1eab79841ad3d1bb4c37bbbe
-      internalID: -424805623
+      spriteID: 6b1bb400b1d4dea4fa8fbb93c6a817de
+      internalID: -794993638
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UpWall
-      rect:
-        serializedVersion: 2
-        x: 66
-        y: 33
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bdefae39c6cfcc0409beb27ffdb1102e
-      internalID: 1518420932
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DownWall
-      rect:
-        serializedVersion: 2
-        x: 99
-        y: 33
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b63033fefe0dcf243967d8d03079e00b
-      internalID: -1827331340
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RightWall
-      rect:
-        serializedVersion: 2
-        x: 132
-        y: 33
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e57ad465748aad04c81c9b89071d6d75
-      internalID: -1237135235
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RightUpWall
+      name: "\uC88C\uCE21\uD558\uB2E8\uCF54\uB108"
       rect:
         serializedVersion: 2
         x: 0
@@ -242,14 +179,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f3e13eda0b53cdb499fcfdc0adf012cc
-      internalID: -4799748
+      spriteID: 668a9465692919e4da458103bc60c912
+      internalID: 317262394
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LeftUpWall
+      name: "\uC88C\uCE21\uC0C1\uB2E8\uCF54\uB108"
       rect:
         serializedVersion: 2
         x: 33
@@ -263,71 +200,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f30abf9a6b596bd4abd0ade20b682c2b
-      internalID: -682980849
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LeftDownWall
-      rect:
-        serializedVersion: 2
-        x: 66
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 58aa70a12ff762245a18770d7e2b1c85
-      internalID: -1364762515
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RightDownWall
-      rect:
-        serializedVersion: 2
-        x: 100
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cc40cffad4d0b424ca8243fd65bab3f7
-      internalID: 327532523
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DarkWall
-      rect:
-        serializedVersion: 2
-        x: 133
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 097fc46d4bc497e41bb6e02928aeb128
-      internalID: 1628661731
+      spriteID: 1624f0c3961549547a600d6c04bbe3dd
+      internalID: 1800220599
       vertices: []
       indices: 
       edges: []
@@ -343,16 +217,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      DarkWall: 1628661731
-      DownWall: -1827331340
-      LeftDownWall: -1364762515
-      LeftUpWall: -682980849
-      LeftWall: -424805623
-      RightDownWall: 327532523
-      RightUpWall: -4799748
-      RightWall: -1237135235
-      UpWall: 1518420932
-      wall: 286071157
+      "\uC624\uB978\uCABD\uC704\uCF54\uB108": -794993638
+      "\uC67C\uCABD\uC704\uCF54\uB108": 921408457
+      "\uC88C\uCE21\uC0C1\uB2E8\uCF54\uB108": 1800220599
+      "\uC88C\uCE21\uD558\uB2E8\uCF54\uB108": 317262394
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
