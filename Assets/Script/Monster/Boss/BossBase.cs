@@ -20,6 +20,7 @@ public class BossBase : MonoBehaviour
     public bool live;
     //[HideInInspector] 
     public GameObject Player;
+    public float IntroTime;
 
     public bool wait =true;
     public bool invincibility;
@@ -31,7 +32,8 @@ public class BossBase : MonoBehaviour
         atk = MainSO.atk;
         maxHp = MainSO.hp;
         curHp = MainSO.hp;
-        speed = MainSO.normalMoveSpeed;
+        speed = MainSO.speed;
+        IntroTime = MainSO.IntroAnimationTime;
         live = true;
         Player = GameManager.Instance.playerOBJ;
         // 위치 설정 추측상 this.pos this.transform.position = 보스 스폰 포지션
@@ -39,9 +41,9 @@ public class BossBase : MonoBehaviour
         
         //아래 시간 대로 보스 시작 무적 설정 추후 시작 애니메이션이 있다면 그렇겠지 아니면 1초겠지
         // 그렇게 된다면 1초를 에네미 베이스에 만들어서 스타트 모션 세컨드 같은걸로 만들어야겠지
-        StartInvincibilityNSecond(1f);
-        WaitPls(1f);
-        FirstPls(1f);
+        StartInvincibilityNSecond(IntroTime);
+        WaitPls(IntroTime);
+        FirstPls(IntroTime);
     }
 
     public virtual void Damege(float damege) 
@@ -84,10 +86,10 @@ public class BossBase : MonoBehaviour
         Destroy(this);
     }
 
-    public void StartInvincibilityNSecond(float i)
+    public void StartInvincibilityNSecond(float second)
     {
         invincibility = true;
-        Invoke("invincibility", i);
+        Invoke("invincibility", second);
     }
 
     public void endinvincibility()

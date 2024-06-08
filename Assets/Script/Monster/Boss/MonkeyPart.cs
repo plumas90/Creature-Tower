@@ -11,7 +11,7 @@ public class MonkeyPart : BossBase
         atk = MainSO.atk;
         maxHp = MainSO.hp;
         curHp = MainSO.hp;
-        speed = MainSO.normalMoveSpeed;
+        speed = MainSO.speed;
         live = true;
         Player = GameManager.Instance.playerOBJ;
         direction = -vecter;

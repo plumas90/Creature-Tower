@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class StageInCheckPoint : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Stage stage;
+    public SpriteRenderer sprite;
+    private void Awake()
     {
-        
+        sprite.color = new Color(0, 0, 0, 0);
     }
-
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (collision.TryGetComponent(out PlayerStatControl playerStatControl)) 
+        {
+            stage.InCheckClear();
+        }
     }
 }

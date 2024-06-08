@@ -31,7 +31,6 @@ public class ThreeMonkeyBoss : BossBase
 
     int makeMonkeyCount;
 
-    object targetPlayer;
     Transform targetPlayerTransform;
     Vector2 direction = Vector2.zero;
     public override void StatSet() 
@@ -123,7 +122,7 @@ public class ThreeMonkeyBoss : BossBase
         atk = enemyso.atk;
         maxHp = enemyso.hp;
         curHp = enemyso.hp;
-        speed = enemyso.normalMoveSpeed;
+        speed = enemyso.speed;
     }
 
 

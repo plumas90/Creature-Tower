@@ -10,8 +10,9 @@ public class EnemySO : ScriptableObject
     //public EnemyType type;        // 적 유형(BT기반 행동 제어를 할거라 필요없으면 지우기)
     public float atk;             // 공격력
     public float hp;              // 체력
-    public float normalMoveSpeed;
+    public float speed;
     public int bossCount;
+    public float IntroAnimationTime;
 
     //public float bulletSpeed;     // 탄환 속도
     //public float atkDelay;        // 공격 딜레이
