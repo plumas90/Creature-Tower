@@ -23,6 +23,7 @@ public class Stage : MonoBehaviour
     public Transform PlayerSpawnPoint;
     public NextStageStairs NextStageStairs;
     public Transform BossSpawnPoint;
+    public SpriteRenderer bossSpawnSprite;
 
 
     private bool firstIn;
@@ -34,6 +35,9 @@ public class Stage : MonoBehaviour
         //브소설정
         BossBase = bossOBJ.GetComponent<BossBase>();
         bossOBJ.transform.position = BossSpawnPoint.position;
+
+
+        bossSpawnSprite.color = new Color(0, 0, 0, 0);
         //아래거 보스액티브 꺼두고 지우기
         bossOBJ.SetActive(false);
 

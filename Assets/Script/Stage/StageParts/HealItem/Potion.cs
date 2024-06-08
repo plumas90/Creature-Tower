@@ -22,19 +22,19 @@ public class Potion : MonoBehaviour
     }
     public void RandomSetting()
     {
-        int random = Random.Range(0, 101);
+        int random = Random.Range(0, 100);
 
-        if (random <= 5)
+        if (random < 1)
         {
             spriteRenderer.sprite = OnehundredPersentHeal;
             _persent = 1;
         }
-        else if(random <= 10) 
+        else if(random < 6) 
         {
             spriteRenderer.sprite = FiveZeroPersentHeal;
             _persent = 0.5f;
         }
-        else if(random <= 30) 
+        else if(random < 30) 
         {
             spriteRenderer.sprite = TwoFivePersentHeal;
             _persent = 0.25f;
