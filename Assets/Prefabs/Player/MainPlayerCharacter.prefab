@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7205423916787976560}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Handle Slide Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 8228697469560193526}
   - component: {fileID: 6769195490939520359}
   - component: {fileID: 2981093293092904977}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: WeaponSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 2780577857159753671}
   - component: {fileID: 2652992673864593638}
   - component: {fileID: 5272273164289323358}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: MainPlayerCharacter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -578,7 +578,7 @@ GameObject:
   - component: {fileID: 7601137353354217969}
   - component: {fileID: 5882496727853596086}
   - component: {fileID: 7615422659578414915}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -652,7 +652,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5815536842483500172}
   - component: {fileID: 1623236037702980216}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -744,7 +744,7 @@ GameObject:
   - component: {fileID: 5579743574869124600}
   - component: {fileID: 628688277547277089}
   - component: {fileID: 6780271676657594187}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PlayerMiniHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -844,7 +844,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9081749030834884191}
   - component: {fileID: 1732268972784601415}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PlayerHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 8840304383738798558}
   - component: {fileID: 8507046882883633607}
   - component: {fileID: 3817335206818689630}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -971,7 +971,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6902161196199567969}
   - component: {fileID: 6681807571634153699}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Reload
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1011,6 +1011,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1943867511632223332}
+  startcheck: 0
 --- !u!1 &6046301477618389120
 GameObject:
   m_ObjectHideFlags: 0
@@ -1020,7 +1021,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1734082019637088524}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: WeaponPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1056,7 +1057,7 @@ GameObject:
   - component: {fileID: 890416968531072083}
   - component: {fileID: 2314461534868061386}
   - component: {fileID: 8182346849350416653}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: MainSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1193,7 +1194,7 @@ GameObject:
   - component: {fileID: 2128726630544485010}
   - component: {fileID: 7633245121995743772}
   - component: {fileID: 4475711676149520312}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1266,7 +1267,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 121902688979682196}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1302,7 +1303,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6750176120389370271}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FirePivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1335,7 +1336,7 @@ GameObject:
   - component: {fileID: 2973430975639761114}
   - component: {fileID: 2963034897079301666}
   - component: {fileID: 9208828886748754827}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TwoMoon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6161,7 +6162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4710392554520460905}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PlayerBuffControl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6197,7 +6198,7 @@ GameObject:
   - component: {fileID: 2563681736728970650}
   - component: {fileID: 7345129707104350111}
   - component: {fileID: 6119199794772410584}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6359,6 +6360,10 @@ PrefabInstance:
       value: speed
       objectReference: {fileID: 0}
     - target: {fileID: 7590175632801861077, guid: 4b7a864e173a6604597b910d9da1c2c1, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7590175632801861077, guid: 4b7a864e173a6604597b910d9da1c2c1, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -6388,6 +6393,10 @@ PrefabInstance:
     - target: {fileID: 1692351355913208722, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
       propertyPath: m_Name
       value: Heal
+      objectReference: {fileID: 0}
+    - target: {fileID: 1692351355913208722, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1692351355913208722, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
       propertyPath: m_IsActive

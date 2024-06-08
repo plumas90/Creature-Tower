@@ -10,6 +10,7 @@ public class UIReloadHUD: UIBase
     public GameObject player;
     private CoolTimeController controller;
     private PlayerStatControl statHandler;
+    public bool startcheck = false;
 
     public override void Initialize()
     {
@@ -29,6 +30,7 @@ public class UIReloadHUD: UIBase
         statHandler = player.GetComponent<PlayerStatControl>();
         //player.GetComponent<TopDownCharacterController>().OnEndReloadEvent += Close;
         slider = GetComponentInChildren<Slider>();
+        startcheck = true;
     }
 
     public void UpdateData()
@@ -39,7 +41,7 @@ public class UIReloadHUD: UIBase
 
     private void OnEnable()
     {
-        if (player != null)
+        if (player != null && startcheck)
             UpdateData();
     }
 

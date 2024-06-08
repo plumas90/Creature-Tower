@@ -149,7 +149,7 @@ public class PlayerInputController : TopDownCharacterController
                 //playerInput.actions["Attack"].ReadValue<float>()마우스 눌리는거 확인하는 변수
                 if (!IsAtking && !EventSystem.current.IsPointerOverGameObject() && playerInput.actions["Attack"].ReadValue<float>() == 1)
                 {
-                    CallAttackEvent(true);
+                CallAttackEvent(true);
                     //추가함
                     CallAttackKeepEvent(true);
                 }
