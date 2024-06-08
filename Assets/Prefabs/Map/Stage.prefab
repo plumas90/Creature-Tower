@@ -3311,7 +3311,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6874200023408318287}
   - component: {fileID: 6242122894690212256}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BotDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3748,7 +3748,7 @@ GameObject:
   - component: {fileID: 665596374320726862}
   - component: {fileID: 6197659606153958607}
   - component: {fileID: 700547438627895123}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DoorSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3941,7 +3941,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7273061629739806887}
   - component: {fileID: 8416353508485015230}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TopDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3987,7 +3987,7 @@ GameObject:
   - component: {fileID: 2206621502755090548}
   - component: {fileID: 5425863410282337219}
   - component: {fileID: 1763134710851928123}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DoorSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
