@@ -28,7 +28,6 @@ public class BossBase : MonoBehaviour
     // Start is called before the first frame update
     public virtual void StatSet() 
     {
-        
         atk = MainSO.atk;
         maxHp = MainSO.hp;
         curHp = MainSO.hp;

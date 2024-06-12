@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a7e00afa431f817428cf94888c944f46
+guid: 3d6e499d7d3a0424a838c5c729205b68
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -121,112 +121,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: Char2WalkFront_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 2
-        width: 16
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ac33b7195463e9f42a59608eb68180fc
-      internalID: 1039015118
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Char2WalkFront_1
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 2
-        width: 16
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5a7797b09f9e88643b91b82eebdd06b6
-      internalID: 1501910321
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Char2WalkFront_2
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 3
-        width: 16
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e666d2a85a7eabe449e61bbe61107fe7
-      internalID: -2135079375
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Char2WalkFront_3
-      rect:
-        serializedVersion: 2
-        x: 96
-        y: 1
-        width: 16
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 326d5d0baf38bb94bb2f836ff363d3d2
-      internalID: 433324805
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Char2WalkFront_4
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 2
-        width: 16
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cb7b0c8166d694647b101da638923bdc
-      internalID: -37160366
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -237,12 +132,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      Char2WalkFront_0: 1039015118
-      Char2WalkFront_1: 1501910321
-      Char2WalkFront_2: -2135079375
-      Char2WalkFront_3: 433324805
-      Char2WalkFront_4: -37160366
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

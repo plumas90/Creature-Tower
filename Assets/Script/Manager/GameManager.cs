@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
 
     [Header("PlayerData")]
     public GameObject playerOBJ;
-    public PlayerDataSetting characterSetting; // 플레이어의 정보
+    //public PlayerDataSetting characterSetting; // 플레이어의 정보
     public bool isDie; // 플레이어 죽음 여부
     //public int Gold;  // 골드
     public int Life; //목숨
@@ -92,20 +92,20 @@ public class GameManager : MonoBehaviour
     #endregion
 
 
-    public List<Stage> StageTree = new List<Stage>();
-    public Stage CurrentStage ;
+    [HideInInspector]public List<Stage> StageTree = new List<Stage>();
+    [HideInInspector]public Stage CurrentStage ;
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
         }
-        bossCount = 0;
-        TowerLevelCount = 0;
     }
 
     public void MakeStageTree() 
     {
+        bossCount = 0;
+        TowerLevelCount = 0;
         //이거보다 더 나은 방법이 있다고 생각한다 근데 모르겠어 시발 근데 난 지금 이걸 완성해둬야해 시발
         if (stageLevel1.Count >=1) 
         {

@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -43,12 +43,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -121,7 +121,175 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Char2BackRoll_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1
+        width: 20
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a08a3c987e56a554f94b44706e97cae4
+      internalID: -1388055616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Char2BackRoll_1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 6
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8aa184a8be60d28468e509ec11a6e4ee
+      internalID: -466000228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Char2BackRoll_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30360bb006473f04697a66b8516771ba
+      internalID: 1961845308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Char2BackRoll_3
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 1
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efbc08f0ab037874e9b540f9771460ba
+      internalID: 1638447101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Char2BackRoll_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d99a0d5f3b6cd1b4ba6ceaf3eb1660fa
+      internalID: -257531925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Char2BackRoll_5
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 4
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 442a9c38610bbc543b96d39c683348e2
+      internalID: -813424717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Char2BackRoll_6
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 2
+        width: 23
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 429d8c5a0927c424eafe9c68a57f0a74
+      internalID: -1513278136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Char2BackRoll_8
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 1
+        width: 25
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18f3f8c225a38a443bf6d311f3b3d9ff
+      internalID: -1062034081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -132,7 +300,26 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Char2BackRoll_0: -1388055616
+      Char2BackRoll_1: -466000228
+      Char2BackRoll_10: -2139460514
+      Char2BackRoll_11: -1514789506
+      Char2BackRoll_12: 286212391
+      Char2BackRoll_13: -622175311
+      Char2BackRoll_14: -2131127276
+      Char2BackRoll_15: 1665791140
+      Char2BackRoll_16: -1008790119
+      Char2BackRoll_17: -919761582
+      Char2BackRoll_18: 680346616
+      Char2BackRoll_2: 1961845308
+      Char2BackRoll_3: 1638447101
+      Char2BackRoll_4: -257531925
+      Char2BackRoll_5: -813424717
+      Char2BackRoll_6: -1513278136
+      Char2BackRoll_7: 10674518
+      Char2BackRoll_8: -1062034081
+      Char2BackRoll_9: 43968485
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
