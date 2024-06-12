@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 143394705}
   - component: {fileID: 143394706}
   m_Layer: 5
-  m_Name: Char2
+  m_Name: Char3Kim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156,9 +156,9 @@ RectTransform:
   - {fileID: 1282735859}
   m_Father: {fileID: 2034818868}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -225, y: 100}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -175, y: 50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &143394706
@@ -174,9 +174,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSO: {fileID: 0}
-  rectTransform: {fileID: 0}
-  character: {fileID: 0}
-  weapon: {fileID: 0}
+  rectTransform: {fileID: 143394705}
+  character: {fileID: 299678076}
+  weapon: {fileID: 1282735860}
 --- !u!1 &163054955
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,7 +586,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1767147923, guid: 59be9a7e375349846b85ad96246d80fd, type: 3}
+  m_Sprite: {fileID: -1171351141, guid: b0125ab166dc58641aa68c47dbf873aa, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1010,7 +1010,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 150, y: 250}
+  m_SizeDelta: {x: 180, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &534828326
 MonoBehaviour:
@@ -1032,7 +1032,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1767147923, guid: 59be9a7e375349846b85ad96246d80fd, type: 3}
+  m_Sprite: {fileID: 2021540804, guid: 93a9db72acfe12e46a5374f097096366, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1375,8 +1375,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 50, y: -25}
-  m_SizeDelta: {x: 150, y: 100}
+  m_AnchoredPosition: {x: 18.1, y: -30.2}
+  m_SizeDelta: {x: 150, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1064059695
 MonoBehaviour:
@@ -1398,7 +1398,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1066371670, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
+  m_Sprite: {fileID: -1776634293, guid: 6dd81585c876b8b4fb8ac05a52637d15, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1427,7 +1427,7 @@ GameObject:
   - component: {fileID: 1108677737}
   - component: {fileID: 1108677738}
   m_Layer: 5
-  m_Name: Char3
+  m_Name: Char2Charlie
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1449,9 +1449,9 @@ RectTransform:
   - {fileID: 1064059694}
   m_Father: {fileID: 2034818868}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 250, y: 100}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: 50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1108677738
@@ -1467,9 +1467,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSO: {fileID: 0}
-  rectTransform: {fileID: 0}
-  character: {fileID: 0}
-  weapon: {fileID: 0}
+  rectTransform: {fileID: 1108677737}
+  character: {fileID: 534828326}
+  weapon: {fileID: 1064059695}
 --- !u!1 &1282735858
 GameObject:
   m_ObjectHideFlags: 0
@@ -1504,8 +1504,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 50, y: -25}
-  m_SizeDelta: {x: 150, y: 100}
+  m_AnchoredPosition: {x: 5.7, y: -52.2}
+  m_SizeDelta: {x: 140, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1282735860
 MonoBehaviour:
@@ -1527,7 +1527,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1066371670, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
+  m_Sprite: {fileID: 1839076245, guid: 6dd81585c876b8b4fb8ac05a52637d15, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1854,8 +1854,8 @@ RectTransform:
   - {fileID: 1880308211}
   - {fileID: 535192995}
   - {fileID: 2103147088}
-  - {fileID: 143394705}
   - {fileID: 1108677737}
+  - {fileID: 143394705}
   - {fileID: 600159558}
   m_Father: {fileID: 386327885}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1880,8 +1880,8 @@ MonoBehaviour:
   mainScale: {x: 1, y: 1}
   pickList:
   - {fileID: 2103147089}
-  - {fileID: 143394706}
   - {fileID: 1108677738}
+  - {fileID: 143394706}
   mainColor: {r: 255, g: 255, b: 255, a: 255}
   otherColor: {r: 255, g: 255, b: 255, a: 180}
 --- !u!114 &2034818870
@@ -1911,7 +1911,7 @@ GameObject:
   - component: {fileID: 2103147088}
   - component: {fileID: 2103147089}
   m_Layer: 5
-  m_Name: Char1
+  m_Name: Char1tv
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1933,9 +1933,9 @@ RectTransform:
   - {fileID: 1649468606}
   m_Father: {fileID: 2034818868}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2103147089
@@ -1950,10 +1950,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cae8d45a1d49dec4d976398e24780660, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSO: {fileID: 0}
-  rectTransform: {fileID: 0}
-  character: {fileID: 0}
-  weapon: {fileID: 0}
+  playerSO: {fileID: 11400000, guid: 94f867be33c4c4945b58ee01a7baf192, type: 2}
+  rectTransform: {fileID: 2103147088}
+  character: {fileID: 163054957}
+  weapon: {fileID: 1649468607}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
