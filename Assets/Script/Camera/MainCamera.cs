@@ -22,6 +22,7 @@ public class MainCamera : MonoBehaviour
 
     private void SetInitialTarget()
     {
+        /*
         if (MainGameManager.Instance != null)
         {
             Target = MainGameManager.Instance.InstantiatedPlayer;
@@ -31,34 +32,37 @@ public class MainCamera : MonoBehaviour
             //Debug.Log("adaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             //Target = GameManager.Instance.clientPlayer;
         }
+        */
 
         //currentOtherTargetViewID = GameManager.Instance.clientPlayer.gameObject.GetPhotonView().ViewID;
     }
 
     private void Update()
     {
+
         if (Target == null)
         {
             //PhotonNetwork.AutomaticallySyncScene = false;
             //PhotonNetwork.LoadLevel("LobbyScene");
         }
+        else
+        {
+            TargetPos = new Vector3(
+                Target.transform.position.x + offsetX,
+                Target.transform.position.y + offsetY,
+                Target.transform.position.z + offsetZ
+                );
+        transform.position = Vector3.Lerp(transform.position, TargetPos, Time.deltaTime * CameraSpeed);
+        }
+
+
         /*if (Target.GetComponent<PlayerStatControl>().isDie)
         {
             ChangeTarget();
             //UpdateDiedView();
             TargetPos = OtherTargetPos;
         }*/
-        //else
 
-        //{
-            TargetPos = new Vector3(
-                Target.transform.position.x + offsetX,
-                Target.transform.position.y + offsetY,
-                Target.transform.position.z + offsetZ
-                );
-        //}
-
-        transform.position = Vector3.Lerp(transform.position, TargetPos, Time.deltaTime * CameraSpeed);
     }
 
     void FixedUpdate()

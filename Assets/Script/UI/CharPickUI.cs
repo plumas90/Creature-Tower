@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,6 +9,14 @@ using UnityEngine.UIElements;
 
 public class CharPickUI : MonoBehaviour
 {
+    public TextMeshProUGUI NameText;
+    public TextMeshProUGUI hpText;
+    public TextMeshProUGUI atkText;
+    public TextMeshProUGUI speedText;
+    public TextMeshProUGUI atkspeedText;
+    public TextMeshProUGUI reloadTimeText;
+    public TextMeshProUGUI rollTimeText;
+    public TextMeshProUGUI skillInfoText;
 
     public int charNum = 0;
     public Vector3 mainPickPosition = new Vector3 (0, 0, 0);
@@ -18,31 +27,36 @@ public class CharPickUI : MonoBehaviour
     //public Vector2 otherScale = new Vector2(0.75f, 0.75f);
 
     public PlayerSlot[] pickList = new PlayerSlot[] { };
-
-    public Color mainColor = new Color(255, 255, 255, 255);
-    public Color otherColor = new Color(255,255,255,180);
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-
-
+        PlayerSO playerSO = pickList[0].playerSO;
+        TextSet(playerSO);
     }
 
-    // Update is called once per frame
+    public void TextSet(PlayerSO playerso) 
+    {
+        NameText.text = playerso.CharaterName;
+        hpText.text = playerso.hp.ToString();
+        atkText.text = playerso.atk.ToString();
+        speedText.text = playerso.unitSpeed.ToString();
+        atkspeedText.text = playerso.atkSpeed.ToString();
+        reloadTimeText.text = playerso.reloadCoolTime.ToString();
+        rollTimeText.text = playerso.rollCoolTime.ToString();
+        //skillInfoText.text = 
+    }
 
     public void LeftBtn()
     {
 
         Bubble();
-        SetInfo();
         ColorSet();
+        TextSet(pickList[0].playerSO);
     }
     public void RightBtn() 
     {
         BubbleReverse();
-        SetInfo();
         ColorSet();
+        TextSet(pickList[0].playerSO);
     }
 
     public void Bubble()
@@ -82,7 +96,6 @@ public class CharPickUI : MonoBehaviour
 
         for (int i = 0; i <= pickList.Length-1; ++i) 
         {
-            Debug.Log("들어오긴해?");
             Color color3 = pickList[i].character.color;
             color3.a = 0.5f;
             pickList[i].character.color = color3;
@@ -90,8 +103,6 @@ public class CharPickUI : MonoBehaviour
             Color color4 = pickList[i].weapon.color;
             color4.a = 0.5f;
             pickList[i].weapon.color = color4;
-            //pickList[i].character.color = otherColor;
-            //pickList[i].weapon.color = otherColor;
         }
 
 
@@ -104,7 +115,7 @@ public class CharPickUI : MonoBehaviour
         pickList[0].weapon.color = color2;
 
     }
-    public void SetInfo() 
+    public void pick() 
     {
         if (pickList[0].playerSO != null) 
         {

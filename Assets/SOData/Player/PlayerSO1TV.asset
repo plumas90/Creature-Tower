@@ -21,6 +21,7 @@ MonoBehaviour:
   bulletSpread: 20
   bulletLifeTime: 2
   BulletSprite: {fileID: -1341790181, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
+  CharaterName: T.V.
   reloadCoolTime: 4
   skillCoolTime: 10
   rollCoolTime: 5

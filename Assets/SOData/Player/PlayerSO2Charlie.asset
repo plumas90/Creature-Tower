@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9665af843a0dad74283ab1755e3bc56e, type: 3}
-  m_Name: PlayerSOWhite 1
+  m_Name: PlayerSO2Charlie
   m_EditorClassIdentifier: 
   atk: 10
   hp: 100
@@ -20,7 +20,8 @@ MonoBehaviour:
   launchVolume: 1
   bulletSpread: 20
   bulletLifeTime: 2
-  BulletSprite: {fileID: -1341790181, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
+  BulletSprite: {fileID: -159473276, guid: 6dd81585c876b8b4fb8ac05a52637d15, type: 3}
+  CharaterName: Charlie
   reloadCoolTime: 4
   skillCoolTime: 10
   rollCoolTime: 5
@@ -28,6 +29,6 @@ MonoBehaviour:
   characterClass: 0
   critical: 0
   playerSprite: {fileID: 7108339969198208228, guid: ba4b9ab02fda5e747ab6713686ffee44, type: 3}
-  weaponSprite: {fileID: 7108339969198208228, guid: 5651710c0df12e043a831098513c7f6e, type: 3}
+  weaponSprite: {fileID: 7108339969198208228, guid: b98d4f4196087f245b4bccec3c82a931, type: 3}
   atkClip: {fileID: 0}
   reloadClip: []

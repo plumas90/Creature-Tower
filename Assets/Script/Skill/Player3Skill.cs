@@ -8,12 +8,14 @@ public class Player3Skill : Skill
 
     public void Start()
     {
-
+        /*
             controller.OnSkillEvent += SkillStart;
             isLink = true;
             controller.SkillMinusEvent += SkillLinkOff;
-        _weaponSystem = GetComponent<WeaponSystem>();
-        skillIcon = icons[2];
+            _weaponSystem = GetComponent<WeaponSystem>();
+        */
+
+        //skillIcon = icons[2];
     }
 
     public override void SkillStart()

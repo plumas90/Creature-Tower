@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9665af843a0dad74283ab1755e3bc56e, type: 3}
-  m_Name: PlayerSOWhite 2
+  m_Name: PlayerSO3Kim Kil Whan
   m_EditorClassIdentifier: 
   atk: 10
   hp: 100
@@ -20,14 +20,15 @@ MonoBehaviour:
   launchVolume: 1
   bulletSpread: 20
   bulletLifeTime: 2
-  BulletSprite: {fileID: -1341790181, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
+  BulletSprite: {fileID: -390541146, guid: 6dd81585c876b8b4fb8ac05a52637d15, type: 3}
+  CharaterName: Kim Kil Whan
   reloadCoolTime: 4
   skillCoolTime: 10
   rollCoolTime: 5
   ammoMax: 30
   characterClass: 0
   critical: 0
-  playerSprite: {fileID: 7108339969198208228, guid: 8ea83b0d447663e4a88c0247a26e21bd, type: 3}
-  weaponSprite: {fileID: 7108339969198208228, guid: b98d4f4196087f245b4bccec3c82a931, type: 3}
+  playerSprite: {fileID: 7108339969198208228, guid: 4d00275e4034b604db91a621dc61d5b9, type: 3}
+  weaponSprite: {fileID: 7108339969198208228, guid: 5651710c0df12e043a831098513c7f6e, type: 3}
   atkClip: {fileID: 0}
   reloadClip: []
