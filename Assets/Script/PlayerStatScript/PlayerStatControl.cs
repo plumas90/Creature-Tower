@@ -159,6 +159,7 @@ public class PlayerStatControl : MonoBehaviour
     [HideInInspector] public bool CanSkill;                               //스킬   가능한지
     [HideInInspector] public bool CanRoll;                                //구르기 가능한지
     public bool Invincibility;                          //무적 처리 피격시 구별
+    public bool SkillRollInvincibility;
 
     public bool useSkill;
     public bool UseRoll;
@@ -202,6 +203,7 @@ public class PlayerStatControl : MonoBehaviour
         CanRoll = true;
         UseRoll = true;
         Invincibility = false;
+        SkillRollInvincibility = false;
 
         CanSpeedBuff = true;
         CanLowSteam = true;

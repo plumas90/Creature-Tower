@@ -1403,6 +1403,7 @@ MonoBehaviour:
   playerTV: {fileID: 0}
   playerCharlie: {fileID: 0}
   playerKimKilWhan: {fileID: 0}
+  skillinfo: {fileID: 5171156729388979549}
 --- !u!1 &3998031624134244051
 GameObject:
   m_ObjectHideFlags: 0

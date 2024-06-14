@@ -21,6 +21,7 @@ public class PlayerUiManager : MonoBehaviour
     private UiPlayerRoll RollGauge;
     private UIPlayerSkill skillGauge;
     private AmmoUpdate ammoUpdate;
+    private UIReloadHUD reloadHUD;
     //private UIBulletIndicator bulletIndicator;
     private GameObject player;
     private bool ready;
@@ -33,8 +34,8 @@ public class PlayerUiManager : MonoBehaviour
         hpGauge = GetComponentInChildren<UIPlayerHP>();
         RollGauge = GetComponentInChildren<UiPlayerRoll>();
         skillGauge = GetComponentInChildren<UIPlayerSkill>();
-        ammoUpdate = GetComponent<AmmoUpdate>();
-
+        ammoUpdate = GetComponentInChildren<AmmoUpdate>();
+        reloadHUD = GetComponentInChildren<UIReloadHUD>();
         //SetupData();
     }
 
@@ -47,6 +48,7 @@ public class PlayerUiManager : MonoBehaviour
         RollGauge.Initialize();
         skillGauge.Initialize();
         ammoUpdate.Initialize();
+        reloadHUD.Initialize();
 
         //√ ªÛ»≠
         //string spritePath = "Images/CharClass";

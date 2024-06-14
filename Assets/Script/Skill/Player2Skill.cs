@@ -15,9 +15,9 @@ public class Player2Skill : Skill
 
     public void Start()
     {
-        //controller.OnSkillEvent += SkillStart;
-        //isLink = true;
-        //controller.SkillMinusEvent += SkillLinkOff;
+        controller.OnSkillEvent += SkillStart;
+        isLink = true;
+        controller.SkillMinusEvent += SkillLinkOff;
 
         //skillIcon = icons[1]; // Shotgun skill icon
 

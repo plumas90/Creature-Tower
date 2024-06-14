@@ -511,25 +511,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player1TV
       objectReference: {fileID: 0}
-    - target: {fileID: 1943867511632223332, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5561630735960313870, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: -1621205154, guid: a985560f7582acb48a2a2b8257b09afe, type: 3}
     - target: {fileID: 6259544758608661779, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.155
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6259544758608661779, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.988
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6259544758608661779, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.03418186
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6259544758608661779, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
       propertyPath: m_LocalRotation.w
@@ -558,10 +550,6 @@ PrefabInstance:
     - target: {fileID: 6259544758608661779, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8182346849350416653, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
-      propertyPath: m_SpriteHash
-      value: 27503621
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -637,17 +625,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1813286255 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5171156729388979549, guid: 7d602ea3824443a408dc598cc5e8be4e, type: 3}
-  m_PrefabInstance: {fileID: 1587412234217603704}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1867971159 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2624178663767016702, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
@@ -685,6 +662,10 @@ PrefabInstance:
     - target: {fileID: 3679330228542448392, guid: 7d602ea3824443a408dc598cc5e8be4e, type: 3}
       propertyPath: m_Name
       value: PickCha
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679330228542448392, guid: 7d602ea3824443a408dc598cc5e8be4e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7785202591203631583, guid: 7d602ea3824443a408dc598cc5e8be4e, type: 3}
       propertyPath: m_Pivot.x
@@ -771,10 +752,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 990412395}
     - target: {fileID: 7857583676457562773, guid: 7d602ea3824443a408dc598cc5e8be4e, type: 3}
-      propertyPath: skillinfo
-      value: 
-      objectReference: {fileID: 1813286255}
-    - target: {fileID: 7857583676457562773, guid: 7d602ea3824443a408dc598cc5e8be4e, type: 3}
       propertyPath: playerCharlie
       value: 
       objectReference: {fileID: 869938755}
@@ -801,15 +778,15 @@ PrefabInstance:
       objectReference: {fileID: 597345251}
     - target: {fileID: 3575851756093069656, guid: fb3782fa038e38a4f9c257efa77aca30, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.63
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3575851756093069656, guid: fb3782fa038e38a4f9c257efa77aca30, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.05
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3575851756093069656, guid: fb3782fa038e38a4f9c257efa77aca30, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.03418186
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3575851756093069656, guid: fb3782fa038e38a4f9c257efa77aca30, type: 3}
       propertyPath: m_LocalRotation.w
@@ -843,10 +820,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player3Kim Kil Whan
       objectReference: {fileID: 0}
-    - target: {fileID: 3678474880436223471, guid: fb3782fa038e38a4f9c257efa77aca30, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -866,6 +839,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 530973818745668287, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1414409749348817701, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1414409749348817701, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1414409749348817701, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2624178663767016702, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
@@ -983,7 +968,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1782171390615115553, guid: 87cde7b258cafa747978f6f314be8153, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.03418186
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1782171390615115553, guid: 87cde7b258cafa747978f6f314be8153, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1020,10 +1005,6 @@ PrefabInstance:
     - target: {fileID: 3474565681185583567, guid: 87cde7b258cafa747978f6f314be8153, type: 3}
       propertyPath: m_Name
       value: Player2Charlie
-      objectReference: {fileID: 0}
-    - target: {fileID: 3474565681185583567, guid: 87cde7b258cafa747978f6f314be8153, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
