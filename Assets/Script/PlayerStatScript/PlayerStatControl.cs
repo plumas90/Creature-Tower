@@ -18,7 +18,7 @@ public class PlayerStatControl : MonoBehaviour
     public event Action OnDieEvent; // 죽었을때 처리 그런데 싱글겜 처리라서 안쓸수도 있음 ##
     public event Action OnRegenEvent; // 부활 이벤트 싱글겜이라 이하 생략 ##
     public event Action<int> OnRegenCalculateEvent; //죽었을때 셋팅인데 안쓸듯 ##
-    public event Action OnChangeAmmorEvent; // 방어력 처리 안쓸 가능성 많음 ##
+    public event Action OnChangeAmmorEvent; // 
     public event Action OnChangeCurHPEvent; // 현재 체력 처리 ex 버서커  
     public event Action MoveStartEvent; //  가만히 있는 시간 처리1 ex 가만히 있는 동안 공격력상승 움직이면 취소 
     public event Action MoveEndEvent; // 가만히 있는 시간 처리2
@@ -151,7 +151,7 @@ public class PlayerStatControl : MonoBehaviour
             if (value > AmmoMax.total)
             curAmmo = AmmoMax.total;
             curAmmo = value;
-            //OnChangeAmmorEvent?.Invoke();
+            OnChangeAmmorEvent?.Invoke();
         }
     }
     [HideInInspector] public bool CanFire;                                //발사   가능한지

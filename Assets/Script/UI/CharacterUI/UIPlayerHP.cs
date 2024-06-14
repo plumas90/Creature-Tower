@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UIPlayerMiniHP : UIBase//, ICommonUI
+public class UIPlayerHP : UIBase
 {
-    private Slider hpGauge;
+    public Slider hpGauge;
     private PlayerStatControl playerStats;
+
 
     public override void Initialize()
     {
@@ -17,10 +19,10 @@ public class UIPlayerMiniHP : UIBase//, ICommonUI
 
     void InitializeData()
     {
-        var player = transform.parent.GetComponent<UIPlayerMiniHUD>().Player;
+
+        playerStats = GameManager.Instance.playerOBJ.GetComponent<PlayerStatControl>();
 
         hpGauge = GetComponentInChildren<Slider>();
-        playerStats = player.GetComponent<PlayerStatControl>();
 
         playerStats.OnChangeCurHPEvent += UpdateValue;
     }

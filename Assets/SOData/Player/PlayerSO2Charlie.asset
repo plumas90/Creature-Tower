@@ -26,7 +26,7 @@ MonoBehaviour:
   skillCoolTime: 10
   rollCoolTime: 5
   ammoMax: 30
-  characterClass: 0
+  CharacterClass: 0
   critical: 0
   playerSprite: {fileID: 7108339969198208228, guid: ba4b9ab02fda5e747ab6713686ffee44, type: 3}
   weaponSprite: {fileID: 7108339969198208228, guid: b98d4f4196087f245b4bccec3c82a931, type: 3}

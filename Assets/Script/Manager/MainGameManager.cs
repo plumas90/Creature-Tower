@@ -26,7 +26,6 @@ public class MainGameManager : MonoBehaviour
     public Dictionary<int, Transform> playerInfoDictionary;   // 각 플레이어의 viewID를 키로 하고 Trasform을 value로 하는 딕셔너리
 
     [Header("PlayerData")]
-    public PlayerDataSetting characterSetting; // 플레이어의 정보
     public bool isDie; // 플레이어 죽음 여부
     public int Gold;  // 골드
 
