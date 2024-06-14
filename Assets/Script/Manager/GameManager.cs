@@ -7,6 +7,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    public PlayerUiManager playerUiManager;
     //TO DO 현재 방 스테이지 정보 현재 처음에 층수 X 맵을 다해두고 좌표이동으로 다음 층 가는걸 생각중임 그래서 현재 층 정보에 대한게 필요함 그게 게임데이타 
     // 방클리어 여부를 그거에 연동하는식으로 체크 하는게 좋을거 같다고 생각됨
 
@@ -39,23 +40,24 @@ public class GameManager : MonoBehaviour
     private int EndingTowerStage = 0; // 마지막층
 
 
-    [SerializeField] public List<List<Stage>> stageList;
-
-    public List<Stage> stageLevel1;
-    public List<Stage> stageLevel2;
-    public List<Stage> stageLevel3;  
-    public List<Stage> stageLevel4;
-    public List<Stage> stageLevel5;
-    public List<Stage> stageLevel6;
-    public List<Stage> stageLevel7;
-    public List<Stage> stageLevel8;
-    public List<Stage> stageLevel9;
-    public List<Stage> stageLevel10;
-    public List<Stage> stageLevel11;
-    public List<Stage> stageLevel12;
-    public List<Stage> stageLevel13;
-    public List<Stage> stageLevel14;
-    public List<Stage> stageLevel15;
+    [SerializeField] public List<List<GameObject>> stageList = new List<List<GameObject>>();
+    #region stagelist
+    public List<GameObject> stageLevel1;
+    public List<GameObject> stageLevel2;
+    public List<GameObject> stageLevel3;  
+    public List<GameObject> stageLevel4;
+    public List<GameObject> stageLevel5;
+    public List<GameObject> stageLevel6;
+    public List<GameObject> stageLevel7;
+    public List<GameObject> stageLevel8;
+    public List<GameObject> stageLevel9;
+    public List<GameObject> stageLevel10;
+    public List<GameObject> stageLevel11;
+    public List<GameObject> stageLevel12;
+    public List<GameObject> stageLevel13;
+    public List<GameObject> stageLevel14;
+    public List<GameObject> stageLevel15;
+    #endregion
 
     [Header("UI")] //의미 불가
     public GameObject StageInfoUI; //스테이지 UI  // 층 올라가는 모션
@@ -190,11 +192,13 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < EndingTowerStage ; i++)
         {
+
             int j = UnityEngine.Random.Range(0, stageList.Count);
-            List<Stage> curStageList = stageList[i];
-            Stage stage = curStageList[j];
+            List<GameObject> curStageList = stageList[i];
+            GameObject Room = Instantiate(curStageList[j], Vector3.zero, Quaternion.identity);
+            Stage stage = Room.GetComponent<Stage>();
             stage.roomNumber = i;
-            stage.transform.position = new Vector3(0, 0 + (i * 50), 0);
+            Room.transform.position = new Vector3(0, 0 + (i * 50), 0);
             if (i == 0) 
             {
                 CurrentStage = stage;
@@ -206,9 +210,12 @@ public class GameManager : MonoBehaviour
     {
         playerOBJ = player;
         Life = 0;
+        //tower ui on
         MakeStageTree();
         SetStageTree();
         StageLevelSet();
+        playerUiManager.SetupData();
+
     }
     public void BossCountSet(int i) 
     {

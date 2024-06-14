@@ -349,6 +349,7 @@ MonoBehaviour:
   bulletNum: 0
   nameTag: 
   weaponType: 0
+  poolParent: {fileID: 0}
   pools:
   - tag: Bullet
     prefab: {fileID: 3260318786757684737, guid: 6316de2c55717b342bb229960f7da868, type: 3}
@@ -625,7 +626,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: -1767147923, guid: 59be9a7e375349846b85ad96246d80fd, type: 3}
+  m_Sprite: {fileID: -1621205154, guid: a985560f7582acb48a2a2b8257b09afe, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -683,10 +684,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed8b1ae4e4e52b34ea557c1c11e076fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CategoryHash: 0.009161512
+  m_CategoryHash: 1.0429618e-14
   m_labelHash: 0.00000040954276
   m_SpriteKey: 0
-  m_SpriteHash: 288431053
+  m_SpriteHash: 27503621
 --- !u!1 &7286285023884196115
 GameObject:
   m_ObjectHideFlags: 0
@@ -5515,7 +5516,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 6
+  m_SortingOrder: 12
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -5555,6 +5556,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4710392554520460905}
+  - component: {fileID: 1998650563740723475}
   m_Layer: 8
   m_Name: PlayerBuffControl
   m_TagString: Untagged
@@ -5580,6 +5582,21 @@ Transform:
   - {fileID: 8314172316488136574}
   m_Father: {fileID: 6259544758608661779}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1998650563740723475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8699809853373345940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073067358f4b20a4c87afee81f0b0c9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speedParticle: {fileID: 4754432588988793697}
+  _TwoMoonParticle: {fileID: 2963034897079301666}
+  _HealParticle: {fileID: 3061821360477597750}
 --- !u!1 &9153189165253564565
 GameObject:
   m_ObjectHideFlags: 0
@@ -5748,6 +5765,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3785070258389592366, guid: 4b7a864e173a6604597b910d9da1c2c1, type: 3}
+      propertyPath: m_SortingOrder
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 7590175632801861077, guid: 4b7a864e173a6604597b910d9da1c2c1, type: 3}
       propertyPath: m_Name
       value: speed
@@ -5834,6 +5855,10 @@ PrefabInstance:
     - target: {fileID: 1711639255351571575, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3320214427619892966, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
+      propertyPath: m_SortingOrder
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

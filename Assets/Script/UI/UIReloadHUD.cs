@@ -21,14 +21,12 @@ public class UIReloadHUD: UIBase
 
     public void InitializeData()
     {
-        //if (SceneManager.GetActiveScene().name == "Test_DoHyun")
-            //player = TestGameManagerDohyun.Instance.InstantiatedPlayer.gameObject;
-        //else
-            //player = GameManager.Instance.clientPlayer.gameObject;
+        player = GameManager.Instance.playerOBJ.gameObject;
 
         controller = player.GetComponent<CoolTimeController>();
         statHandler = player.GetComponent<PlayerStatControl>();
-        //player.GetComponent<TopDownCharacterController>().OnEndReloadEvent += Close;
+        player.GetComponent<TopDownCharacterController>().OnReloadEvent += Open;
+        player.GetComponent<TopDownCharacterController>().OnEndReloadEvent += Close;
         slider = GetComponentInChildren<Slider>();
         startcheck = true;
     }
@@ -48,6 +46,10 @@ public class UIReloadHUD: UIBase
     // Update is called once per frame
     void Update()
     {
-        //slider.value = controller.curReloadCool;
+        if (startcheck) 
+        {
+            slider.value = controller.curReloadCool;
+        }
+
     }
 }

@@ -718,7 +718,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     private void A2104()//무기교체 :  핸드건 >> 등가 교환 최대 장탄수가 감소하지만 기본 스킬 스팀팩 효과를 증가시키는 핸드건으로변경
     {
         playerstatHandler.AmmoMax.added -= 5;
-        Player1Skill skill = player.GetComponent<Player1Skill>();
+        PlayerCharlieSkill skill = player.GetComponent<PlayerCharlieSkill>();
         if (skill != null) 
         {
             skill.applicationAtkSpeed += 1f;
@@ -791,7 +791,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     {
         playerInput.actions.FindAction("Skill").Disable();
         playerstatHandler.isCanSkill = false;
-        Player1Skill skill = player.GetComponent<Player1Skill>();
+        PlayerCharlieSkill skill = player.GetComponent<PlayerCharlieSkill>();
         if (skill != null)
         {
             skill.applicationAtkSpeed *= 0.5f;

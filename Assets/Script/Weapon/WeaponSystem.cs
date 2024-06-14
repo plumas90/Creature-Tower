@@ -51,6 +51,7 @@ public class WeaponSystem : MonoBehaviour
         public GameObject prefab;
         public int count;
     }
+    public GameObject poolParent;
     public List<Pool> pools;
     public Dictionary<string, Queue<GameObject>> poolDictionary;
 
@@ -63,6 +64,11 @@ public class WeaponSystem : MonoBehaviour
             for (int i = 0; i < pool.count; i++)
             {
                 GameObject obj = Instantiate(pool.prefab);
+                if (poolParent != null) 
+                {
+                    obj.transform.SetParent(poolParent.transform);
+
+                }
                 obj.GetComponent<SpriteRenderer>().sprite = playerStatHandler.BulletSprite;
                 obj.SetActive(false);
                 objectsPool.Enqueue(obj);

@@ -5,11 +5,11 @@ using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using static PlayerDebuffControl;
 
-public class Player1Skill : Skill
+public class PlayerCharlieSkill : Skill
 {
     public int applicationTime = 5;
-    public float applicationspeed = 1f;
-    public float applicationAtkSpeed = 1f;
+    public float applicationspeed = 0.5f;
+    public float applicationAtkSpeed = 0.5f;
     private PlayerStatControl statHandler;
     private PlayerDebuffControl debuffControl;
 
@@ -20,8 +20,7 @@ public class Player1Skill : Skill
             controller.OnSkillEvent += SkillStart;
             isLink = true;
             controller.SkillMinusEvent += SkillLinkOff;
-            //debuffControl= GetComponent<PlayerStatControl>()._DebuffControl;       
-            //skillIcon = icons[0]; // Soldier skill icon
+            debuffControl= GetComponent<PlayerStatControl>()._DebuffControl;       
     }
     public override void SkillStart()
     {

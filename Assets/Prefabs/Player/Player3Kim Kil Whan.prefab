@@ -4917,7 +4917,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 6
+  m_SortingOrder: 12
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -5256,7 +5256,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3575851756093069656
 Transform:
   m_ObjectHideFlags: 0
@@ -5299,7 +5299,7 @@ MonoBehaviour:
   WeaponSpriteCase: {fileID: 0}
   _PlayerSprite: {fileID: 3014510059826458967}
   _WeaponSprite: {fileID: 3052713999376494482}
-  _DebuffControl: {fileID: 0}
+  _DebuffControl: {fileID: 2692903165753684615}
   isNoramlMove: 0
   isCanSkill: 0
   isCanAtk: 0
@@ -5436,6 +5436,7 @@ MonoBehaviour:
   bulletNum: 0
   nameTag: 
   weaponType: 0
+  poolParent: {fileID: 0}
   pools:
   - tag: Bullet
     prefab: {fileID: 3260318786757684737, guid: 39ac2a7e65dfc9e41b94e41b636e9c5e, type: 3}
@@ -5609,6 +5610,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2474879384815756201}
+  - component: {fileID: 2692903165753684615}
   m_Layer: 8
   m_Name: PlayerBuffControl
   m_TagString: Untagged
@@ -5634,6 +5636,21 @@ Transform:
   - {fileID: 8237558073513665469}
   m_Father: {fileID: 3575851756093069656}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2692903165753684615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5129101291958536421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073067358f4b20a4c87afee81f0b0c9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speedParticle: {fileID: 8226624778284835862}
+  _TwoMoonParticle: {fileID: 6196948564802659629}
+  _HealParticle: {fileID: 3120350819002606837}
 --- !u!1 &8119383844940128342
 GameObject:
   m_ObjectHideFlags: 0
@@ -5745,6 +5762,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3785070258389592366, guid: 4b7a864e173a6604597b910d9da1c2c1, type: 3}
+      propertyPath: m_SortingOrder
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 7590175632801861077, guid: 4b7a864e173a6604597b910d9da1c2c1, type: 3}
       propertyPath: m_Name
       value: speed
@@ -5831,6 +5852,10 @@ PrefabInstance:
     - target: {fileID: 1711639255351571575, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3320214427619892966, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
+      propertyPath: m_SortingOrder
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

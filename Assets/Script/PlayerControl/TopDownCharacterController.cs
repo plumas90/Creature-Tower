@@ -130,12 +130,20 @@ public class TopDownCharacterController : MonoBehaviour
             //Debug.Log($"구르기 스택 까임 : {playerStatHandler.CurRollStack} 남음");
             playerStatHandler.CanRoll = false;
             playerStatHandler.Invincibility = true;
-            Invoke("CallEndRollEvent", 0.6f);
+            Invoke("CallEndRollEvent", 0.8f);
         }
         else
         {
             //Debug.Log("구르기 쿨타임 입니다");
         }
+    }
+    public void CompulsoryRoll() 
+    {
+        OnRollEvent?.Invoke();
+    }
+    public void CompulsoryRollEnd() 
+    {
+        OnEndRollEvent?.Invoke();
     }
     public void CallEndRollEvent()
     {

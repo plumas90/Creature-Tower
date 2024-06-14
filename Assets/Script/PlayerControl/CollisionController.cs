@@ -81,6 +81,7 @@ public class CollisionController : MonoBehaviour // 모노비하비어펀에서 그냥으로 
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Bullet")
             && !playerStat.Invincibility
+            && !playerStat.SkillRollInvincibility
             //&& !playerStat.isDie
             //&& !playerStat.isRegen
             && collision.gameObject.GetComponent<Bullet>().targets.ContainsValue((int)BulletTarget.Player))

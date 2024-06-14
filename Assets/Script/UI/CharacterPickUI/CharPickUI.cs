@@ -5,7 +5,9 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Localization.Components;
 using UnityEngine.UIElements;
+
 
 public class CharPickUI : MonoBehaviour
 {
@@ -18,45 +20,82 @@ public class CharPickUI : MonoBehaviour
     public TextMeshProUGUI rollTimeText;
     public TextMeshProUGUI skillInfoText;
 
-    public int charNum = 0;
-    public Vector3 mainPickPosition = new Vector3 (0, 0, 0);
+    private int charNum = 0;
+    private Vector3 mainPickPosition = new Vector3 (0, 0, 0);
     //public Vector3 leftPickPosition = new Vector3(-225, 100, 0);
     //public Vector3 rightPickPosition = new Vector3(250, 100, 0);
 
-    public Vector2 mainScale = new Vector2 (1, 1);
+    private Vector2 mainScale = new Vector2 (1, 1);
     //public Vector2 otherScale = new Vector2(0.75f, 0.75f);
 
+
+    private PlayerSO _playerso;
+
     public PlayerSlot[] pickList = new PlayerSlot[] { };
+
+    public GameObject playerTV;
+    public GameObject playerCharlie;
+    public GameObject playerKimKilWhan;
+
+    public LocalizeStringEvent skillinfo;
+
+    public void LocalizeTextString(string localcode)
+    {
+        //GetComponent<LocalizeStringEvent>().StringReference
+        skillinfo.StringReference
+            .SetReference("TABLE", localcode);
+    }
     private void Awake()
     {
-        PlayerSO playerSO = pickList[0].playerSO;
-        TextSet(playerSO);
+        PlayerSOSet();
+        TextSet();
+    }
+    public void PlayerSOSet()
+    {
+        _playerso = pickList[0].playerSO;
     }
 
-    public void TextSet(PlayerSO playerso) 
+    public void TextSet() 
     {
-        NameText.text = playerso.CharaterName;
-        hpText.text = playerso.hp.ToString();
-        atkText.text = playerso.atk.ToString();
-        speedText.text = playerso.unitSpeed.ToString();
-        atkspeedText.text = playerso.atkSpeed.ToString();
-        reloadTimeText.text = playerso.reloadCoolTime.ToString();
-        rollTimeText.text = playerso.rollCoolTime.ToString();
+        NameText.text = _playerso.CharaterName;
+        hpText.text = _playerso.hp.ToString();
+        atkText.text = _playerso.atk.ToString();
+        speedText.text = _playerso.unitSpeed.ToString();
+        atkspeedText.text = _playerso.atkSpeed.ToString();
+        reloadTimeText.text = _playerso.reloadCoolTime.ToString();
+        rollTimeText.text = _playerso.rollCoolTime.ToString();
         //skillInfoText.text = 
+        switch (_playerso.CharacterClass) 
+        {
+            case (int)ClassName.TV:
+                LocalizeTextString("SkillTV");
+                break;
+
+            case (int)ClassName.Charlie:
+                LocalizeTextString("SkillCharlie");
+                break;
+
+            case (int)ClassName.KimKilWhan:
+                LocalizeTextString("SkillKim");
+                break;
+
+        }
+
     }
 
     public void LeftBtn()
     {
-
         Bubble();
         ColorSet();
-        TextSet(pickList[0].playerSO);
+        PlayerSOSet();
+        TextSet();
     }
     public void RightBtn() 
     {
         BubbleReverse();
         ColorSet();
-        TextSet(pickList[0].playerSO);
+        PlayerSOSet();
+        TextSet();
     }
 
     public void Bubble()
@@ -152,7 +191,33 @@ public class CharPickUI : MonoBehaviour
         }
 
     }
-    
+    public void PickButton() 
+    {
+        switch (_playerso.CharacterClass) 
+        {
+            case (int)ClassName.TV:
+                playerTV.SetActive(true);
+                GameManager.Instance.Init(playerTV);
+                Destroy(playerCharlie);
+                Destroy(playerKimKilWhan);
+                break;
+
+            case (int)ClassName.Charlie:
+                playerCharlie.SetActive(true);
+                GameManager.Instance.Init(playerCharlie);
+                Destroy(playerTV);
+                Destroy(playerKimKilWhan);
+                break;
+
+            case (int)ClassName.KimKilWhan:
+                playerKimKilWhan.SetActive(true);
+                GameManager.Instance.Init(playerKimKilWhan);
+                Destroy(playerTV);
+                Destroy(playerCharlie);
+                break;
+
+        }
+    }
     public void OnPickUi() 
     {
         this.gameObject.SetActive(true);
