@@ -5,7 +5,7 @@ using UnityEngine;
 public class A3106 : MonoBehaviour
 {
     PlayerStatControl playerStat;
-    Player2Skill shieldSkill;
+    PlayerKimKilWhan shieldSkill;
     private float reflectCoeff;
     private int viewID;
 
@@ -17,14 +17,14 @@ public class A3106 : MonoBehaviour
 
             //playerStat.HitEvent2 += DefPose;
 
-            shieldSkill = GetComponent<Player2Skill>();
+            shieldSkill = GetComponent<PlayerKimKilWhan>();
             //playerStat.CanReflect = true;
             //playerStat.OnDamageReflectEvent += ReflectDamage;
 
             reflectCoeff = 0.3f;
-            shieldSkill.ReflectCoeff = reflectCoeff;
+            //shieldSkill.ReflectCoeff = reflectCoeff;
             //playerStat.ReflectCoeff = reflectCoeff;
-            shieldSkill.OnGiveReflectCoeffEvent += shieldSkill.SetReflectCoeff;
+            //shieldSkill.OnGiveReflectCoeffEvent += shieldSkill.SetReflectCoeff;
     }
     /*
     private void DefPose(float damage)

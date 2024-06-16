@@ -12,21 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9665af843a0dad74283ab1755e3bc56e, type: 3}
   m_Name: PlayerSO1TV
   m_EditorClassIdentifier: 
-  atk: 10
+  atk: 5
   hp: 100
   unitSpeed: 2.5
-  atkSpeed: 3
+  atkSpeed: 2
   unitScale: 1
   launchVolume: 1
-  bulletSpread: 20
-  bulletLifeTime: 2
+  bulletSpread: 10
+  bulletLifeTime: 3
   BulletSprite: {fileID: -1341790181, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
   CharaterName: T.V.
   reloadCoolTime: 4
   skillCoolTime: 10
   rollCoolTime: 5
   ammoMax: 30
-  characterClass: 0
+  CharacterClass: 0
   critical: 0
   playerSprite: {fileID: 7108339969198208228, guid: 8ea83b0d447663e4a88c0247a26e21bd, type: 3}
   weaponSprite: {fileID: 7108339969198208228, guid: 9215f81dd1585f044b4d336fcbba8bc6, type: 3}

@@ -675,7 +675,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     }
     private void A1303()// 내용 이해 못함 나중에 제목보고 다시 체크 할것
     {
-        if (player.GetComponent<Player2Skill>() != null)
+        if (player.GetComponent<PlayerKimKilWhan>() != null)
         {
             playerstatHandler.AmmoMax.added += 29;
             playerstatHandler.CurAmmo += 29;
@@ -873,7 +873,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     }
     private void A3207()//보호 모드 실드 크기 업인데 싱글이면 실드 크기 커져서 뭐함? 지켜줄 팀이 없는데
     {
-        Player2Skill player2 = player.GetComponent<Player2Skill>();
+        PlayerKimKilWhan player2 = player.GetComponent<PlayerKimKilWhan>();
         if (player2 != null)
         {
             player2.shieldScale += 0.5f;
@@ -888,7 +888,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     }
     private void A3302()//쉴드 범위 증가, 쉴드량 증가, //  평타 약화,  쉴드 안에 아군 버프//
     {
-        Player2Skill player2 = player.GetComponent<Player2Skill>();
+        PlayerKimKilWhan player2 = player.GetComponent<PlayerKimKilWhan>();
         if (player2 != null)
         {
             player2.shieldScale *= 2f;

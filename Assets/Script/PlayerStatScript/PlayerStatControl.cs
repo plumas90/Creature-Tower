@@ -31,7 +31,7 @@ public class PlayerStatControl : MonoBehaviour
 
     PlayerAnimatorController anime;
 
-
+    [Header("스탯")]
     [HideInInspector] public Stats ATK;                 // 공격력
     [HideInInspector] public Stats HP;                  // 체력
     [HideInInspector] public Stats Speed;               // 이동 속도
@@ -47,17 +47,17 @@ public class PlayerStatControl : MonoBehaviour
     [HideInInspector] public float defense; //방어력 중요한건 데미지 배율 이라는거임 기본값 1로 데미지 10 받을시 데미지 x 방어력 배율 = 실제 데미지 같은 느낌
 
     //public Sprite indicatorSprite; 모름
+    [Header("사운드")]
     public AudioClip atkClip;
     public AudioClip reloadStartClip;
     public AudioClip reloadFinishClip;
 
+    [Header("스프라이트")]
     [HideInInspector] public SpriteLibraryAsset PlayerSprite; // 스프라이트
     [HideInInspector] public SpriteLibraryAsset WeaponSprite; // 스프라이트
     [HideInInspector] public Sprite BulletSprite; // 스프라이트
     [HideInInspector] public SpriteLibrary PlayerSpriteCase; // 스프라이트
     [HideInInspector] public SpriteLibrary WeaponSpriteCase; // 스프라이트
-
-
     public GameObject _PlayerSprite;
     public GameObject _WeaponSprite;
     public PlayerDebuffControl _DebuffControl; //디버프 매니저 만들어야함
@@ -67,7 +67,7 @@ public class PlayerStatControl : MonoBehaviour
     [HideInInspector] public bool isCanAtk;
     public bool isDie; //죽음 체크
     //public bool isRegen; //
-    public int RegenHP; // 부활시 체력인데 시발 아 뭔지 모르겠음 햇갈려
+    public int RegenHP; // 부활시 체력인데 
 
     #region 쓰레기
     //아래 사라질것들 목숨은 게임매니저로 사라짐 멀티가 아니니까 킬수 견제 없음
@@ -133,7 +133,7 @@ public class PlayerStatControl : MonoBehaviour
                 {
                     curHP = value;
                 }
-                //OnChangeCurHPEvent?.Invoke();
+                OnChangeCurHPEvent?.Invoke();
             }
         }
     }
@@ -164,8 +164,11 @@ public class PlayerStatControl : MonoBehaviour
     public bool useSkill;
     public bool UseRoll;
     //public bool ImGhost;
-    //public bool IsInShield; 중요@@ 실드개념 다 리메이크 가능성 높음
-    //public float InShieldHP; 실드처리값 실드개념 정리 필요
+
+
+    [Header("실드")]
+    public bool IsInShield; //중요@@ 실드개념 다 리메이크 가능성 높음
+    public float InShieldHP; //실드처리값 실드개념 정리 필요
     //int viewID; 포톤뷰 처리 지울예정
     //[HideInInspector] public bool IsChargeAttack; 차지어택 재능 처리
     //[HideInInspector] public bool CanReflect; 반사 재능 처리
@@ -231,7 +234,6 @@ public class PlayerStatControl : MonoBehaviour
 
         PlayerSpriteCase.spriteLibraryAsset = PlayerSprite;
         WeaponSpriteCase.spriteLibraryAsset = WeaponSprite;
-        //defense = 1;
 
         //IsChargeAttack = false;
 
@@ -241,6 +243,7 @@ public class PlayerStatControl : MonoBehaviour
         //reloadStartClip = playerStats.reloadClip[0];
         //reloadFinishClip = playerStats.reloadClip[1];
 
+        //아래거 없애도 될거 같은데 
         PlayerStatArray = new Stats[11];
         PlayerStatNameArray = new string[11]
         {
@@ -360,10 +363,22 @@ public class PlayerStatControl : MonoBehaviour
 
         DamegeTemp = damage; //데미지 값 저장
         GetDamege?.Invoke(DamegeTemp);  //받은 데미지 저장 연동된 효과에 따라 데미지가 달라질 수 있음
-        int a = UnityEngine.Random.Range(1, 101); // 회피값 
-        if (evasionPersent <= a) // 회피 실패시 데미지 처리
+        int a = UnityEngine.Random.Range(0, 100); // 회피값 
+        if (evasionPersent < a) // 회피 실패시 데미지 처리
         {
             //TODO 여기서 IF문 열고 실드 처리
+            if (IsInShield) 
+            {
+                if (InShieldHP > 0) 
+                {
+                    InShieldHP -= DamegeTemp;
+                    if (InShieldHP < 0) 
+                    {
+                        return;
+                    }
+                }
+
+            }
 
             DamegeTemp = DamegeTemp * defense;
 
