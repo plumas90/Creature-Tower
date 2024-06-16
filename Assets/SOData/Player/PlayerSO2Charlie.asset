@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9665af843a0dad74283ab1755e3bc56e, type: 3}
   m_Name: PlayerSO2Charlie
   m_EditorClassIdentifier: 
-  atk: 10
+  atk: 3
   hp: 100
-  unitSpeed: 2.5
+  unitSpeed: 2.7
   atkSpeed: 3
   unitScale: 1
   launchVolume: 1
-  bulletSpread: 20
+  bulletSpread: 30
   bulletLifeTime: 2
   BulletSprite: {fileID: -159473276, guid: 6dd81585c876b8b4fb8ac05a52637d15, type: 3}
   CharaterName: Charlie
-  reloadCoolTime: 4
-  skillCoolTime: 10
+  reloadCoolTime: 5
+  skillCoolTime: 20
   rollCoolTime: 5
   ammoMax: 30
   CharacterClass: 1
