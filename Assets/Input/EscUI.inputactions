@@ -1,0 +1,46 @@
+{
+    "name": "EscUI",
+    "maps": [
+        {
+            "name": "EscUi",
+            "id": "28e2d3af-6851-4967-8667-7af75dfa26be",
+            "actions": [
+                {
+                    "name": "EscUI",
+                    "type": "Button",
+                    "id": "138c4163-5774-46b0-9483-d12fcb575aa6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d34ef70c-bf00-4d41-81ad-543b6b1c8eed",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "New control scheme",
+                    "action": "EscUI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "New control scheme",
+            "bindingGroup": "New control scheme",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

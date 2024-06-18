@@ -511,6 +511,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player1TV
       objectReference: {fileID: 0}
+    - target: {fileID: 1943867511632223332, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6259544758608661779, guid: 49c286e342836e74baba30a4d2f69dec, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -665,7 +669,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3679330228542448392, guid: 7d602ea3824443a408dc598cc5e8be4e, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7785202591203631583, guid: 7d602ea3824443a408dc598cc5e8be4e, type: 3}
       propertyPath: m_Pivot.x
@@ -856,6 +860,10 @@ PrefabInstance:
     - target: {fileID: 2624178663767016702, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
       propertyPath: m_Name
       value: PlayerInfoUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 2624178663767016702, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6021860707363252482, guid: 3e7d34b161e869f418f949ac0b028269, type: 3}
       propertyPath: m_AnchorMax.x

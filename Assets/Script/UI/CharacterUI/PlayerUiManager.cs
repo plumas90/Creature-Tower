@@ -37,6 +37,7 @@ public class PlayerUiManager : MonoBehaviour
         ammoUpdate = GetComponentInChildren<AmmoUpdate>();
         reloadHUD = GetComponentInChildren<UIReloadHUD>();
         //SetupData();
+        this.gameObject.SetActive(false);
     }
 
     public void SetupData()
@@ -49,7 +50,7 @@ public class PlayerUiManager : MonoBehaviour
         skillGauge.Initialize();
         ammoUpdate.Initialize();
         reloadHUD.Initialize();
-
+        this.gameObject.SetActive(true);
         //√ ªÛ»≠
         //string spritePath = "Images/CharClass";
         //PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(CustomProperyDefined.CLASS_PROPERTY, out object temp);
