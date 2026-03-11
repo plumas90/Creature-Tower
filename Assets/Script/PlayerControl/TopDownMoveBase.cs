@@ -15,7 +15,7 @@ public class TopDownMoveBase : MonoBehaviour
     private void Awake()
     {
         //_controller = GetComponent<TopDownCharacterController>();
-        //if( _controller != null ) { Debug.Log("Á¸ÀçÇÔ"); }
+        //if( _controller != null ) { Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"); }
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
@@ -31,7 +31,7 @@ public class TopDownMoveBase : MonoBehaviour
     {
         if (!isRoll)
         {
-            //Debug.Log("¹«ºêÅ×½ºÆ®");
+            //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½Æ®");
             ApplyMovment(_movemewtDirection);
         }
         else
@@ -42,7 +42,7 @@ public class TopDownMoveBase : MonoBehaviour
 
     private void Move(Vector2 direction)
     {
-        //Debug.Log("¹«ºê¸ÕÆ®¹«ºêÅ×½ºÆ®");
+        //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½Æ®");
         //Debug.Log(direction);
         _movemewtDirection = direction;
     }
@@ -50,13 +50,13 @@ public class TopDownMoveBase : MonoBehaviour
     private void ApplyMovment(Vector2 direction)
     {
         direction = direction * _controller.playerStatHandler.Speed.total;
-        //Debug.Log($" ¼Óµµ´Â{_controller.playerStatHandler.Speed.total} ¹æÇâÀ¸ {direction}");
-        _rigidbody2D.velocity = direction;
+        //Debug.Log($" ï¿½Óµï¿½ï¿½ï¿½{_controller.playerStatHandler.Speed.total} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {direction}");
+        _rigidbody2D.linearVelocity = direction;
     }
     private void ApplyRolling(Vector2 direction)
     {
         direction = direction * _controller.playerStatHandler.Speed.total * 2f;
-        _rigidbody2D.velocity = direction;
+        _rigidbody2D.linearVelocity = direction;
     }
 
     private void Roll()
