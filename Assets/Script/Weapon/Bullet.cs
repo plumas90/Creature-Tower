@@ -10,7 +10,7 @@ public enum BulletTarget
 
 public class Bullet : MonoBehaviour
 {
-    //Ãæµ¹ÇÒ ¸éÀÇ º¤ÅÍ
+    //ï¿½æµ¹ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     Vector2 collisionVector;
 
 
@@ -53,11 +53,10 @@ public class Bullet : MonoBehaviour
     }
     public void Init()
     {
-        BulletLifeTime = UnityEngine.Random.Range(BulletLifeTime * 0.15f, BulletLifeTime * 0.2f);
-        //Debug.Log($"ÀÎÀÕ ³²Àº ½Ã°£ {BulletLifeTime}");
-        //Invoke("Destroy", BulletLifeTime);
+        CancelInvoke(); // í’€ ì¬ì‚¬ìš© ì‹œ ì´ì „ Invoke("Destroy") ì˜ˆì•½ ì·¨ì†Œ
+        time = 0f;      // ì¬ì‚¬ìš© ì‹œ ìˆ˜ëª… íƒ€ì´ë¨¸ ì´ˆê¸°í™”
+        // BulletLifeTimeì€ BS()ì—ì„œ ì´ë¯¸ stat ê°’ìœ¼ë¡œ ì„¸íŒ…ë¨ - ì—¬ê¸°ì„œ ì¶”ê°€ ë³€ê²½ ì—†ìŒ
         _direction = transform.right;
-        //to del ¾Æ·¡
         layerMask = 1 << LayerMask.NameToLayer("Wall");
     }
     public void MissileFire(int i)
@@ -73,25 +72,25 @@ public class Bullet : MonoBehaviour
         time += Time.deltaTime;
         if (time >= BulletLifeTime)
         {
-            //Debug.Log("½Ã°£µÇ¼­ »ç¶óÁü");
+            //Debug.Log("ï¿½Ã°ï¿½ï¿½Ç¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½");
             Destroy();
         }
         if (locator)
         {
             ATK -= ATK * 3f * Time.deltaTime;
-            Debug.Log($"¾àÇØÁö´ÂÁß ÇöÀç {ATK} ½Ã°£ {time}");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ {ATK} ï¿½Ã°ï¿½ {time}");
         }
         if (sniping)
         {
             ATK += ATK * 2f * Time.deltaTime;
-            Debug.Log($"°­ÇØÁö´ÂÁß ÇöÀç {ATK} ½Ã°£ {time}");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ {ATK} ï¿½Ã°ï¿½ {time}");
         }
     }
 
     public void Destroy()
     {
         //Destroy(gameObject);
-        //Debug.Log("»ç¶óÁü");
+        //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½");
         time = 0f;
         gameObject.SetActive(false);
     }
@@ -99,34 +98,30 @@ public class Bullet : MonoBehaviour
 
 
 
-    private void OnTriggerEnter2D(Collider2D collision)//TO DEL ÀÌ ºÎºĞÀº ½º³ªÀÌÆÛ1201À» °í·ÁÇÏ¿© ÀÛ¼ºÇÏ¿©¾ß ÇÕ´Ï´Ù
+    private void OnTriggerEnter2D(Collider2D collision)//TO DEL ï¿½ï¿½ ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1201ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Û¼ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½Õ´Ï´ï¿½
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall")) //¸¸¾àº®ÀÌ¶ó¸é
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall")) //ë²½ì´ë¼ë©´
         {
-
             if (canAngle)
             {
-
                 hit = Physics2D.Raycast(this.transform.position, _direction, BulletSpeed * BulletLifeTime, layerMask);
                 Debug.DrawRay(this.transform.position, _direction, UnityEngine.Color.red, 3f);
 
                 Vector3 reflectVector = Vector3.Reflect(_direction, hit.normal).normalized;
                 float angle = Mathf.Atan2(reflectVector.y, reflectVector.x) * Mathf.Rad2Deg;
 
-
                 Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angle));
                 this.transform.rotation = rotation;
                 _direction = reflectVector;
-                //Debug.DrawRay(this.transform.position, reflectVector, UnityEngine.Color.red, 3f);
             }
             else
             {
-                Invoke("Destroy", 0.01f);
+                Destroy(); // Invoke ëŒ€ì‹  ì¦‰ì‹œ í˜¸ì¶œ - ì¬ì‚¬ìš© ì´ì•Œì— Invoke ì”ë¥˜ ë°©ì§€
             }
             return;
         }
         /*
-        //¸¸¾à ÆÀÅ³ÀÌ ¾Æ´Ñ ¸ó½ºÅÍÀÇ ÃÑ¾ËÀÌ¶ó¸é ¸ó½ºÅÍ°¡ ¾Æ´Ï¶ó¸é »èÁ¦
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½Ì¶ï¿½ï¿½ ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Æ´Ï¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         else if (targets.ContainsValue((int)BulletTarget.Player)
             && !targets.ContainsValue((int)BulletTarget.Enemy)
             && collision.gameObject.layer == LayerMask.NameToLayer("Player"))
@@ -135,15 +130,15 @@ public class Bullet : MonoBehaviour
             return;
         }
         */
-        //¸¸¾à °üÅëÀÎ ÇÃ·¹ÀÌ¾îÀÇ ÃÑ¾ËÀÌ¶ó¸é º®ÀÏ¶§»èÁ¦
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½Ì¶ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ï¿½ï¿½
         else if (Penetrate)
         {
             return;
         }
-        //ÇÃ·¹ÀÌ¾îÀÇ ÃÑ¾ËÀÌ ¸ó½ºÅÍ¿¡°ÔºÎµúÇô¼­ »èÁ¦
+        //ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ÔºÎµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         else if (targets.ContainsValue((int)BulletTarget.Enemy) && collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            Invoke("Destroy", 0.01f);
+            Destroy(); // Invoke ëŒ€ì‹  ì¦‰ì‹œ í˜¸ì¶œ
             return;
         }
     }

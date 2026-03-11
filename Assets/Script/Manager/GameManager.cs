@@ -8,8 +8,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public PlayerUiManager playerUiManager;
-    //TO DO ÇöÀç ¹æ ½ºÅ×ÀÌÁö Á¤º¸ ÇöÀç Ã³À½¿¡ Ãş¼ö X ¸ÊÀ» ´ÙÇØµÎ°í ÁÂÇ¥ÀÌµ¿À¸·Î ´ÙÀ½ Ãş °¡´Â°É »ı°¢ÁßÀÓ ±×·¡¼­ ÇöÀç Ãş Á¤º¸¿¡ ´ëÇÑ°Ô ÇÊ¿äÇÔ ±×°Ô °ÔÀÓµ¥ÀÌÅ¸ 
-    // ¹æÅ¬¸®¾î ¿©ºÎ¸¦ ±×°Å¿¡ ¿¬µ¿ÇÏ´Â½ÄÀ¸·Î Ã¼Å© ÇÏ´Â°Ô ÁÁÀ»°Å °°´Ù°í »ı°¢µÊ
+    //TO DO ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ X ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ØµÎ°ï¿½ ï¿½ï¿½Ç¥ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ñ°ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½×°ï¿½ ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Å¸ 
+    // ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½×°Å¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Â½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¼Å© ï¿½Ï´Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
     /*
@@ -26,18 +26,18 @@ public class GameManager : MonoBehaviour
 
     [Header("PlayerData")]
     public GameObject playerOBJ;
-    //public PlayerDataSetting characterSetting; // ÇÃ·¹ÀÌ¾îÀÇ Á¤º¸
-    public bool isDie; // ÇÃ·¹ÀÌ¾î Á×À½ ¿©ºÎ
-    //public int Gold;  // °ñµå
-    public int Life; //¸ñ¼û
+    //public PlayerDataSetting characterSetting; // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public bool isDie; // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //public int Gold;  // ï¿½ï¿½ï¿½
+    public int Life; //ï¿½ï¿½ï¿½
 
     [Header("GameData")]
-    //public StageData stageData;//½ºÅ×ÀÌÁö µ¥ÀÌÅÍ ÇÊ¿ä ¾øÀ»°Å °°Àºµ¥ È¤½Ã ¸ğ¸§
-    private int TowerLevelCount; // Ãş¼ö
-    //public int currentMonsterCount; // ÇöÀç ³²Àº ¸ó½ºÅÍ¼ö º¸½ºÄ«¿îÅÍ ½º¼À ±×³É
+    //public StageData stageData;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¤ï¿½ï¿½ ï¿½ï¿½
+    private int TowerLevelCount; // ï¿½ï¿½ï¿½ï¿½
+    //public int currentMonsterCount; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¼ï¿½ ï¿½ï¿½ï¿½ï¿½Ä«ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×³ï¿½
     public int bossCount;
-    //public bool clearRoom;// ¹æÅ¬¸®¾î¿©ºÎ ¹æ¿¡¼­ °¡Á®°¨
-    private int EndingTowerStage = 0; // ¸¶Áö¸·Ãş
+    //public bool clearRoom;// ï¿½ï¿½Å¬ï¿½ï¿½ï¿½î¿©ï¿½ï¿½ ï¿½æ¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    private int EndingTowerStage = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
     [SerializeField] public List<List<GameObject>> stageList = new List<List<GameObject>>();
@@ -59,14 +59,14 @@ public class GameManager : MonoBehaviour
     public List<GameObject> stageLevel15;
     #endregion
 
-    [Header("UI")] //ÀÇ¹Ì ºÒ°¡
-    public GameObject StageInfoUI; //½ºÅ×ÀÌÁö UI  // Ãş ¿Ã¶ó°¡´Â ¸ğ¼Ç
-    public GameObject thankDemoUI; // µ¥¸ğ ÇÃ·¹ÀÌ °¨»ç UI Å©·¹µ÷ Æ÷ÇÔ
+    [Header("UI")] //ï¿½Ç¹ï¿½ ï¿½Ò°ï¿½
+    public GameObject StageInfoUI; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI  // ï¿½ï¿½ ï¿½Ã¶ó°¡´ï¿½ ï¿½ï¿½ï¿½
+    public GameObject thankDemoUI; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ UI Å©ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    #region Æó±â
+    #region ï¿½ï¿½ï¿½
     /*
     [Serializable]
-    public struct StageData // ½ºÅ×ÀÌÁöÀÇ µ¥ÀÌÅÍ
+    public struct StageData // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
         //public int currentArea;
         //public int currentStage;
@@ -76,20 +76,20 @@ public class GameManager : MonoBehaviour
         public bool isBossRoom;
         public bool isShopRoom;
     }*/
-    /* ÀÌº¥Æ® ¸ñ·Ï
-    public event Action OnGameStartedEvent; // °ÔÀÓ ½ÃÀÛ½Ã ÀÌº¥Æ® (Áõ°­ÂÊ)
-    public event Action OnGameEndedEvent; // °ÔÀÓ ³¡³¯½Ã ÀÌº¥Æ® (Áõ°­ÂÊ)
-    public event Action OnGameClearedEvent; // °ÔÀÓ Å¬¸®¾î½Ã ÀÌº¥Æ®
-    public event Action OnPlayerDieEvent; // ÇÃ·¹ÀÌ¾î »ç¸Á½Ã ÀÌº¥Æ®
-    public event Action OnGameOverEvent; // °ÔÀÓ ¿À¹ö½Ã ÀÌº¥Æ®
+    /* ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½
+    public event Action OnGameStartedEvent; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û½ï¿½ ï¿½Ìºï¿½Æ® (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+    public event Action OnGameEndedEvent; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+    public event Action OnGameClearedEvent; // ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®
+    public event Action OnPlayerDieEvent; // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®
+    public event Action OnGameOverEvent; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®
 
 
-    //public event Action OnOverCheckEvent; // ´Ù¸¥ ÇÃ·¹ÀÌ¾î »ç¸Á½Ã ÇöÀç »ıÁ¸ÀÚ¸¦ ¼¼´Â ÀÌº¥Æ®
-    public event Action OnUIPlayingStateChanged; // UIÂÊ ÇÃ·¹ÀÌ½Ã ÀÌº¥Æ®
-    public event Action OnStartStateChanged; // ½ºÅ¸Æ® ½ºÅ×ÀÌÆ®½Ã ÀÌº¥Æ®
-    public event Action OnPlayingStateChanged; // ÇÃ·¹À× ½ºÅ×ÀÌÆ®½Ã ÀÌº¥Æ®
-    public event Action OnEndStateChanged; // ³¡³¯ ½Ã ÀÌº¥Æ®
-    public event Action OnAugmentListingStateChanged; // º¸»ó ½ºÅ×ÀÌÆ®½Ã ÀÌº¥Æ®
+    //public event Action OnOverCheckEvent; // ï¿½Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®
+    public event Action OnUIPlayingStateChanged; // UIï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì½ï¿½ ï¿½Ìºï¿½Æ®
+    public event Action OnStartStateChanged; // ï¿½ï¿½Å¸Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ìºï¿½Æ®
+    public event Action OnPlayingStateChanged; // ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ìºï¿½Æ®
+    public event Action OnEndStateChanged; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ìºï¿½Æ®
+    public event Action OnAugmentListingStateChanged; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ìºï¿½Æ®
     */
     #endregion
 
@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour
     {
         bossCount = 0;
         TowerLevelCount = 0;
-        //ÀÌ°Åº¸´Ù ´õ ³ªÀº ¹æ¹ıÀÌ ÀÖ´Ù°í »ı°¢ÇÑ´Ù ±Ùµ¥ ¸ğ¸£°Ú¾î ½Ã¹ß ±Ùµ¥ ³­ Áö±İ ÀÌ°É ¿Ï¼ºÇØµÖ¾ßÇØ ½Ã¹ß
+        //ï¿½Ì°Åºï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½ ï¿½Ùµï¿½ ï¿½ğ¸£°Ú¾ï¿½ ï¿½Ã¹ï¿½ ï¿½Ùµï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì°ï¿½ ï¿½Ï¼ï¿½ï¿½ØµÖ¾ï¿½ï¿½ï¿½ ï¿½Ã¹ï¿½
         if (stageLevel1.Count >=1) 
         {
             stageList.Add(stageLevel1);
@@ -210,12 +210,19 @@ public class GameManager : MonoBehaviour
     {
         playerOBJ = player;
         Life = 0;
+
+        // ì´ì•Œ í’€ì€ ìŠ¤í…Œì´ì§€ ì´ˆê¸°í™”ë³´ë‹¤ ë¨¼ì € ìƒì„± (ì´í›„ ì½”ë“œ ì˜ˆì™¸ì™€ ë¬´ê´€í•˜ê²Œ ë³´ì¥)
+        WeaponSystem weaponSystem = player.GetComponent<WeaponSystem>();
+        if (weaponSystem != null)
+        {
+            weaponSystem.StartObjectPOOL();
+        }
+
         //tower ui on
         MakeStageTree();
         SetStageTree();
         StageLevelSet();
         playerUiManager.SetupData();
-
     }
     public void BossCountSet(int i) 
     {
@@ -234,20 +241,20 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentStage.roomNumber > EndingTowerStage)
         {
-            if (false)//¿£µù ¹Ì¿Ï¼º
+            if (false)//ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿Ï¼ï¿½
             {
 
             }
             else //
             {
-                //ui test play Á¾·á ¶¯Å¥
+                //ui test play ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¥
                 thankDemoUI.SetActive(true);
             }
             //to do end
         }
-        else if (false)  // ¸¶Áö¸· º¸½º ¿¬Ãâ
+        else if (false)  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
-            //¿µ»ó ¿¬Ãâ ÈÄ ÄÚ·çÆ¾ µ¹·Á¼­ ¾îÄ³µç ¾Æ·¡²¨ ÇÏ¸é µÉµí
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä³ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½Ï¸ï¿½ ï¿½Éµï¿½
         }
         else
         {
@@ -258,6 +265,7 @@ public class GameManager : MonoBehaviour
     }
     public void StageLevelSet() 
     {
+        if (CurrentStage == null) return;
         CurrentStage.ReadyStage();
         playerOBJ.transform.position = CurrentStage.PlayerSpawnPoint.position;
     }

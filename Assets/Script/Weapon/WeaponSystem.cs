@@ -14,7 +14,7 @@ public class WeaponSystem : MonoBehaviour
     private TopDownCharacterController _controller;
     //private PhotonView pv;
     public Transform muzzleOfAGun;
-    private GameObject bullet;
+    [SerializeField]private GameObject bullet;
     public Dictionary<string, int> targets;
     public bool isDamage;
     public bool sizeUp;
@@ -35,7 +35,7 @@ public class WeaponSystem : MonoBehaviour
     public bool canresurrection;
     public bool sniperAtkBuff;
 
-    // Ãß°¡
+    // ï¿½ß°ï¿½
     public int bulletNum;
     private CoolTimeController _cool;
     public string nameTag;
@@ -60,16 +60,29 @@ public class WeaponSystem : MonoBehaviour
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
         foreach (var pool in pools)
         {
+            // pool.prefabì´ ë¯¸ì„¤ì •ì´ë©´ Awakeì—ì„œ Resources.Loadí•œ bullet í•„ë“œë¡œ ëŒ€ì²´
+            GameObject prefabToUse = pool.prefab != null ? pool.prefab : bullet;
+            if (prefabToUse == null)
+            {
+                Debug.LogError($"[WeaponSystem] í’€ '{pool.tag}'ì˜ prefabì´ ì—†ê³  bullet í•„ë“œë„ nullì…ë‹ˆë‹¤. ì´ì•Œì„ ìƒì„±í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+                continue;
+            }
+
             Queue<GameObject> objectsPool = new Queue<GameObject>();
             for (int i = 0; i < pool.count; i++)
             {
-                GameObject obj = Instantiate(pool.prefab);
-                if (poolParent != null) 
+                GameObject obj = Instantiate(prefabToUse);
+                if (poolParent != null)
                 {
                     obj.transform.SetParent(poolParent.transform);
-
                 }
-                obj.GetComponent<SpriteRenderer>().sprite = playerStatHandler.BulletSprite;
+                SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                {
+                    if (playerStatHandler.BulletSprite != null)
+                        sr.sprite = playerStatHandler.BulletSprite;
+                    sr.sortingOrder = 9; // ë ˆì´ì–´ ê·œì¹™: í”Œë ˆì´ì–´ ì•„ë˜ ì˜¤ë¸Œì íŠ¸
+                }
                 obj.SetActive(false);
                 objectsPool.Enqueue(obj);
             }
@@ -94,38 +107,38 @@ public class WeaponSystem : MonoBehaviour
     {
         isDamage = true;
         bullet = Resources.Load<GameObject>("Prefabs/Player/Bullet");
-        //pv = GetComponent<PhotonView>(); Æ÷Åæ »èÁ¦
+        //pv = GetComponent<PhotonView>(); ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         _controller = GetComponent<TopDownCharacterController>();
-        //_viewID = pv.ViewID; Æ÷Åæ »èÁ¦
+        //_viewID = pv.ViewID; ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         playerStatHandler = GetComponent<PlayerStatControl>();
-        //target = BulletTarget.Enemy; ¾Æ·¡2¹øÂ°ÁÙ ºÒ·¿Å¸°Ù.¿¡³×¹Ì·Î ´ëÃ¼
+        //target = BulletTarget.Enemy; ï¿½Æ·ï¿½2ï¿½ï¿½Â°ï¿½ï¿½ ï¿½Ò·ï¿½Å¸ï¿½ï¿½.ï¿½ï¿½ï¿½×¹Ì·ï¿½ ï¿½ï¿½Ã¼
         targets = new Dictionary<string, int>();
         targets["Enemy"] = (int)BulletTarget.Enemy;
-        // Ãß°¡
-        sizeUp = false; //ÃÑ¾ËÅ©±â Àç´É Ã¼Å©
-        sizeBody = false; // ¸ö Å©±â Àç´É Ã¼Å©
-        locator = false; // ±ÙÁ¢ °­ÇÔ Ã¼Å©
-        sniping = false; // ¸ÖÀ½ °­ÇÔ Ã¼Å©
-        fire = false; // ºÒ µğ¹öÇÁ Ã¼Å©
-        water = false; // ¹° µğ¹öÇÁ Ã¼Å©
-        //ice = false; // ¾óÀ½ µğ¹öÇÁ Ã¼Å© = ¸÷½Ã½ºÅÛ °ü·Ã º¯°æ ÇÊ¿ä
-        burn = false;  // È­»ó Ã¼Å© 
-        gravity = false; // Áß·Â ´ç±è Ã¼Å©
-        Penetrate = false; //  °üÅë Ã¼Å©
-        pivotSet = false; // ÇÇ¹ş¼¼ÆÃ 
-        //canresurrection = false; // ºÎÈ° Ã¼Å© ¸ÖÆ¼ x
-        //sniperAtkBuff = false; // °ø“¹ Ã¼Å© ¸ÖÆ¼ x
-        canAngle = false; // º® Æ¨±è Ã¼Å© 
+        // ï¿½ß°ï¿½
+        sizeUp = false; //ï¿½Ñ¾ï¿½Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¼Å©
+        sizeBody = false; // ï¿½ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¼Å©
+        locator = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+        sniping = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+        fire = false; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+        water = false; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+        //ice = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¼Å© = ï¿½ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
+        burn = false;  // È­ï¿½ï¿½ Ã¼Å© 
+        gravity = false; // ï¿½ß·ï¿½ ï¿½ï¿½ï¿½ Ã¼Å©
+        Penetrate = false; //  ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+        pivotSet = false; // ï¿½Ç¹ï¿½ï¿½ï¿½ï¿½ï¿½ 
+        //canresurrection = false; // ï¿½ï¿½È° Ã¼Å© ï¿½ï¿½Æ¼ x
+        //sniperAtkBuff = false; // ï¿½ï¿½ï¿½ï¿½ Ã¼Å© ï¿½ï¿½Æ¼ x
+        canAngle = false; // ï¿½ï¿½ Æ¨ï¿½ï¿½ Ã¼Å© 
         weaponType = WeaponType.Shooting;
-        // finalAttackCoeff = 1; Â÷Â¡ Ã¼Å©
-        humanAttackintelligentmissile = false; // À¯µµ Ã¼Å©
+        // finalAttackCoeff = 1; ï¿½ï¿½Â¡ Ã¼Å©
+        humanAttackintelligentmissile = false; // ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
 
         _cool = GetComponent<CoolTimeController>();
-        _controller.OnAttackEvent += Shooting; // °ø°İ ¼Óµµ °ü·Ã Ã¼Å©
+        _controller.OnAttackEvent += Shooting; // ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
     }
     private void Start()
     {
-        StartObjectPOOL();
+        // StartObjectPOOL()ì€ GameManager.Init()ì—ì„œ ìºë¦­í„° ì„ íƒ í›„ ëª…ì‹œì ìœ¼ë¡œ í˜¸ì¶œë¨
     }
 
 
@@ -134,7 +147,7 @@ public class WeaponSystem : MonoBehaviour
         for (int i = 0; i < _controller.playerStatHandler.LaunchVolume.total; i++)
         {
             Quaternion rot = muzzleOfAGun.transform.rotation;
-            rot.eulerAngles += new Vector3(0, 0, Random.Range(-1 * _controller.playerStatHandler.BulletSpread.total, _controller.playerStatHandler.BulletSpread.total));// Áß¿äÇÔ
+            rot.eulerAngles += new Vector3(0, 0, Random.Range(-1 * _controller.playerStatHandler.BulletSpread.total, _controller.playerStatHandler.BulletSpread.total));// ï¿½ß¿ï¿½ï¿½ï¿½
             float _ATK = _controller.playerStatHandler.ATK.total;
             float _BLT = _controller.playerStatHandler.BulletLifeTime.total;
             var _targets = targets;
@@ -145,7 +158,7 @@ public class WeaponSystem : MonoBehaviour
         _controller.playerStatHandler.CurAmmo--;
     }
 
-    /*public void Charging() Â÷Â¡ ¹¯¾îµÎ±â
+    /*public void Charging() ï¿½ï¿½Â¡ ï¿½ï¿½ï¿½ï¿½Î±ï¿½
     {
         int bullets = _cool.bulletNum;
         if (bullets <= 1)
@@ -156,7 +169,7 @@ public class WeaponSystem : MonoBehaviour
         for (int i = 0; i < bullets; i++)
         {
             Quaternion rot = muzzleOfAGun.transform.rotation;
-            rot.eulerAngles += new Vector3(0, 0, Random.Range(-1 * _controller.playerStatHandler.BulletSpread.total, _controller.playerStatHandler.BulletSpread.total));// Áß¿äÇÔ
+            rot.eulerAngles += new Vector3(0, 0, Random.Range(-1 * _controller.playerStatHandler.BulletSpread.total, _controller.playerStatHandler.BulletSpread.total));// ï¿½ß¿ï¿½ï¿½ï¿½
             float _ATK = _controller.playerStatHandler.ATK.total * finalAttackCoeff;
             float _BLT = _controller.playerStatHandler.BulletLifeTime.total;
             var _targets = targets;
@@ -167,7 +180,7 @@ public class WeaponSystem : MonoBehaviour
         finalAttackCoeff = 1;
         _cool.bulletNum = 0;
     } */ 
-    public void burstCall(Quaternion rot) //¶óÀÌÇÃ ½ºÅ³ Àç´É
+    public void burstCall(Quaternion rot) //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½
     {
         float _ATK = _controller.playerStatHandler.ATK.total;
         float _BLT = _controller.playerStatHandler.BulletLifeTime.total;
@@ -182,44 +195,44 @@ public class WeaponSystem : MonoBehaviour
     {
         float critical = playerStatHandler.Critical.total;
         int criticalchance = Random.Range(1, 101);
-        if (critical >= criticalchance)// Å©¸®Æ¼ÄÃ½Ã µ¥¹ÌÁö 1.5¹è Ã³¸®
+        if (critical >= criticalchance)// Å©ï¿½ï¿½Æ¼ï¿½Ã½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1.5ï¿½ï¿½ Ã³ï¿½ï¿½
         {
             Atk = Atk * 1.5f;
         }
-        //Debug.Log("Å¸°Ù");
+        //Debug.Log("Å¸ï¿½ï¿½");
         //foreach (var target in _targets)
         //{
         //    Debug.Log(target);
         //}
-        //Debug.Log("µ¥¹ÌÁö¸¦ ÁÖ´Â°¡?");
+        //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Â°ï¿½?");
         //Debug.Log(_isDamage);
-        float size = 1f; // »çÀÌÁî Ã³¸®Àü ±âº» °ª
+        float size = 1f; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½
 
-        if (sizeBody) // ¹Ùµğ »çÀÌÁî ºñ·Ê ÃÑ¾ËÅ©±â Àç´É Ã³¸®
+        if (sizeBody) // ï¿½Ùµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
         {
             size = transform.localScale.x;
         }
-        if (sizeUp) // ÃÑ¾ËÅ©±â¾÷ Ã³¸®
+        if (sizeUp) // ï¿½Ñ¾ï¿½Å©ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
         {
             size *= 1.3f;
         }
 
 
-        Vector3 bulletPositon = muzzleOfAGun.transform.position;// ÃÑ¾Ë »ı¼º À§Ä¡
+        Vector3 bulletPositon = muzzleOfAGun.transform.position;// ï¿½Ñ¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
 
-        Vector3 eulerRotation = rot.eulerAngles; // euler °ªÀ¸·Î º¯°æ
+        Vector3 eulerRotation = rot.eulerAngles; // euler ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (pivotSet)
         {
             bulletPositon = this.gameObject.transform.localPosition;
         }
         GameObject _object = SpawnFromPool(nameTag);
         _object.transform.position = bulletPositon;
-        //GameObject _object = Instantiate(bullet, bulletPositon, Quaternion.identity); // ÃÑ¾Ë »ı¼º
+        //GameObject _object = Instantiate(bullet, bulletPositon, Quaternion.identity); // ï¿½Ñ¾ï¿½ ï¿½ï¿½ï¿½ï¿½
         _object.transform.rotation = Quaternion.Euler(eulerRotation);
-        Bullet _bullet = _object.GetComponent<Bullet>(); //ÇØ´ç ÃÑ¾Ë¿¡ ³» Æ¯¼º ºÎ¿© À§ÇÑ °´Ã¼ °¡Á®¿À±â
+        Bullet _bullet = _object.GetComponent<Bullet>(); //ï¿½Ø´ï¿½ ï¿½Ñ¾Ë¿ï¿½ ï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-        _object.transform.localScale = new Vector2(size, size); //Å©±â Ã³¸®
-        //ÇöÀç °¡±î¿ï½Ã/ ¸Ö½Ã µ¥¹ÌÁö Ã³¸® ¹æ½Ä - ±âº» µ¥¹ÌÁö * ¹èÀ² +- Ã¼°ø½Ã Áõ°¨°ª  == ±âº»µ¥¹ÌÁö*¹èÀ²(ÃÑ¾Ë»ı¼º½Ã Ã³¸®) ÃÑ¾Ë Ã¼°ø Áõ°¨°ª(ÃÑ¾Ë ½Ç½Ã°£ Ã³¸®)
+        _object.transform.localScale = new Vector2(size, size); //Å©ï¿½ï¿½ Ã³ï¿½ï¿½
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ ï¿½Ö½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ - ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ * ï¿½ï¿½ï¿½ï¿½ +- Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  == ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*ï¿½ï¿½ï¿½ï¿½(ï¿½Ñ¾Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½) ï¿½Ñ¾ï¿½ Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ñ¾ï¿½ ï¿½Ç½Ã°ï¿½ Ã³ï¿½ï¿½)
         if (locator)
         {
             _bullet.locator = true;
@@ -250,10 +263,10 @@ public class WeaponSystem : MonoBehaviour
             _bullet.MissileFire(1);
         }
         _object.SetActive(true);
-        //Debug.Log($"³²Àº½Ã°£ {bulletLifeTime}");
+        //Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ {bulletLifeTime}");
     }
 
-        /*[PunRPC] ¿øº» ÃÑ¾Ë »ı¼º º¸°ü¿ë
+        /*[PunRPC] ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         public void BS(Quaternion rot, float Atk, float bulletLifeTime, Dictionary<string, int> _targets, bool _isDamage, int _viewID)//BulletSpawn
         {
             float critical = playerStatHandler.Critical.total;
@@ -262,12 +275,12 @@ public class WeaponSystem : MonoBehaviour
             {
                 Atk = Atk * 1.5f;
             }
-            //Debug.Log("Å¸°Ù");
+            //Debug.Log("Å¸ï¿½ï¿½");
             foreach (var target in _targets)
             {
                 //Debug.Log(target);
             }
-            //Debug.Log("µ¥¹ÌÁö¸¦ ÁÖ´Â°¡?");
+            //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Â°ï¿½?");
             //Debug.Log(_isDamage);
             float size = 1f;
 

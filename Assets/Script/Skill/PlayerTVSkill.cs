@@ -35,7 +35,7 @@ public class PlayerTVSkill : Skill
     {
         _playerStatControl.CanRoll = true;
         _playerStatControl.SkillRollInvincibility = false;
-        CompulsoryRollEnd();
+        topDownCharacter.CompulsoryRollEnd();
 
         SkillEnd();
     }
