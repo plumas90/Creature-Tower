@@ -1,15 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using TMPro;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static MainGameManager;
 
-public class ResultManager : MonoBehaviour//vsÄÚµå
+public class ResultManager : MonoBehaviour//vsï¿½Úµï¿½
 {
     public ChoiceSlot[] picklist;
     public static ResultManager Instance;
@@ -36,9 +32,6 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
 
 
     public bool statChance;
-    public bool countDownCheck;
-    public float pickTime;
-    public TextMeshProUGUI time;
 
     bool testsetting;
     public bool SetActiveCheck;
@@ -47,8 +40,7 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
         Player = playerObj;
         IsStat = false;
         SetActiveCheck = false;
-        countDownCheck = false;
-        //if (MainGameManager.Instance != null) TO DEL»ç½Ç Á×Àº ºÎºÐ if¹® ÀüÃ¼¸¦ Áö¿öµµ µÈ´Ù°í ÆÇ´ÜµÊ
+        //if (MainGameManager.Instance != null) TO DELï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ ifï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½È´Ù°ï¿½ ï¿½Ç´Üµï¿½
         //{
         //    gameManager = MainGameManager.Instance;
         //    gameManager.OnGameEndedEvent += Result;
@@ -85,49 +77,37 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
         SpecialAugment2 = MakeAugmentListManager.Instance.SpecialAugment2;
         SpecialAugment3 = MakeAugmentListManager.Instance.SpecialAugment3;
         
-        //GameManager.Instance.OnBossStageStartEvent += ReadyCheck; ¸ÖÆ¼¿¡¼­ º¸»óÀ» ´Ù Ã¼Å©ÇØ¾ß ³Ñ¾î°¡´ÂºÎºÐ ½Ì±ÛÀÌ¶ó »èÁ¦¿¹Á¤
+        //GameManager.Instance.OnBossStageStartEvent += ReadyCheck; ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ã¼Å©ï¿½Ø¾ï¿½ ï¿½Ñ¾î°¡ï¿½ÂºÎºï¿½ ï¿½Ì±ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         //GameManager.Instance.OnStageStartEvent += ReadyCheck;
         ProtoList = MakeAugmentListManager.Instance.Prototype;
-        Debug.Log("¹èÆ÷Àü ÇÁ·ÎÅäÅ¸ÀÔ ÁÖ¼®Ã³¸®");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½Ö¼ï¿½Ã³ï¿½ï¿½");
         statChance = false;
     }
     public void ReadyCheck() 
     {
         readycheck = false;
     }
-    private void Update()
-    {
-        if (countDownCheck) 
-        {
-            pickTime -= Time.deltaTime;
-            time.text = pickTime.ToString("F1");
-            if (pickTime <= 0) 
-            {
-                picklist[0].pick();
-            }
-        }
 
-    }
     public void SpecialResult()
     {
-        if (!testsetting)//Áõ°­ Å×½ºÆ®¿ë ¾î¿þÀÌÅ© Å×½ºÆ® true½Ã ÇÁ·ÎÅäÅ¸ÀÔ¸®ÀýÆ®¸¸°¡Á®¿È
+        if (!testsetting)//ï¿½ï¿½ï¿½ï¿½ ï¿½×½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å© ï¿½×½ï¿½Æ® trueï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ô¸ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
             CallSpecialResult();
         }
         else 
         {
-            CallProtoResult();//¾Ö°¡ Å×½ºÆ® ½ºÆä¼È Áõ°­
+            CallProtoResult();//ï¿½Ö°ï¿½ ï¿½×½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
     }
-    public void CallProtoResult()//ÇÁ·ÎÅäÅ¸ÀÔ¿ë º¯¼ö ºÎ¸£´Â ¸®½ºÆ®°¡ ¸¸µé¾îÁø ÃÊ±â ¹öÀü¸¸ µé¾îÀÖ´Ù
+    public void CallProtoResult()//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ô¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö´ï¿½
     {
         PickSpecialList(ProtoList);
     }
     private int RandomTier() 
     {
         //int tier = GameManager.Instance.curStage;
-        int tier = 1; //ÀÓ½Ã
-        int random = Random.Range(1, 12); // ÇöÀç Ãþ¼ö¿¡ ºñ·ÊÇÏ¿© Æ¼¾î °¡ÁßÄ¡ Å¸°Ù3µµ ÀÖ¾ú´Âµ¥ ÇÊ¿ä¾ø¾î¼­ Áö¿ò 10-³ª¸ÓÁö °ª
+        int tier = 1; //ï¿½Ó½ï¿½
+        int random = Random.Range(1, 12); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ Æ¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ Å¸ï¿½ï¿½3ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½Âµï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½î¼­ ï¿½ï¿½ï¿½ï¿½ 10-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         int target1 = 4;
         int target2 = 3;
         int target3 = 2;
@@ -202,36 +182,26 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
     }
     public void CallSpecialResult()
     {
-        /*
-        if (GameManager.Instance.curStage < GameManager.Instance.stageListInfo.StagerList.Count -1)
-        {
         int tier = RandomTier();
-            switch (tier)
-            {   
-                case 1:
+        switch (tier)
+        {
+            case 1:
                 PickSpecialList(SpecialAugment1);
                 break;
-    
-                case 2:
+            case 2:
                 PickSpecialList(SpecialAugment2);
                 break;
-    
-                case 3:
+            case 3:
+            case 4:
                 PickSpecialList(SpecialAugment3);
                 break;
-
-                case 4:
-                PickSpecialList(SpecialAugment3);
-                break;
-
-                default:
+            default:
                 PickSpecialList(SpecialAugment1);
                 break;
-            }
-        }*/
+        }
     }
   
-    void PickStatList(List<IAugment> origin)// °í¸¥°Ô ¾È»ç¸®Áö´Â Å¸ÀÔ = ÀÏ¹Ý½ºÅÈ
+    void PickStatList(List<IAugment> origin)// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½È»ç¸®ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ = ï¿½Ï¹Ý½ï¿½ï¿½ï¿½
     {
         playerinput.actions.FindAction("Attack").Disable();
 
@@ -240,7 +210,7 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
             picklist[0].pick();
         }
         int Count = picklist.Length;
-        //¿©±â¼­ ½ºÅÈÁõ°­ÀÎÁö Æ¯¼ö Áõ°­ÀÎÁö¿¡ µû¶óÅõ¸®½ºÆ®ÇÒÁö ±×³É ¹ÞÀ»Áö
+        //ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½×³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         List<IAugment> list = origin.ToList();
 
         for (int i = 0; i < Count; ++i)
@@ -250,11 +220,11 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
             picklist[i].gameObject.SetActive(true);
             list.RemoveAt(a);
         }
-        IsStat = true;// ÀÌ°É·Î ¸®½ºÆ®¿¡¼­ Á¦°ÅÀÎÁö ±×´ë·ÎÀÎÁö ±¸º°ÇÔ
+        IsStat = true;// ï¿½Ì°É·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         SetActiveCheck = true;
     }
 
-    void PickSpecialList(List<SpecialAugment> origin) // °í¸¥°Ô »ç¶óÁö´Â Å¸ÀÔ == ÇÃ·¹ÀÌº¯È­ Áõ°­
+    void PickSpecialList(List<SpecialAugment> origin) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ == ï¿½Ã·ï¿½ï¿½Ìºï¿½È­ ï¿½ï¿½ï¿½ï¿½
     {
         playerinput.actions.FindAction("Attack").Disable();
 
@@ -272,17 +242,11 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
             picklist[i].gameObject.SetActive(true);
             list.RemoveAt(a);
         }
-        /*if (GameManager.Instance.ClearStageCheck)
-        {
-            countDownCheck = true;
-            time.gameObject.SetActive(true);
-            pickTime = 30f;
-        }*/
         SetActiveCheck = true;
         IsStat = false;
 
     }
-    public void close()//¸ñ·Ï¿¡¼­ °ñ¶ú´Ù¸é ¶ç¿î ui¸¦ ´Ý¾ÆÁÜ
+    public void close()//ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ uiï¿½ï¿½ ï¿½Ý¾ï¿½ï¿½ï¿½
     {
         playerinput.actions.FindAction("Attack").Enable();
 
@@ -293,15 +257,15 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
             {
                 int target= picklist[i].stat.Code;
                 int index = tempList.FindIndex(x => x.Code.Equals(target));
-                //¸®½ºÆ®¿¡¼­ ÀÌ¸§ Ã£¾Æ¼­ Á¦°Å
+                //ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ Ã£ï¿½Æ¼ï¿½ ï¿½ï¿½ï¿½ï¿½
                 MySpecialListSocket newSocket = Instantiate(Socketprefab);//
-                newSocket.transform.SetParent(ViewListContent,false);//¿ùµåÆ÷Áö¼Ç À¯ÁöÇÏ¸é¼­ ½ºÄÉÀÏÀÌ À¯ÁöµÉ¼ö°¡ ÀÖÀ½ ¸Â¾ÒÀ½ ¿ùµåÆ÷Áö¼ÇÆÞ½ºÇÏ´Ï±îÇØ°áµÊ
+                newSocket.transform.SetParent(ViewListContent,false);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸é¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½É¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Â¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ½ï¿½ï¿½Ï´Ï±ï¿½ï¿½Ø°ï¿½ï¿½
                 newSocket.Init(tempList[index].Name, tempList[index].func, tempList[index].Rare, tempList[index].Code);
 
                 tempList.Remove(tempList[index]);
                 if (tempList.Count <= 2) 
                 {
-                    SpecialAugment AllStat = new SpecialAugment("All Stat",999,"Èû½Ø°í °­ÇÑ ¿Ã½ºÅÈ", 3);
+                    SpecialAugment AllStat = new SpecialAugment("All Stat",999,"ï¿½ï¿½ï¿½Ø°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã½ï¿½ï¿½ï¿½", 3);
                     tempList.Add(AllStat);
                 }
 
@@ -315,8 +279,6 @@ public class ResultManager : MonoBehaviour//vsÄÚµå
         {
             Ready();
         }
-        countDownCheck = false;
-        time.gameObject.SetActive(false);
         statChance = false;
     }
     public void Ready() 

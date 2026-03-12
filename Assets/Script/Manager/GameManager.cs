@@ -218,6 +218,17 @@ public class GameManager : MonoBehaviour
             weaponSystem.StartObjectPOOL();
         }
 
+        // 증강/보상 매니저 초기화 (캐릭터 선택 직후, 스테이지 생성 전)
+        if (AugmentManager.Instance != null)
+            AugmentManager.Instance.startset(player);
+        if (MakeAugmentListManager.Instance != null)
+            MakeAugmentListManager.Instance.startset(player); // 캐릭터 타입에 맞는 증강 리스트 빌드
+        if (ResultManager.Instance != null)
+        {
+            ResultManager.Instance.startset(player);
+            ResultManager.Instance.StartSet(); // MakeLisk 완료 후 리스트 복사
+        }
+
         //tower ui on
         MakeStageTree();
         SetStageTree();

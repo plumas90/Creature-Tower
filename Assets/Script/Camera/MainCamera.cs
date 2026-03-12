@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 public class MainCamera : MonoBehaviour
 {
-    public GameObject Target;               // Ä«¸Ş¶ó°¡ µû¶ó´Ù´Ò Å¸°Ù
+    public GameObject Target;               // Ä«ï¿½Ş¶ï¿½ ï¿½ï¿½ï¿½ï¿½Ù´ï¿½ Å¸ï¿½ï¿½
 
-    public float offsetX = 0.0f;            // Ä«¸Ş¶óÀÇ xÁÂÇ¥
-    public float offsetY = 0.0f;            // Ä«¸Ş¶óÀÇ yÁÂÇ¥
-    public float offsetZ = -10.0f;          // Ä«¸Ş¶óÀÇ zÁÂÇ¥
+    public float offsetX = 0.0f;            // Ä«ï¿½Ş¶ï¿½ï¿½ï¿½ xï¿½ï¿½Ç¥
+    public float offsetY = 0.0f;            // Ä«ï¿½Ş¶ï¿½ï¿½ï¿½ yï¿½ï¿½Ç¥
+    public float offsetZ = -10.0f;          // Ä«ï¿½Ş¶ï¿½ï¿½ï¿½ zï¿½ï¿½Ç¥
 
-    public float CameraSpeed = 10.0f;       // Ä«¸Ş¶óÀÇ ¼Óµµ
-    Vector3 TargetPos;                      // Å¸°ÙÀÇ À§Ä¡
+    public float CameraSpeed = 10.0f;       // Ä«ï¿½Ş¶ï¿½ï¿½ï¿½ ï¿½Óµï¿½
+    Vector3 TargetPos;                      // Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
     Vector3 OtherTargetPos;
     int currentOtherTargetViewID;
 
@@ -22,22 +23,12 @@ public class MainCamera : MonoBehaviour
 
     private void SetInitialTarget()
     {
-        /*
-        if (MainGameManager.Instance != null)
-        {
-            Target = MainGameManager.Instance.InstantiatedPlayer;
-        }
-        else
-        {
-            //Debug.Log("adaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            //Target = GameManager.Instance.clientPlayer;
-        }
-        */
-
-        //currentOtherTargetViewID = GameManager.Instance.clientPlayer.gameObject.GetPhotonView().ViewID;
+        // TestGameManagerê°€ ìˆìœ¼ë©´ í”Œë ˆì´ì–´ ì„ íƒ í›„ Targetì„ ì§ì ‘ ì§€ì •í•˜ë¯€ë¡œ ì—¬ê¸°ì„  ì•„ë¬´ê²ƒë„ ì•ˆ í•¨
+        if (Target != null) return;
     }
 
-    private void Update()
+
+    public void Update()
     {
 
         if (Target == null)
@@ -65,45 +56,37 @@ public class MainCamera : MonoBehaviour
 
     }
 
-    void FixedUpdate()
-    {
 
-    }
-
-    //¸ŞÀÎ Ä«¸Ş¶ó Áö , ´Æ , ´Æ2 , Å¸°Ù¸¸ ¹Ù²ÙÀÚ
-    public void UpdateDiedView()
-    {
-        //¾÷µ¥ÀÌÆ® Å¸°ÙÀº Ç×»ó ±×³É 
-    }
+    //ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Ş¶ï¿½ ï¿½ï¿½ , ï¿½ï¿½ , ï¿½ï¿½2 , Å¸ï¿½Ù¸ï¿½ ï¿½Ù²ï¿½
 
     /*public void ChangeTarget()
     {
-        var playerInfoDictionary = GameManager.Instance.playerInfoDictionary; //°ÔÀÓ¸Å´ÏÀú¿¡¼­ ÇÃ·¹ÀÌ¾î ÀÎÆ÷ µñ¼Å³Ê¸® ¹Ş¾Æ¿È
+        var playerInfoDictionary = GameManager.Instance.playerInfoDictionary; //ï¿½ï¿½ï¿½Ó¸Å´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³Ê¸ï¿½ ï¿½Ş¾Æ¿ï¿½
 
-        //¿©µû Å¸°Ù Æ÷½º ¾÷µ¥ÀÌÆ®
-        if (Input.GetKeyDown(KeyCode.Q)) // Å° ´©¸£¸é 
+        //ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+        if (Input.GetKeyDown(KeyCode.Q)) // Å° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
         {
             bool foundNewTarget = false;
             foreach (var viewID in playerInfoDictionary.Keys)
             {
-                if (viewID != GameManager.Instance.clientPlayer.gameObject.GetPhotonView().ViewID //³»°¡ ¾Æ´Ï°Å³ª, ÇöÀç º¸°í ÀÖ´Â Å¸°ÙÀÌ ¾Æ´Ñ °æ¿ì¿¡¸¸ ÀÛµ¿
+                if (viewID != GameManager.Instance.clientPlayer.gameObject.GetPhotonView().ViewID //ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ï°Å³ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½Ûµï¿½
                     && viewID != currentOtherTargetViewID)
                 {
                     OtherTargetPos = new Vector3(playerInfoDictionary[viewID].position.x, playerInfoDictionary[viewID].position.y, offsetZ);
                     currentOtherTargetViewID = viewID;
                     foundNewTarget = true;
-                    break; // Ã¹ ¹øÂ° ´Ù¸¥ ÇÃ·¹ÀÌ¾î¸¸ ¼±ÅÃÇÏµµ·Ï º¯°æ
+                    break; // Ã¹ ï¿½ï¿½Â° ï¿½Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î¸¸ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 }
             }
 
-            // Q ÀÔ·Â ½Ã ´Ù¸¥ ÇÃ·¹ÀÌ¾î¸¦ Ã£Áö ¸øÇÑ °æ¿ì ÃÊ±â Å¸°Ù
+            // Q ï¿½Ô·ï¿½ ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î¸¦ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½ Å¸ï¿½ï¿½
             if (!foundNewTarget)
             {
                 SetInitialTarget();
             }
         }
 
-        //¾Æ¹« ÀÔ·Âµµ ¾ø´Â°æ¿ì OtherTargetPos¸¦ ÇöÀç Å¸°ÙÀ¸·Î °è¼ÓÇØ¼­ ¾÷µ¥ÀÌÆ®
+        //ï¿½Æ¹ï¿½ ï¿½Ô·Âµï¿½ ï¿½ï¿½ï¿½Â°ï¿½ï¿½ OtherTargetPosï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
         if (currentOtherTargetViewID != null)
             OtherTargetPos = new Vector3(playerInfoDictionary[currentOtherTargetViewID].position.x, playerInfoDictionary[currentOtherTargetViewID].position.y, offsetZ);
     }

@@ -4,12 +4,12 @@ using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class MakeAugmentListManager : MonoBehaviour//Áõ°­ ¸®½ºÆ®¸¦ ¸¸µé¾îÁÜ
+public class MakeAugmentListManager : MonoBehaviour//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
     public static MakeAugmentListManager Instance;
 
-    //ÀÌ°Ô ¸Â³ª ¸ğ¸£°Ú´Âµ¥ ½ºÅÈÀº ¸ğµÎ°¡ »ç¿ë°¡´ÉÇÏ´Ï ½ºÅÂÆ½À¸·Î ÇÏ³ª¸¸ ¸¸µé¾îµÎ°í
-    // ÇÃ·¹ÀÌ ½ºÅ¸ÀÏ º¯È­ Áõ°­ = ³Ê¹«±è ¾ÕÀ¸·Î ½ºÆä¼ÈÁõ°­À¸·Î ºÎ¸£°ÚÀ½
+    //ï¿½Ì°ï¿½ ï¿½Â³ï¿½ ï¿½ğ¸£°Ú´Âµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Î°ï¿½ ï¿½ï¿½ë°¡ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Î°ï¿½
+    // ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ = ï¿½Ê¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¸ï¿½ï¿½ï¿½ï¿½ï¿½
     // 
     public  List<IAugment> stat1 = new List<IAugment>();
     public  List<IAugment> stat2 = new List<IAugment>();
@@ -29,7 +29,7 @@ public class MakeAugmentListManager : MonoBehaviour//Áõ°­ ¸®½ºÆ®¸¦ ¸¸µé¾îÁÜ
     {
         playerObj = player;
         
-        Debug.Log("Áõ°­¸®½ºÆ®»ı¼º");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½");
     }
     public void startset(GameObject gameobj) 
     {
@@ -64,26 +64,32 @@ public class MakeAugmentListManager : MonoBehaviour//Áõ°­ ¸®½ºÆ®¸¦ ¸¸µé¾îÁÜ
     }
     private void Start()
     {
-        ResultManager.Instance.StartSet();
+        // StartSetì€ ìºë¦­í„° ì„ íƒ í›„ MakeLisk() ì™„ë£Œ ì‹œì ì— GameManager.Init()ì—ì„œ í˜¸ì¶œ
     }
     public void MakeLisk() 
     {
-        //PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Char_Class", out object classNum);
-        //¾Æ·¡ 1À» Ä³¸¯ÅÍ Å¸ÀÔÀ¸·Î ¹Ù²Ü°Í
-        playerType = 1;
+        // ìºë¦­í„° ì„ íƒ ê²°ê³¼ë¥¼ PlayerStatControl.CharacterClassì—ì„œ ì½ì–´ì˜´
+        PlayerStatControl pstat = playerObj != null ? playerObj.GetComponent<PlayerStatControl>() : null;
+        playerType = pstat != null ? pstat.CharacterClass : 0;
         string Ptype = "a";
+        // ClassName enum: TV=0, Charlie=1, KimKilWhan=2
         switch (playerType)
         {
-            case 0:
-                Ptype = "Soldier";
+            case (int)ClassName.TV:
+                Ptype = "TV";
                 break;
 
-            case 1:
-                Ptype = "Shotgun";
+            case (int)ClassName.Charlie:
+                Ptype = "Charlie";
                 break;
 
-            case 2:
-                Ptype = "Sniper";
+            case (int)ClassName.KimKilWhan:
+                Ptype = "KimKilWhan";
+                break;
+
+            default:
+                Ptype = "TV";
+                Debug.LogWarning($"[MakeAugmentListManager] ì•Œ ìˆ˜ ì—†ëŠ” CharacterClass={playerType}, TVë¡œ ê¸°ë³¸ ì„¤ì •");
                 break;
         }
         SpecialAugmentSetting(SpecialAugment1, Ptype + "1");
@@ -107,7 +113,7 @@ public class MakeAugmentListManager : MonoBehaviour//Áõ°­ ¸®½ºÆ®¸¦ ¸¸µé¾îÁÜ
         }
 
     }
-    public static void SpecialAugmentSetting(List<SpecialAugment> list,string str)// ³ÖÀ» ¸®½ºÆ® , ºÒ·¯¿ÃcsvÆÄÀÏ¸í csvÆÄÀÏÀ» ºÒ·¯¿Í ¸®½ºÆ®¿¡ ³Ö¾îÁÜ
+    public static void SpecialAugmentSetting(List<SpecialAugment> list,string str)// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® , ï¿½Ò·ï¿½ï¿½ï¿½csvï¿½ï¿½ï¿½Ï¸ï¿½ csvï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½
     {
         List<Dictionary<string, object>> data = CSVReader.Read("CSVReader/" + str);
 
@@ -119,7 +125,7 @@ public class MakeAugmentListManager : MonoBehaviour//Áõ°­ ¸®½ºÆ®¸¦ ¸¸µé¾îÁÜ
 
     }
 
-    public class CSVReader// csv ÆÄÀÏÀ» ºÒ·¯¿ÍÁÜ
+    public class CSVReader// csv ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½
     {
         static string SPLIT_RE = @",(?=(?:[^""]*""[^""]*"")*(?![^""]*""))";
         static string LINE_SPLIT_RE = @"\r\n|\n\r|\n|\r";

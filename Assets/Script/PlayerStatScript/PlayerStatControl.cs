@@ -8,72 +8,73 @@ using UnityEngine.U2D.Animation;
 
 public class PlayerStatControl : MonoBehaviour
 {
-    // ÇöÀç °ÔÀÓ ¸Å´ÏÀú°¡ »õ·Î ¸¸µé¾î¾ß ÇÒ°Å °°¾Æ¼­ °ÔÀÓ ¸Å´ÏÀú °ü·ÃÀº »ç¿ëÇØµµ ÁÖ¼® Ã³¸® ÇØµÒ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½ ï¿½ï¿½ï¿½Æ¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Øµï¿½ ï¿½Ö¼ï¿½ Ã³ï¿½ï¿½ ï¿½Øµï¿½
 
 
-    // ÃßÈÄ ¹æÇâ¼º¿¡ µû¶ó ¾È¾µ¼ö ÀÖ´Â ÀÌº¥Æ® ³¡¿¡ ##À» ºÙ¿©µÒ
-    public event Action<float> GetDamege; //ÇÇ°İ½Ã Ã³À½ µé¾î¿Â µ¥¹ÌÁö Ã³¸®  = µé¾î¿Â µ¥¹ÌÁö
-    public event Action<float> HitEvent2; //ÇÇ°İ µ¥¹ÌÁö ¼öÄ¡ °ü·Ã Ã³¸® Àç´É¹ßÇöÀ¸·Î ½ÇÁ¦ µ¥¹ÌÁö ¼öÄ¡ Ã³¸®¸¦ÇÔ  = ÃÖÁ¾ µ¥¹ÌÁö
-    public event Action HitEvent; // ÇÇ°İ ¹ß»ı ¿©ºÎ Ã³¸® ÀÌº¥Æ®
-    public event Action OnDieEvent; // Á×¾úÀ»¶§ Ã³¸® ±×·±µ¥ ½Ì±Û°× Ã³¸®¶ó¼­ ¾È¾µ¼öµµ ÀÖÀ½ ##
-    public event Action OnRegenEvent; // ºÎÈ° ÀÌº¥Æ® ½Ì±Û°×ÀÌ¶ó ÀÌÇÏ »ı·« ##
-    public event Action<int> OnRegenCalculateEvent; //Á×¾úÀ»¶§ ¼ÂÆÃÀÎµ¥ ¾È¾µµí ##
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¼ºï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È¾ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ##ï¿½ï¿½ ï¿½Ù¿ï¿½ï¿½ï¿½
+    public event Action<float> GetDamege; //ï¿½Ç°İ½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½  = ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public event Action<float> HitEvent2; //ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  = ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public event Action HitEvent; // ï¿½Ç°ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ìºï¿½Æ®
+    public event Action OnDieEvent; // ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½Ì±Û°ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ##
+    public event Action OnRegenEvent; // ï¿½ï¿½È° ï¿½Ìºï¿½Æ® ï¿½Ì±Û°ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ##
+    public event Action<int> OnRegenCalculateEvent; //ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Îµï¿½ ï¿½È¾ï¿½ï¿½ï¿½ ##
     public event Action OnChangeAmmorEvent; // 
-    public event Action OnChangeCurHPEvent; // ÇöÀç Ã¼·Â Ã³¸® ex ¹ö¼­Ä¿  
-    public event Action MoveStartEvent; //  °¡¸¸È÷ ÀÖ´Â ½Ã°£ Ã³¸®1 ex °¡¸¸È÷ ÀÖ´Â µ¿¾È °ø°İ·Â»ó½Â ¿òÁ÷ÀÌ¸é Ãë¼Ò 
-    public event Action MoveEndEvent; // °¡¸¸È÷ ÀÖ´Â ½Ã°£ Ã³¸®2
-    public event Action EnemyHitEvent; // Å¸°İ nÈ¸½Ã Ãß°¡ Å¸°İ µî Ã³¸® ¾È¾µ¼ö ÀÖÀ½ ##
-    public event Action KillCatchEvent; // Å³ ½Ã °ø°İ·Â »ó½Â ÀÌº¥Æ® µî¿¡ »ç¿ë ÃÊ¹İ º¸½º·¯½¬ ÁøÇà½Ã »ç¿ë ÃßÈÄ °¡´É¼º ÀÖÀ½ x ##
-    public event Action<float, int> OnDamageReflectEvent;// µ¥¹ÌÁö ¹İ»ç Ã³¸® ÀÌº¥Æ® ±¸ÇöÀÌ »ı°¢º¸´Ù Èûµé°í Àç¹Õ´Â Æ®¸® °°Áö°¡ ¾ÊÀ½ ##
+    public event Action OnChangeCurHPEvent; // ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ Ã³ï¿½ï¿½ ex ï¿½ï¿½ï¿½ï¿½Ä¿  
+    public event Action MoveStartEvent; //  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ã°ï¿½ Ã³ï¿½ï¿½1 ex ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½İ·Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ 
+    public event Action MoveEndEvent; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ã°ï¿½ Ã³ï¿½ï¿½2
+    public event Action EnemyHitEvent; // Å¸ï¿½ï¿½ nÈ¸ï¿½ï¿½ ï¿½ß°ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½È¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ##
+    public event Action KillCatchEvent; // Å³ ï¿½ï¿½ ï¿½ï¿½ï¿½İ·ï¿½ ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½î¿¡ ï¿½ï¿½ï¿½ ï¿½Ê¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½ x ##
+    public event Action<float, int> OnDamageReflectEvent;// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½İ»ï¿½ Ã³ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Õ´ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ##
 
 
     [SerializeField] private PlayerSO playerStats;
+    public int CharacterClass => playerStats != null ? playerStats.CharacterClass : 0; // ìºë¦­í„° í´ë˜ìŠ¤ ì™¸ë¶€ ì ‘ê·¼ìš©
 
     PlayerAnimatorController anime;
 
-    [Header("½ºÅÈ")]
-    [HideInInspector] public Stats ATK;                 // °ø°İ·Â
-    [HideInInspector] public Stats HP;                  // Ã¼·Â
-    [HideInInspector] public Stats Speed;               // ÀÌµ¿ ¼Óµµ
-    [HideInInspector] public Stats AtkSpeed;            // °ø°İ ¼Óµµ
-    [HideInInspector] public Stats ReloadCoolTime;      // ÀåÀü   Äğ Å¸ÀÓ
-    [HideInInspector] public Stats SkillCoolTime;       // ½ºÅ³   Äğ Å¸ÀÓ
-    [HideInInspector] public Stats RollCoolTime;        // ±¸¸£±â Äğ Å¸ÀÓ
-    [HideInInspector] public Stats BulletSpread;        // ÅºÆÛÁü
-    [HideInInspector] public Stats BulletLifeTime;      // ÃÑ¾Ë »ç°Å¸®
-    [HideInInspector] public Stats LaunchVolume;        // ÇÑ¹øÀÇ ¹ß»çÀÇ ¹ß»ç·®
-    [HideInInspector] public Stats Critical;            // Å©¸®Æ¼ÄÃ = Å©¸®Æ¼ÄÃ ºôµå°¡ Àç¹ÕÀ»°Å °°Áö¸¸ µ¥¹ÌÁö ³­ÀÌµµ¿¡ ²Ò Å« ¿µÇâÀ» ÁÜ
-    [HideInInspector] public Stats AmmoMax;             // ÀåÅº¼ö
-    [HideInInspector] public float defense; //¹æ¾î·Â Áß¿äÇÑ°Ç µ¥¹ÌÁö ¹èÀ² ÀÌ¶ó´Â°ÅÀÓ ±âº»°ª 1·Î µ¥¹ÌÁö 10 ¹ŞÀ»½Ã µ¥¹ÌÁö x ¹æ¾î·Â ¹èÀ² = ½ÇÁ¦ µ¥¹ÌÁö °°Àº ´À³¦
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
+    [HideInInspector] public Stats ATK;                 // ï¿½ï¿½ï¿½İ·ï¿½
+    [HideInInspector] public Stats HP;                  // Ã¼ï¿½ï¿½
+    [HideInInspector] public Stats Speed;               // ï¿½Ìµï¿½ ï¿½Óµï¿½
+    [HideInInspector] public Stats AtkSpeed;            // ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½
+    [HideInInspector] public Stats ReloadCoolTime;      // ï¿½ï¿½ï¿½ï¿½   ï¿½ï¿½ Å¸ï¿½ï¿½
+    [HideInInspector] public Stats SkillCoolTime;       // ï¿½ï¿½Å³   ï¿½ï¿½ Å¸ï¿½ï¿½
+    [HideInInspector] public Stats RollCoolTime;        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å¸ï¿½ï¿½
+    [HideInInspector] public Stats BulletSpread;        // Åºï¿½ï¿½ï¿½ï¿½
+    [HideInInspector] public Stats BulletLifeTime;      // ï¿½Ñ¾ï¿½ ï¿½ï¿½Å¸ï¿½
+    [HideInInspector] public Stats LaunchVolume;        // ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ß»ç·®
+    [HideInInspector] public Stats Critical;            // Å©ï¿½ï¿½Æ¼ï¿½ï¿½ = Å©ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ Å« ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    [HideInInspector] public Stats AmmoMax;             // ï¿½ï¿½Åºï¿½ï¿½
+    [HideInInspector] public float defense; //ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ï¿½Ñ°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¶ï¿½Â°ï¿½ï¿½ï¿½ ï¿½âº»ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 10 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ x ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ = ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    //public Sprite indicatorSprite; ¸ğ¸§
-    [Header("»ç¿îµå")]
+    //public Sprite indicatorSprite; ï¿½ï¿½
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
     public AudioClip atkClip;
     public AudioClip reloadStartClip;
     public AudioClip reloadFinishClip;
 
-    [Header("½ºÇÁ¶óÀÌÆ®")]
-    [HideInInspector] public SpriteLibraryAsset PlayerSprite; // ½ºÇÁ¶óÀÌÆ®
-    [HideInInspector] public SpriteLibraryAsset WeaponSprite; // ½ºÇÁ¶óÀÌÆ®
-    [HideInInspector] public Sprite BulletSprite; // ½ºÇÁ¶óÀÌÆ®
-    [HideInInspector] public SpriteLibrary PlayerSpriteCase; // ½ºÇÁ¶óÀÌÆ®
-    [HideInInspector] public SpriteLibrary WeaponSpriteCase; // ½ºÇÁ¶óÀÌÆ®
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®")]
+    [HideInInspector] public SpriteLibraryAsset PlayerSprite; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+    [HideInInspector] public SpriteLibraryAsset WeaponSprite; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+    [HideInInspector] public Sprite BulletSprite; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+    [HideInInspector] public SpriteLibrary PlayerSpriteCase; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+    [HideInInspector] public SpriteLibrary WeaponSpriteCase; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
     public GameObject _PlayerSprite;
     public GameObject _WeaponSprite;
-    public PlayerDebuffControl _DebuffControl; //µğ¹öÇÁ ¸Å´ÏÀú ¸¸µé¾î¾ßÇÔ
+    public PlayerDebuffControl _DebuffControl; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    [HideInInspector] public bool isNoramlMove; //Á¶ÀÛ ÁÂ¿ì ¹İÀü Ã¼Å©
-    [HideInInspector] public bool isCanSkill; // ½ºÅ³ ÄğÅ¸ÀÓ Ã¼Å©
+    [HideInInspector] public bool isNoramlMove; //ï¿½ï¿½ï¿½ï¿½ ï¿½Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+    [HideInInspector] public bool isCanSkill; // ï¿½ï¿½Å³ ï¿½ï¿½Å¸ï¿½ï¿½ Ã¼Å©
     [HideInInspector] public bool isCanAtk;
-    public bool isDie; //Á×À½ Ã¼Å©
+    public bool isDie; //ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
     //public bool isRegen; //
-    public int RegenHP; // ºÎÈ°½Ã Ã¼·ÂÀÎµ¥ 
+    public int RegenHP; // ï¿½ï¿½È°ï¿½ï¿½ Ã¼ï¿½ï¿½ï¿½Îµï¿½ 
 
-    #region ¾²·¹±â
-    //¾Æ·¡ »ç¶óÁú°Íµé ¸ñ¼ûÀº °ÔÀÓ¸Å´ÏÀú·Î »ç¶óÁü ¸ÖÆ¼°¡ ¾Æ´Ï´Ï±î Å³¼ö °ßÁ¦ ¾øÀ½
-    //public int MaxRegenCoin; //ºÎÈ° ¸ñ¼û ÃÖ´ë
-    //private int curRegenCoin; // ºÎÈ° ¸ñ¼û ÇöÀç
-    //private int kill; // ·Î¾Æ °¡Á· »çÁø Ã³·³ °ÔÀÓ Å¬¸®¾î½Ã Ã³Ä¡ÇÑ ¸÷¼ö °í·Á
+    #region ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ó¸Å´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½Æ´Ï´Ï±ï¿½ Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //public int MaxRegenCoin; //ï¿½ï¿½È° ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½
+    //private int curRegenCoin; // ï¿½ï¿½È° ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //private int kill; // ï¿½Î¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     /*
     public int CurRegenCoin
     {
@@ -93,20 +94,20 @@ public class PlayerStatControl : MonoBehaviour
     */
     #endregion
 
-    /* @@@@@@ ¾Ë¾ÆµÖ¾ßÇÒ Áß¿äÇÑ °³³ä ÇöÁØÀÌ°¡ ÀĞ¾úÀ¸¸é ÀÌÁ¦ Áö¿öµµµÊ
-     ½ºÅÏÀÌ 500ÃÊ °É¸®´Â ½ºÅ³°ú ½ºÅÏÀÌ 1ÃÊ °É¸®´Â ½ºÅ³ÀÌ ÀÖÀ»¶§ ½ºÅÏ 500ÃÊ¿¡ ¸ÂÀ¸¸é 500ÃÊÈÄ¿¡ ½ºÅÏÀÌ Ç®¸®°Ô ¼³Á¤À» ÇØµÑ°ÅÀÓ
-    ±×·±µ¥ ÀÌ¶§ ½ºÅÏ 1ÃÊ Â¥¸® ½ºÅ³À» °É¸é ÀÌ ½ºÅ³¶ÇÇÑ 1ÃÊÈÄ¿¡ ½ºÅÏÀÌ Ç®¸®°Ô ¸¸µé°ÅÀÓ ÀÌ°Ô °ãÄ¡¸é? 499ÃÊ ½ºÅÏÀÌ ¾ÃÈ÷´Â°ÅÀÓ 
-    ¹öÇÁ , µğ¹öÇÁ ¶§ ÀÌ¹Ì ¹öÇÁ°¡ °É·ÁÀÖÀ»¶§ ³²Àº ¹öÇÁ½Ã°£ °ú »õ·Î ³ÖÀ» ¹öÇÁ Áö¼Ó ½Ã°£À» ºñ±³ÇØ¼­ Ã³¸®¸¦ ÇØÁà¾ßÇÔ 
+    /* @@@@@@ ï¿½Ë¾ÆµÖ¾ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½Ğ¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 500ï¿½ï¿½ ï¿½É¸ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½É¸ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 500ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 500ï¿½ï¿½ï¿½Ä¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ØµÑ°ï¿½ï¿½ï¿½
+    ï¿½×·ï¿½ï¿½ï¿½ ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ Â¥ï¿½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½É¸ï¿½ ï¿½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ï¿½Ä¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì°ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½? 499ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ , ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½É·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
      */
     [HideInInspector] public bool CanSpeedBuff; 
     [HideInInspector] public bool CanLowSteam;
     [HideInInspector] public bool CanAtkBuff;
-    [HideInInspector] public int MaxSkillStack; //Àç´É¹ßÇöÀ¸·Î ½ºÅ³ ½ºÅÃÀ» ´Ã·ÈÀ»¶§ »ç¿ë¿ë
+    [HideInInspector] public int MaxSkillStack; //ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     [HideInInspector] public int CurSkillStack;
     [HideInInspector] public int MaxRollStack;
     [HideInInspector] public int CurRollStack;
-    public int evasionPersent; //È¸ÇÇ È®·ü Áõ°­
-    public float DamegeTemp;// µ¥¹ÌÁö ÀúÀå¿ë
+    public int evasionPersent; //È¸ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public float DamegeTemp;// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
     private float curHP;
@@ -140,7 +141,7 @@ public class PlayerStatControl : MonoBehaviour
 
     [SerializeField] private float curAmmo;
     //[HideInInspector]
-    public float CurAmmo //ÇöÀç ÀÜÅº
+    public float CurAmmo //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Åº
     {
         get
         {
@@ -154,11 +155,11 @@ public class PlayerStatControl : MonoBehaviour
             OnChangeAmmorEvent?.Invoke();
         }
     }
-    [HideInInspector] public bool CanFire;                                //¹ß»ç   °¡´ÉÇÑÁö
-    [HideInInspector] public bool CanReload;                              //ÀåÀü   °¡´ÉÇÑÁö
-    [HideInInspector] public bool CanSkill;                               //½ºÅ³   °¡´ÉÇÑÁö
-    [HideInInspector] public bool CanRoll;                                //±¸¸£±â °¡´ÉÇÑÁö
-    public bool Invincibility;                          //¹«Àû Ã³¸® ÇÇ°İ½Ã ±¸º°
+    [HideInInspector] public bool CanFire;                                //ï¿½ß»ï¿½   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [HideInInspector] public bool CanReload;                              //ï¿½ï¿½ï¿½ï¿½   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [HideInInspector] public bool CanSkill;                               //ï¿½ï¿½Å³   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [HideInInspector] public bool CanRoll;                                //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public bool Invincibility;                          //ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ç°İ½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public bool SkillRollInvincibility;
 
     public bool useSkill;
@@ -166,14 +167,14 @@ public class PlayerStatControl : MonoBehaviour
     //public bool ImGhost;
 
 
-    [Header("½Çµå")]
-    public bool IsInShield; //Áß¿ä@@ ½Çµå°³³ä ´Ù ¸®¸ŞÀÌÅ© °¡´É¼º ³ôÀ½
-    public float InShieldHP; //½ÇµåÃ³¸®°ª ½Çµå°³³ä Á¤¸® ÇÊ¿ä
-    //int viewID; Æ÷Åæºä Ã³¸® Áö¿ï¿¹Á¤
-    //[HideInInspector] public bool IsChargeAttack; Â÷Áö¾îÅÃ Àç´É Ã³¸®
-    //[HideInInspector] public bool CanReflect; ¹İ»ç Àç´É Ã³¸®
+    [Header("ï¿½Çµï¿½")]
+    public bool IsInShield; //ï¿½ß¿ï¿½@@ ï¿½Çµå°³ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public float InShieldHP; //ï¿½Çµï¿½Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Çµå°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
+    //int viewID; ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿¹ï¿½ï¿½
+    //[HideInInspector] public bool IsChargeAttack; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
+    //[HideInInspector] public bool CanReflect; ï¿½İ»ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
 
-    //public float ReflectCoeff; ¹İ»ç Ã³¸® °ª
+    //public float ReflectCoeff; ï¿½İ»ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½
 
     [HideInInspector] public string[] PlayerStatNameArray;
     [HideInInspector] public Stats[] PlayerStatArray;
@@ -243,25 +244,25 @@ public class PlayerStatControl : MonoBehaviour
         //reloadStartClip = playerStats.reloadClip[0];
         //reloadFinishClip = playerStats.reloadClip[1];
 
-        //¾Æ·¡°Å ¾ø¾Öµµ µÉ°Å °°Àºµ¥ 
+        //ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Öµï¿½ ï¿½É°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
         PlayerStatArray = new Stats[11];
         PlayerStatNameArray = new string[11]
         {
-            "Ã¼·Â",
-            "°ø°İ·Â",
-            "ÀÌµ¿¼Óµµ",
-            "°ø°İ¼Óµµ",
-            "ÀåÀü ÄğÅ¸ÀÓ",
-            "½ºÅ³ ÄğÅ¸ÀÓ",
-            "´ë½¬ ÄğÅ¸ÀÓ",
-            "ÅºÆÛÁü",
-            "»ç°Å¸®",
-            "Å©¸®Æ¼ÄÃ",
-            "ÀåÅº¼ö",
+            "Ã¼ï¿½ï¿½",
+            "ï¿½ï¿½ï¿½İ·ï¿½",
+            "ï¿½Ìµï¿½ï¿½Óµï¿½",
+            "ï¿½ï¿½ï¿½İ¼Óµï¿½",
+            "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½",
+            "ï¿½ï¿½Å³ ï¿½ï¿½Å¸ï¿½ï¿½",
+            "ï¿½ë½¬ ï¿½ï¿½Å¸ï¿½ï¿½",
+            "Åºï¿½ï¿½ï¿½ï¿½",
+            "ï¿½ï¿½Å¸ï¿½",
+            "Å©ï¿½ï¿½Æ¼ï¿½ï¿½",
+            "ï¿½ï¿½Åºï¿½ï¿½",
         };
     }
 
-    private void stageBuffReset() //¹öÇÁÁß ´ÙÀ½ ½ºÅ×ÀÌÁö·Î ³Ñ¾î°¥¶§ ¿Ã¶ó°£ ½ºÅÈ Ã³¸®
+    private void stageBuffReset() //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾î°¥ï¿½ï¿½ ï¿½Ã¶ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
     {
         if (!CanSpeedBuff)
         {
@@ -283,7 +284,7 @@ public class PlayerStatControl : MonoBehaviour
 
     private void Start()
     {
-        //Ã¼·Â º¯È­½Ã Ã¼·Â µ¿±âÈ­ Ã³¸®ÀÎµ¥ ¸ÖÆ¼ ±âÁØÀÌ¶ó¼­ ¾ø¾îµµ µÉ°Å °°Àºµ¥ ÀÏ´Ü ³ªµÒ
+        //Ã¼ï¿½ï¿½ ï¿½ï¿½È­ï¿½ï¿½ Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­ Ã³ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½îµµ ï¿½É°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½
         //if (MainGameManager.Instance != null)
         //{
         //    MainGameManager.Instance.OnGameStartedEvent += RefillCoin;
@@ -310,27 +311,27 @@ public class PlayerStatControl : MonoBehaviour
     {
         /*
         //GameManager.Instance.OnStageStartEvent += RefillCoin;
-        GameManager.Instance.OnStageStartEvent += startHp;  //½ºÅ×ÀÌÁö ½ÃÀÛ½Ã Ç®ÇÇÃ³¸® ¿´´ø°Å °°Àºµ¥ Áö¿ì´Â°Å °í·Á 
+        GameManager.Instance.OnStageStartEvent += startHp;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û½ï¿½ Ç®ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ 
         //GameManager.Instance.OnBossStageStartEvent += RefillCoin;
         GameManager.Instance.OnBossStageStartEvent += startHp;
         GameManager.Instance.OnStageStartEvent += PunRpcStageBuffReset;
         GameManager.Instance.OnBossStageStartEvent += PunRpcStageBuffReset;
-        //viewID = photonView.ViewID; Æ÷Åæ ¸ÖÆ¼Ã³¸®¿ë ºä¾ÆÀÌµğ Ã¼Å©
+        //viewID = photonView.ViewID; ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¼Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìµï¿½ Ã¼Å©
         */
     }
-    public override string ToString() //±×¾Æ ±× ±× ÀÌ°Ô ½ºÆ®¸µ ex ½ºÅä¸® Ã³¸® ÇÒ¶§ define? Ã³¸® ÇØ¼­ ÇÏ´Â°Ô Á» ´õ È¿À²ÀûÀÎµ¥ ±×°Å Ã³¸®¿ë °°À½
+    public override string ToString() //ï¿½×¾ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì°ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ex ï¿½ï¿½ï¿½ä¸® Ã³ï¿½ï¿½ ï¿½Ò¶ï¿½ define? Ã³ï¿½ï¿½ ï¿½Ø¼ï¿½ ï¿½Ï´Â°ï¿½ ï¿½ï¿½ ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ï¿½Îµï¿½ ï¿½×°ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     {
         return curHP.ToString() + "/" + HP.total.ToString();
     }
 
-    public void CharacterChange(PlayerSO playerData) //Ä³¸¯ÅÍ °í¸£´Â°Å Ã³¸® °æ¿ì¿¡ µû¶ó ¾È ¾µ¼öµµ ÀÖÀ½
+    public void CharacterChange(PlayerSO playerData) //Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ì¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     {
         playerStats = playerData;
         Awake();
         Debug.Log("[PlayerStatHandler]" + this.ToString());
         Debug.Log("[PlayerStatHandler] " + "CharacterChange Done");
     }
-    //public void GiveDamege(float damage) // punÇÔ¼ö¿ë Á÷Á¢°ø°İ °³³äÀÌ¿´´Âµ¥ ¾È¾µ °¡´É¼º ³ôÀ½
+    //public void GiveDamege(float damage) // punï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¿ï¿½ï¿½Âµï¿½ ï¿½È¾ï¿½ ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½
     //{
     //    Damage(damage);
     //}
@@ -361,12 +362,12 @@ public class PlayerStatControl : MonoBehaviour
     {
         //CurHP -= damage;
 
-        DamegeTemp = damage; //µ¥¹ÌÁö °ª ÀúÀå
-        GetDamege?.Invoke(DamegeTemp);  //¹ŞÀº µ¥¹ÌÁö ÀúÀå ¿¬µ¿µÈ È¿°ú¿¡ µû¶ó µ¥¹ÌÁö°¡ ´Ş¶óÁú ¼ö ÀÖÀ½
-        int a = UnityEngine.Random.Range(0, 100); // È¸ÇÇ°ª 
-        if (evasionPersent < a) // È¸ÇÇ ½ÇÆĞ½Ã µ¥¹ÌÁö Ã³¸®
+        DamegeTemp = damage; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        GetDamege?.Invoke(DamegeTemp);  //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ş¶ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        int a = UnityEngine.Random.Range(0, 100); // È¸ï¿½Ç°ï¿½ 
+        if (evasionPersent < a) // È¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ğ½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
         {
-            //TODO ¿©±â¼­ IF¹® ¿­°í ½Çµå Ã³¸®
+            //TODO ï¿½ï¿½ï¿½â¼­ IFï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Çµï¿½ Ã³ï¿½ï¿½
             if (IsInShield) 
             {
                 if (InShieldHP > 0) 
@@ -383,27 +384,27 @@ public class PlayerStatControl : MonoBehaviour
             DamegeTemp = DamegeTemp * defense;
 
             HitEvent?.Invoke();
-            HitEvent2?.Invoke(DamegeTemp);//ÀÌ°Ô °ªÀÌ ÇÊ¿äÇÑ°æ¿ì¿Í ÇÊ¿ä ¾ø´Â°æ¿ì°¡ ÀÖ´Âµ¥ ÇÑ°³·Î ÇÒ¼ö°¡ ÀÖ´ÂÁö ¸ğ¸£°ÚÀ½ ÀÏ´Ü ÀÌ·¸°ÔÇÔ
-                                          // ¾ÆÁ÷µµ °¡Áö°í ÀÖ´Â ÀÇ¹®ÀÓ
+            HitEvent2?.Invoke(DamegeTemp);//ï¿½Ì°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Ñ°ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ì°¡ ï¿½Ö´Âµï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ ï¿½Ò¼ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ğ¸£°ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½Ì·ï¿½ï¿½ï¿½ï¿½ï¿½
+                                          // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ç¹ï¿½ï¿½ï¿½
 
-            if (CurHP - DamegeTemp <= 0) // µ¥¹ÌÁö ¹Ş¾ÒÀ»¶§ Á×À»°É·Î ¿¹»óµÉ¶§ Ã³¸®
+            if (CurHP - DamegeTemp <= 0) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ş¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½É·ï¿½ ï¿½ï¿½ï¿½ï¿½É¶ï¿½ Ã³ï¿½ï¿½
             {
                 CurHP -= DamegeTemp;
                 isDie = true;
 
-                //TODO ÇöÀç Á×¾úÀ»´ë ÀÌº¥Æ® °É¸°°Ô ¾øÀ½ ¸ğ¼Ç º¯È­Ã³¸® ¹× NÃÊÈÄ °ÔÀÓ ¿À¹ö Ãß°¡
+                //TODO ï¿½ï¿½ï¿½ï¿½ ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½É¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È­Ã³ï¿½ï¿½ ï¿½ï¿½ Nï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
                 OnDieEvent?.Invoke();
                 
 
-                if (GameManager.Instance.Life > 0) // ¸ñ¼û ºÎÈ° Ã³¸®
+                if (GameManager.Instance.Life > 0) // ï¿½ï¿½ï¿½ ï¿½ï¿½È° Ã³ï¿½ï¿½
                 {
-                    // TODO ¾Æ·¡²¬ ÇÔ¼ö·Î ¸¸µé°í Á×¾úÀ»¶§ NÃÊÈÄ ºÎÈ° »óÅÂ·Î Ã³¸® 
+                    // TODO ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ Nï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È° ï¿½ï¿½ï¿½Â·ï¿½ Ã³ï¿½ï¿½ 
                     GameManager.Instance.Life -= 1;
                     isDie = false;
                     Regen(HP.total);
 
-                //Á×¾úÀ»¶§ °ÔÀÓ¸Å´ÏÀú Ãø¿¡¼± °ÔÀÓÀÌ ¾È³¡³ª´Â »óÅÂ¿Í Æ¯Á¤À§Ä¡·Î ºÎÈ° Ã³¸®¸¦ ÇØ¾ßÇÑ´Ù°í »ı°¢ÇÔ
-                // °ÔÀÓ¸Å´ÏÀú »ó´Ü¿¡ ±× ÇöÀç ¸Ê Á¤º¸°¡ ÇÊ¿ä ÇÏ´Ù°í Çß´Âµ¥ ºÎÈ° À§Ä¡µµ ±×·¸°Ô ÇØ¾ß ÇÒ°Å °°À½
+                //ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ó¸Å´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½È³ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½È° Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Ñ´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                // ï¿½ï¿½ï¿½Ó¸Å´ï¿½ï¿½ï¿½ ï¿½ï¿½Ü¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½Ï´Ù°ï¿½ ï¿½ß´Âµï¿½ ï¿½ï¿½È° ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ ï¿½Ò°ï¿½ ï¿½ï¿½ï¿½ï¿½
                 //GameManager.Instance?.PlayerDie();
                     return;
                 }
@@ -416,44 +417,44 @@ public class PlayerStatControl : MonoBehaviour
         }
         else 
         {
-            //È¸ÇÇ½Ã Æ¯¼ö È¿°ú Ã³¸® ¼Ò¸®¶û ½Ã°¢Àû È¿°ú Ãß°¡ ÇØ¾ßÇÒµí
+            //È¸ï¿½Ç½ï¿½ Æ¯ï¿½ï¿½ È¿ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ò¸ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Ø¾ï¿½ï¿½Òµï¿½
         }
 
     }
 
-    public void HPadd(float addhp) // Èú 
+    public void HPadd(float addhp) // ï¿½ï¿½ 
     {
         CurHP += addhp;
     }
 
-    public void Regen(float HP) // ºÎÈ°ÀÎµ¥
+    public void Regen(float HP) // ï¿½ï¿½È°ï¿½Îµï¿½
     {
         HPadd(HP);
-        OnRegenEvent?.Invoke(); //ºÎÈ° ÀÌº¥Æ® EX ºÎÈ°½Ã °ø°İ·Â Áõ°¡
-        OnRegenCalculateEvent?.Invoke(RegenHP);// ºÎÈ°½Ã Ç® Ã¼·ÂÀÌ ¾Æ´Ñ´ë½Å ¸ñ¼û¿©·¯°³ Áõ°­¿ë
+        OnRegenEvent?.Invoke(); //ï¿½ï¿½È° ï¿½Ìºï¿½Æ® EX ï¿½ï¿½È°ï¿½ï¿½ ï¿½ï¿½ï¿½İ·ï¿½ ï¿½ï¿½ï¿½ï¿½
+        OnRegenCalculateEvent?.Invoke(RegenHP);// ï¿½ï¿½È°ï¿½ï¿½ Ç® Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ñ´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
-            //Á×¾úÀ»¶§ Á¶ÀÛ ´Ù ²¨¹ö¸®±â ¼¼ÆÃ ÇØ¾ßÇÔ ±×·±µ¥ ºÎÈ° ÁöÁ¡¿¡¼­ ºÎÈ° ¸»°í À¯·É‰ç´Ù°¡ ºÎÈ° ÇÏ´Â°Íµµ °í·ÁÁß ÀÌ°Íµµ ÁÁÀ»°Å °°À½
+            //ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½È° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É‰ï¿½Ù°ï¿½ ï¿½ï¿½È° ï¿½Ï´Â°Íµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì°Íµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             PlayerInputController tempInputControl = this.gameObject.GetComponent<PlayerInputController>();
             tempInputControl.ResetSetting();
 
         isDie = false;
-        _DebuffControl.Init(PlayerDebuffControl.buffName.TwoMoon, 5f); //¹«Àû ¹öÇÁ5ÃÊ°°Àºµ¥ ¹öÇÁµµ ´Ù½Ã °¥¾Æ¾ş¾î¾ßµÊ
+        _DebuffControl.Init(PlayerDebuffControl.buffName.TwoMoon, 5f); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½5ï¿½Ê°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½Æ¾ï¿½ï¿½ï¿½ßµï¿½
     }
-    public void MoveStartCall() //¿òÁ÷ÀÓ°¨ÁöÀÌº¥Æ®
+    public void MoveStartCall() //ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½Ìºï¿½Æ®
     {
         MoveStartEvent?.Invoke();
     }
-    public void MoveEndCall() // ¿òÁ÷ÀÓ °¨ÁöÀÌº¥Æ®
+    public void MoveEndCall() // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½Æ®
     {
         MoveEndEvent?.Invoke();
     }
 
-    public void EnemyHitCall() // Àû Å¸°İ ÀÌº¥Æ®
+    public void EnemyHitCall() // ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Ìºï¿½Æ®
     {
         EnemyHitEvent?.Invoke(); 
     }
-    public void KillEvent() // Å³ ÀÌº¥Æ®
+    public void KillEvent() // Å³ ï¿½Ìºï¿½Æ®
     {
         //kill++;
         KillCatchEvent?.Invoke();
@@ -466,12 +467,12 @@ public class PlayerStatControl : MonoBehaviour
         }
         else
         {
-            //Debug.Log($"A206 ¹ß¾Ç ½ÇÇà : {calHP}");
+            //Debug.Log($"A206 ï¿½ß¾ï¿½ ï¿½ï¿½ï¿½ï¿½ : {calHP}");
             HPadd((calHP - HP.total));
         }
     }
 
-    public void CallReflectEvent(float damage, int targetID) // ¹İ»ç Ã¼Å©ÀÎµ¥ ³­ ¹İ»ç¿¡ È¸ÀÇÀûÀÓ
+    public void CallReflectEvent(float damage, int targetID) // ï¿½İ»ï¿½ Ã¼Å©ï¿½Îµï¿½ ï¿½ï¿½ ï¿½İ»ç¿¡ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
         //if (CanReflect)
         //{
@@ -484,7 +485,7 @@ public class PlayerStatControl : MonoBehaviour
         StartCoroutine(Knockback(direction, distance));
     }
 
-    //º¸½º ÆĞÅÏ¿ë ³Ë¹é Ãß°¡ÇÔ - ¿ì¹Î±Ô
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ë¹ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ - ï¿½ï¿½Î±ï¿½
     public IEnumerator Knockback(Vector3 direction, float distance)
     {
         Vector3 startPosition = transform.position;
@@ -496,13 +497,13 @@ public class PlayerStatControl : MonoBehaviour
         {
             transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / 0.1f);
             elapsedTime += Time.deltaTime;
-            yield return null; // 1ÇÁ·¹ÀÓ ´ë±â
+            yield return null; // 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         }
 
-        // ÃÖÁ¾ À§Ä¡¿¡ °íÁ¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         transform.position = targetPosition;
     }
-    public void SetStatusArray() // ½ºÅÈ ¹è¿­È­
+    public void SetStatusArray() // ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­È­
     {
         PlayerStatArray = new Stats[11]
         {

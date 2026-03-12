@@ -1,7 +1,7 @@
 /*
 ================================================================
   Creature-Tower 게임 기획 분석 메모
-  (GitHub Copilot이 코드 분석 후 정리한 내용 - 수정/보완 필요)
+  최종 업데이트: 2026-03-12
 ================================================================
 
 ■ 장르 및 기본 구조
@@ -109,6 +109,14 @@
 
   [총알 관리]
     오브젝트 풀링 방식 (poolDictionary)
+    - WeaponSystem.pools : Inspector에서 tag / prefab / count 설정
+    - poolParent         : 씬의 BulletPool 오브젝트 할당 → 풀링 총알이 자식으로 관리됨
+    - 총알 SortingOrder  : 9 (레이어 규칙 준수)
+    - 각 캐릭터 전용 총알 프리팹: BulletTV / BulletCharlie / BulletKimKilWhan
+
+    ※ 주의: Charlie / KimKilWhan 프리팹은 루트가 비활성(m_IsActive:0)이므로
+      Instantiate 직후 Awake()가 자동 실행되지 않음.
+      → StartObjectPOOL() 전에 반드시 player.SetActive(true) 호출 필요
 
 ----------------------------------------------------------------
 ■ 증강(Augment) 시스템 - 핵심 로그라이트 요소
@@ -118,12 +126,16 @@
 
   [코드 체계]
     A9xx  : 스탯 증강 (티어별 공/체/이속/공속/정밀도/쿨감/크리/장탄)
-    A1xx  : 공용 1티어 특수 증강
-    A2xx  : 공용 2티어 특수 증강
-    A3xx  : 공용 3티어 특수 증강
-    A1xxx : TV 전용 증강      (Sniper 역할 계승)
-    A2xxx : Charlie 전용 증강 (Soldier/따발총 역할 계승)
-    A3xxx : KimKilWhan 전용 증강 (Shotgun 역할 계승)
+    A1xx  : 공용 1티어 특수 증강  (100~199)
+    A2xx  : 공용 2티어 특수 증강  (200~299)
+    A3xx  : 공용 3티어 특수 증강  (300~399)
+    A1xxx : TV 전용 증강      (1000~1999, CharacterClass=0)
+    A2xxx : Charlie 전용 증강 (2000~2999, CharacterClass=1)
+    A3xxx : KimKilWhan 전용 증강 (3000~3999, CharacterClass=2)
+
+    ※ 직업 전용 증강(code≥1000) 은 AugmentManager.AugmentCall()에서
+      requiredClass = (code/1000)-1 로 계산 후 현재 CharacterClass와 비교,
+      불일치 시 차단 (Debug.LogWarning 후 return)
 
   [호출 방식]
     AugmentManager.AugmentCall(code)
@@ -174,7 +186,48 @@
   13~15: 몬스터 2 (플레이어보다 앞에 그려지는 적)
 
 ----------------------------------------------------------------
+■ 테스트씬 시스템 (MapMakeSetting)
+
+  TestGameManager : 씬 전용 게임매니저
+    - 캐릭터 선택 UI → SelectTV/SelectCharlie/SelectKimKilWhan 버튼
+    - StartTest(prefab) : 소환 → SetActive(true) → BulletPool 생성 → StartObjectPOOL()
+
+  TestAugmentUI   : 증강 디버그 목록 UI
+    - "증강 목록" 버튼(좌상단) → 토글 패널
+    - 섹션 분류 : ★ 직업 티어1/2/3, ■ 공용 티어1/2/3
+    - 행 클릭 → AugmentManager.AugmentCall(code)
+
+  TestAugmentManager : Galmuri9 SDF 폰트 관리 (한글 지원)
+    - TestAugmentUIRoot에 부착, Inspector에서 fontAsset 할당
+
+----------------------------------------------------------------
+■ UI / 렌더링 규칙
+
+  ScrollView Viewport : RectMask2D 사용 권장
+    - Mask + Image(Color.clear) 조합은 스텐실 실패로 전체 클리핑 버그 발생
+    - RectMask2D는 Image 없이 RectTransform 경계로 클리핑 (안정적)
+
+  비활성 상태에서 레이아웃 생성 시 주의
+    - ContentSizeFitter / VerticalLayoutGroup은 비활성 GameObject에서 계산 안 됨
+    - 패널 활성화 후 Canvas.ForceUpdateCanvases() + LayoutRebuilder.ForceRebuildLayoutImmediate() 필요
+
+  SpriteRenderer.color 주의
+    - Color 채널 범위는 0~1 (float)
+    - new Vector4(255,255,255,255) 은 255배 포화 → 흰색으로 날아감
+    - 올바른 사용: Color.white (=new Color(1,1,1,1)), 투명: new Color(1,1,1,0)
+
+----------------------------------------------------------------
 ■ 현재 개발 상황 / TO-DO 메모
+
+  [수정 완료]
+  - PlayerTVSkill.cs  : CompulsoryRollEnd() 무한재귀 수정
+  - Bullet.cs         : CancelInvoke, time=0f, Invoke→직접호출
+  - GameManager.cs    : Init() 실행순서, StageLevelSet null 가드
+  - WeaponSystem.cs   : StartObjectPOOL null 안전처리, SortingOrder=9
+  - PlayerAnimatorController.cs : 구르기 후 총 흰색 버그 수정 (Vector4→Color)
+  - AugmentManager.cs : 직업 불일치 증강 차단 로직 추가
+  - TestGameManager.cs: 비활성 프리팹 SetActive(true) 처리, BulletPool 부모 생성
+  - MapMakeSetting 씬  : Viewport Mask→RectMask2D 교체
 
   [미구현 / 주석 처리된 기능]
   - Gold(돈) 시스템 → 상점 연동 미구현
@@ -189,11 +242,13 @@
   - Stage.ResultSummon() : ResultPickPoint(보상 아이템) 연결 로직 TODO 상태
 
   [구조적 이슈]
-  - GameManager 와 MainGameManager 두 매니저 병용 중 (역할 정리 필요)
+  - GameManager 와 MainGameManager 두 매니저 병용 중 (MainGameManager는 참고/이관용)
   - 소환형 증강들 (현재 소환 개념 수정 예정, 주석 "소환형" 으로 표시됨)
   - 목숨형 증강 개념 미정 (주석 "목숨형" 으로 표시됨)
   - A117 (777 증강) : atkPercent 스탯 비활성화 상태로 미완성
   - A126 (반사타입) : 주석 처리됨
+  - Charlie/KimKilWhan 프리팹 루트 비활성 상태 → 의도인지 확인 후 정리 필요
+  - Resources.Load(CSV) → 나중에 Addressables 교체 검토 (현재 보류)
 
 ================================================================
 */

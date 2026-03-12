@@ -16,7 +16,7 @@ public class Stage : MonoBehaviour
 
     [Header("Choice Result")]
     public RandomHealPoint randomHealPoint;
-    public GameObject ResultPickPoint;
+    public ResultDNA resultDNA;
 
     [Header("Spawn Point")]
     public GameObject spawnPointStairs;
@@ -32,21 +32,21 @@ public class Stage : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
-        //ºê¼Ò¼³Á¤
+        //ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½
         BossBase = bossOBJ.GetComponent<BossBase>();
         bossOBJ.transform.position = BossSpawnPoint.position;
 
 
         bossSpawnSprite.color = new Color(0, 0, 0, 0);
-        //¾Æ·¡°Å º¸½º¾×Æ¼ºê ²¨µÎ°í Áö¿ì±â
+        //ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½ï¿½Î°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
         bossOBJ.SetActive(false);
 
-        //º¸»ó¼³Á¤
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         ResultSummon();
 
         firstIn = true;
 
-        //¿ÀºêÁ§Æ® ²¨µÒÀ¸·Î ½á ´ë±â
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
         ObjActiveFalse();
 
 
@@ -56,16 +56,16 @@ public class Stage : MonoBehaviour
         ObjActiveTrue();
         botDoor.gameObject.SetActive(false);
         GameManager.Instance.bossCount = BossBase.bossCount;
-        //°ÔÀÓ¸Å´ÏÀú ·¹µð½ºÅ×ÀÌÁö ¾Æ·¡¿¡ Æ÷Áö¼ÇÀ» ¿Å±æ°Í.
+        //ï¿½ï¿½ï¿½Ó¸Å´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å±ï¿½ï¿½.
     }
-    //public void NextGo(GameObject player)  ½ºÀ¾ ¾îÂ¼´Ùº¸´Ï ³Ø½ºÆ®½ºÅ×ÀÌÁö½ºÅ×¾î¿¡¼­ °ÔÀÓ¸Å´ÏÀú È£ÃâÇØ¼­ ½ÇÇàÇÔ
+    //public void NextGo(GameObject player)  ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Â¼ï¿½Ùºï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¾î¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½Ó¸Å´ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     //{
     //    player.transform.position = GameManager.Instance.StageTree[roomNumber + 1].PlayerSpawnPoint.position;
     //}
 
     public void InCheckClear()
     {
-        if (!firstIn) 
+        if (firstIn) 
         {
             SummonBoss();
             CloseBotDoor();
@@ -82,8 +82,8 @@ public class Stage : MonoBehaviour
     public void ResultSummon() 
     {
         randomHealPoint.MakePotion();
-        //¸®ÀýÆ® º¸»óÃ³¸®
-        //ResultPickPoint. todo
+        if (resultDNA != null)
+            resultDNA.Init();
     }
     public void ObjActiveTrue() 
     {

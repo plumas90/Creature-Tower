@@ -63,7 +63,7 @@ public class PlayerAnimatorController : MonoBehaviour
         {
             _animation.SetFloat("IsLookBack", 0);
             WSO(rotY);
-            //pv.RPC("WSO", RpcTarget.AllBuffered, rotY); µ¿±âÈ­ Ã³¸®
+            //pv.RPC("WSO", RpcTarget.AllBuffered, rotY); ï¿½ï¿½ï¿½ï¿½È­ Ã³ï¿½ï¿½
         }
         else
         {
@@ -73,7 +73,7 @@ public class PlayerAnimatorController : MonoBehaviour
 
         }
     }
-    void WSO(float rotY)//WeaponSortingOrder ±âÁ¸ ÇÃ·¹ÀÌ¾î ·¹ÀÌ¾î 5 Áï ÃÑÀ» À§·Î ÇâÇÑ´Ù¸é ÇÃ·¹ÀÌ¾î ·¹ÀÌ¾î°¡ À§¿¡ ÀÖ¾î¼­ ÃÑÀ» ÀÏºÎ °¡¸² ¾Æ·¡ÂÊÀº ´Ùº¸ÀÓ Ã³¸®
+    void WSO(float rotY)//WeaponSortingOrder ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½ 5 ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ñ´Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾î¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½Ïºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ùºï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
     {
         if (Mathf.Abs(rotY) > 90f)
         {
@@ -107,20 +107,20 @@ public class PlayerAnimatorController : MonoBehaviour
     private void RollAnimator()
     {
         _animation.SetTrigger("IsRoll");
-        weaponRenderer.color = new Vector4(255, 255, 255, 0); // ±¸¸¦¶§ ¹«±â ¾Èº¸ÀÌ±â Ã³¸®
+        weaponRenderer.color = new Color(1f, 1f, 1f, 0f); // êµ¬ë¥´ê¸° ì¤‘ ë¬´ê¸° ìˆ¨ê¸°ê¸°
         Invoke("EndRollAnimator", 0.7f);
     }
 
     private void EndRollAnimator()
     {
-        weaponRenderer.color = new Vector4(255, 255, 255, 255);
+        weaponRenderer.color = Color.white; // êµ¬ë¥´ê¸° ì¢…ë£Œ í›„ ë¬´ê¸° ë³µì›
     }
     private void ColorTeen()
     {
 
     }
 
-    /* private void Die() Á×À½ Ã³¸®ÀÎµ¥ ½Ì±Û°×ÀÌ¶ó ¾îÄ³ µÉÁö ¸ğ¸£°ÙÀ½
+    /* private void Die() ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Îµï¿½ ï¿½Ì±Û°ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½Ä³ ï¿½ï¿½ï¿½ï¿½ ï¿½ğ¸£°ï¿½ï¿½ï¿½
     {
         _animation.SetTrigger("IsDie");
         int viewID = pv.ViewID;
@@ -137,7 +137,7 @@ public class PlayerAnimatorController : MonoBehaviour
 
     public void Regen()
     {
-        Debug.Log("ºÎÈ°");
+        Debug.Log("ï¿½ï¿½È°");
         _animation.SetTrigger("IsRegen");
         int viewID = pv.ViewID;
         pv.RPC("PunRegen", RpcTarget.OthersBuffered, viewID);

@@ -59,6 +59,22 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     }
     public void AugmentCall(int code)//slot에서 pick으로 호출해서 punppc로 모든컴퓨터에 뿌려줌
     {
+        // 직업 전용 증강(코드 1000 이상)은 캐릭터 타입이 일치해야만 적용
+        if (code >= 1000 && playerstatHandler != null)
+        {
+            // 코드 첫 자리로 필요 직업 판별: 1xxx=TV, 2xxx=Charlie, 3xxx=KimKilWhan
+            int requiredClass = (code / 1000) - 1;
+            int currentClass  = playerstatHandler.CharacterClass;
+            if (requiredClass != currentClass)
+            {
+                string[] classNames = { "TV", "Charlie", "KimKilWhan" };
+                string req = (requiredClass >= 0 && requiredClass < classNames.Length) ? classNames[requiredClass] : requiredClass.ToString();
+                string cur = (currentClass  >= 0 && currentClass  < classNames.Length) ? classNames[currentClass]  : currentClass.ToString();
+                Debug.LogWarning($"[AugmentManager] 직업 불일치로 증강 차단 | 증강코드={code} (필요:{req}) / 현재 캐릭터:{cur}");
+                return;
+            }
+        }
+
         string callName = "A" + code.ToString();
         //photonView.RPC(callName, RpcTarget.All, PlayerPvNumber);
         // 속도를 원한다면 if(itemCode=="Item001") AItem001(); 이런식으로 모든 애들을 처리하는게 더 빠른데 코드상 너무 비효율적 센드메시지로 보내는게
