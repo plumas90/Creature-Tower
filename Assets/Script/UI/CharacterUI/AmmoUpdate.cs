@@ -30,12 +30,62 @@ public class AmmoUpdate : UIBase
                 ammo = GetComponentInChildren<TMP_Text>(true);
         }
 
-        player = GameManager.Instance.playerOBJ.GetComponent<PlayerInputController>();
+        GameObject playerObj = ResolvePlayer();
+        if (playerObj == null)
+            return;
 
-        playerStat = player.playerStatHandler;
+        player = playerObj.GetComponent<PlayerInputController>();
+        playerStat = playerObj.GetComponent<PlayerStatControl>();
+        if (playerStat == null && player != null)
+            playerStat = player.playerStatHandler;
+
+        if (playerStat == null)
+            return;
 
         //subscribe event
+        playerStat.OnChangeAmmorEvent -= ChangeValue;
         playerStat.OnChangeAmmorEvent += ChangeValue;
+    }
+
+    private GameObject ResolvePlayer()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.playerOBJ != null)
+            return GameManager.Instance.playerOBJ;
+
+        PlayerStatControl stat = Object.FindObjectOfType<PlayerStatControl>();
+        return stat != null ? stat.gameObject : null;
+    }
+
+    private void BuildIfNeeded()
+    {
+        if (ammo != null)
+            return;
+
+        RectTransform root = GetComponent<RectTransform>();
+        if (root == null)
+            root = gameObject.AddComponent<RectTransform>();
+
+        if (root.sizeDelta.x <= 1f)
+            root.sizeDelta = new Vector2(180f, 36f);
+
+        if (GetComponent<TMP_Text>() != null)
+        {
+            ammo = GetComponent<TMP_Text>();
+            return;
+        }
+
+        GameObject txtObj = new GameObject("AmmoText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        txtObj.transform.SetParent(transform, false);
+        RectTransform txtRt = txtObj.GetComponent<RectTransform>();
+        txtRt.anchorMin = Vector2.zero;
+        txtRt.anchorMax = Vector2.one;
+        txtRt.offsetMin = Vector2.zero;
+        txtRt.offsetMax = Vector2.zero;
+
+        ammo = txtObj.GetComponent<TextMeshProUGUI>();
+        ammo.fontSize = 24f;
+        ammo.alignment = TextAlignmentOptions.Center;
+        ammo.color = Color.white;
     }
 
     private void ChangeValue()

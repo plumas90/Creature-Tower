@@ -21,12 +21,12 @@ public class UIPlayerSkill : UIBase
 
     void InitializeData()
     {
-        GameObject player;
+        GameObject player = ResolvePlayer();
+        if (player == null)
+            return;
 
-            player = GameManager.Instance.playerOBJ;
-
-        playerCool = GameManager.Instance.playerOBJ.GetComponent<CoolTimeController>();
-        playerStats = GameManager.Instance.playerOBJ.GetComponent<PlayerStatControl>();
+        playerCool = player.GetComponent<CoolTimeController>();
+        playerStats = player.GetComponent<PlayerStatControl>();
 
         if (skillIcon == null)
         {
@@ -51,9 +51,6 @@ public class UIPlayerSkill : UIBase
             }
         }
 
-        if (skillIcon != null && skillSprite != null)
-            skillIcon.sprite = skillSprite;
-
         if (skillGauge != null)
         {
             skillGauge.type = Image.Type.Filled;
@@ -69,6 +66,58 @@ public class UIPlayerSkill : UIBase
         //playerInput.OnSkillEvent += UpdateSkillIcon;
 
         //UpdateSkillIcon();
+    }
+
+    private GameObject ResolvePlayer()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.playerOBJ != null)
+            return GameManager.Instance.playerOBJ;
+
+        PlayerStatControl stat = Object.FindObjectOfType<PlayerStatControl>();
+        return stat != null ? stat.gameObject : null;
+    }
+
+    private void BuildIfNeeded()
+    {
+        if (skillIcon != null && skillGauge != null)
+            return;
+
+        RectTransform root = GetComponent<RectTransform>();
+        if (root == null)
+            root = gameObject.AddComponent<RectTransform>();
+
+        if (root.sizeDelta.x <= 1f)
+            root.sizeDelta = new Vector2(64f, 64f);
+
+        if (skillIcon == null)
+        {
+            GameObject iconObj = new GameObject("SkillIcon", typeof(RectTransform), typeof(Image));
+            iconObj.transform.SetParent(transform, false);
+            RectTransform iconRt = iconObj.GetComponent<RectTransform>();
+            iconRt.anchorMin = Vector2.zero;
+            iconRt.anchorMax = Vector2.one;
+            iconRt.offsetMin = Vector2.zero;
+            iconRt.offsetMax = Vector2.zero;
+
+            skillIcon = iconObj.GetComponent<Image>();
+            skillIcon.color = Color.white;
+            if (skillSprite != null)
+                skillIcon.sprite = skillSprite;
+        }
+
+        if (skillGauge == null && skillIcon != null)
+        {
+            GameObject gaugeObj = new GameObject("SkillGauge", typeof(RectTransform), typeof(Image));
+            gaugeObj.transform.SetParent(skillIcon.transform, false);
+            RectTransform gaugeRt = gaugeObj.GetComponent<RectTransform>();
+            gaugeRt.anchorMin = Vector2.zero;
+            gaugeRt.anchorMax = Vector2.one;
+            gaugeRt.offsetMin = Vector2.zero;
+            gaugeRt.offsetMax = Vector2.zero;
+
+            skillGauge = gaugeObj.GetComponent<Image>();
+            skillGauge.color = new Color(0f, 0f, 0f, 0.6f);
+        }
     }
 
     /*

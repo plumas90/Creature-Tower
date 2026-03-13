@@ -51,6 +51,10 @@ public class TestGameManager : MonoBehaviour
             : Vector3.zero;
         GameObject player = Instantiate(prefab, spawnPos, Quaternion.identity);
 
+        // 테스트 씬에서도 HUD/매니저가 현재 플레이어를 참조하도록 동기화
+        if (GameManager.Instance != null)
+            GameManager.Instance.playerOBJ = player;
+
         // 비활성 프리팹 (Charlie, KimKilWhan 등)은 Instantiate 후 Awake()가 실행되지 않으므로
         // SetActive(true)로 먼저 Awake()를 강제 실행 후 풀 초기화
         if (!player.activeSelf)
@@ -93,7 +97,75 @@ public class TestGameManager : MonoBehaviour
         }
 
         // 테스트룸도 메인 게임과 동일한 HUD 흐름을 사용한다.
-        if (GameManager.Instance != null && GameManager.Instance.playerUiManager != null)
-            GameManager.Instance.playerUiManager.SetupData();
+        // 씬 레퍼런스가 비어 있어도 런타임에서 PlayerUiManager를 찾아 연결한다.
+        PlayerUiManager uiManager = null;
+        if (GameManager.Instance != null)
+        {
+            uiManager = GameManager.Instance.playerUiManager;
+            if (uiManager == null)
+            {
+                uiManager = Object.FindObjectOfType<PlayerUiManager>(true);
+                if (uiManager != null)
+                    GameManager.Instance.playerUiManager = uiManager;
+            }
+        }
+        else
+        {
+            uiManager = Object.FindObjectOfType<PlayerUiManager>(true);
+        }
+
+        if (uiManager == null)
+        {
+            // 씬에 PlayerUiManager가 없으면 실제 PlayerHUD 프리팹 로드를 우선 시도한다.
+            Canvas canvas = Object.FindObjectOfType<Canvas>(true);
+            if (canvas == null)
+            {
+                GameObject canvasObj = new GameObject("Canvas", typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
+                canvas = canvasObj.GetComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            }
+
+            GameObject hudRoot = null;
+            GameObject hudPrefab = Resources.Load<GameObject>("Prefabs/PlayerHUD/PlayerHUD");
+            if (hudPrefab != null)
+            {
+                hudRoot = Instantiate(hudPrefab, canvas.transform);
+                hudRoot.name = "PlayerHUD";
+                RectTransform hudRt = hudRoot.GetComponent<RectTransform>();
+                if (hudRt != null)
+                {
+                    hudRt.anchorMin = Vector2.zero;
+                    hudRt.anchorMax = Vector2.one;
+                    hudRt.offsetMin = Vector2.zero;
+                    hudRt.offsetMax = Vector2.zero;
+                }
+
+                uiManager = hudRoot.GetComponent<PlayerUiManager>();
+                if (uiManager == null)
+                    uiManager = hudRoot.GetComponentInChildren<PlayerUiManager>(true);
+            }
+
+            // 프리팹 로드 실패 시에만 최소 런타임 HUD 루트로 폴백
+            if (uiManager == null)
+            {
+                hudRoot = new GameObject("PlayerHUD", typeof(RectTransform), typeof(PlayerUiManager));
+                hudRoot.transform.SetParent(canvas.transform, false);
+                RectTransform hudRt = hudRoot.GetComponent<RectTransform>();
+                hudRt.anchorMin = Vector2.zero;
+                hudRt.anchorMax = Vector2.one;
+                hudRt.offsetMin = Vector2.zero;
+                hudRt.offsetMax = Vector2.zero;
+                uiManager = hudRoot.GetComponent<PlayerUiManager>();
+                Debug.LogWarning("[TestGameManager] PlayerHUD 프리팹 로드 실패로 런타임 HUD를 생성했습니다. 경로: Resources/Prefabs/PlayerHUD/PlayerHUD");
+            }
+
+            if (GameManager.Instance != null)
+                GameManager.Instance.playerUiManager = uiManager;
+        }
+
+        if (uiManager != null)
+            uiManager.SetupData();
+        else
+            Debug.LogWarning("[TestGameManager] PlayerUiManager를 찾지 못해 HUD를 초기화하지 못했습니다.");
     }
 }

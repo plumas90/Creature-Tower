@@ -28,14 +28,22 @@ public class UIReloadHUD: UIBase
 
     public void InitializeData()
     {
-        player = GameManager.Instance.playerOBJ.gameObject;
+        player = ResolvePlayer();
+        if (player == null)
+            return;
+
         targetCamera = Camera.main;
 
         controller = player.GetComponent<CoolTimeController>();
         statHandler = player.GetComponent<PlayerStatControl>();
-        player.GetComponent<TopDownCharacterController>().OnReloadEvent += OpenReloadHUD;
-        player.GetComponent<TopDownCharacterController>().OnEndReloadEvent += Close;
-        BuildIfNeeded();
+        TopDownCharacterController tdc = player.GetComponent<TopDownCharacterController>();
+        if (tdc != null)
+        {
+            tdc.OnReloadEvent -= OpenReloadHUD;
+            tdc.OnReloadEvent += OpenReloadHUD;
+            tdc.OnEndReloadEvent -= Close;
+            tdc.OnEndReloadEvent += Close;
+        }
         startcheck = true;
     }
 
@@ -51,12 +59,12 @@ public class UIReloadHUD: UIBase
 
         float total = Mathf.Max(0.0001f, statHandler.ReloadCoolTime.total);
         float remain = Mathf.Clamp(controller.curReloadCool, 0f, total);
-        float progress = 1f - (remain / total);
+        float remainRatio = remain / total;
 
         if (reloadGauge != null)
         {
             RectTransform gaugeRt = reloadGauge.rectTransform;
-            float x = gaugeStartLocalPos.x + (gaugeTravelX * progress);
+            float x = gaugeStartLocalPos.x + (gaugeTravelX * remainRatio);
             gaugeRt.anchoredPosition = new Vector2(x, gaugeStartLocalPos.y);
         }
 
@@ -153,5 +161,14 @@ public class UIReloadHUD: UIBase
         reloadGauge.color = Color.white;
         if (reloadGaugeSprite != null)
             reloadGauge.sprite = reloadGaugeSprite;
+    }
+
+    private GameObject ResolvePlayer()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.playerOBJ != null)
+            return GameManager.Instance.playerOBJ;
+
+        PlayerStatControl stat = Object.FindObjectOfType<PlayerStatControl>();
+        return stat != null ? stat.gameObject : null;
     }
 }
