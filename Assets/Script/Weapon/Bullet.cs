@@ -5,7 +5,8 @@ using UnityEngine;
 public enum BulletTarget
 {
     Player,
-    Enemy
+    Enemy,
+    All// �̺κ� ��ų������ �Ѵ��ľ��ؼ� �� �ݿ����Ѿߵɵ� �ٸ��е����� ���ϱ�
 }
 
 public class Bullet : MonoBehaviour
@@ -52,14 +53,15 @@ public class Bullet : MonoBehaviour
         targets = new Dictionary<string, int>();
     }
     public void Init()
-    {
-        CancelInvoke(); // 풀 재사용 시 이전 Invoke("Destroy") 예약 취소
-        time = 0f;      // 재사용 시 수명 타이머 초기화
-        // BulletLifeTime은 BS()에서 이미 stat 값으로 세팅됨 - 여기서 추가 변경 없음
+    {        
+        time = 0f;
+        BulletLifeTime = UnityEngine.Random.Range(BulletLifeTime * 0.15f, BulletLifeTime * 0.2f);
+        //Invoke("Destroy", BulletLifeTime);
         _direction = transform.right;
+        //to del �Ʒ�
         layerMask = 1 << LayerMask.NameToLayer("Wall");
     }
-    public void MissileFire(int i)
+    public void MissileFire(int i) 
     {
         missile = GetComponentInChildren<HumanAttackintelligentmissile>();
         missile.init(i);
@@ -70,17 +72,16 @@ public class Bullet : MonoBehaviour
     {
         transform.Translate(Vector3.right * BulletSpeed * Time.deltaTime);
         time += Time.deltaTime;
-        if (time >= BulletLifeTime)
+        if (time>= BulletLifeTime) 
         {
-            //Debug.Log("�ð��Ǽ� �����");
             Destroy();
         }
-        if (locator)
+        if (locator) 
         {
-            ATK -= ATK * 3f * Time.deltaTime;
+            ATK -= ATK*3f * Time.deltaTime;
             Debug.Log($"���������� ���� {ATK} �ð� {time}");
         }
-        if (sniping)
+        if (sniping) 
         {
             ATK += ATK * 2f * Time.deltaTime;
             Debug.Log($"���������� ���� {ATK} �ð� {time}");
@@ -89,10 +90,22 @@ public class Bullet : MonoBehaviour
 
     public void Destroy()
     {
-        //Destroy(gameObject);
-        //Debug.Log("�����");
-        time = 0f;
         gameObject.SetActive(false);
+    }
+
+    private float GetAngle(Vector2 vec1, Vector2 vec2) 
+    {
+        float angle = (Mathf.Atan2(vec2.y, vec2.x) - Mathf.Atan2(vec1.y, vec1.x)) * Mathf.Rad2Deg;
+        return angle;
+    }
+    public float CalculateAngle(Vector3 from, Vector3 to)
+    {
+        return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;
+    }
+    public static float GetAngle2(Vector3 from, Vector3 to)
+    {
+        Vector3 v = to - from;
+        return Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
     }
 
 
@@ -100,36 +113,47 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)//TO DEL �� �κ��� ��������1201�� �����Ͽ� �ۼ��Ͽ��� �մϴ�
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall")) //벽이라면
+        if (collision == null)
+            return;
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall")) //���ຮ�̶��
         {
+
             if (canAngle)
             {
+
                 hit = Physics2D.Raycast(this.transform.position, _direction, BulletSpeed * BulletLifeTime, layerMask);
                 Debug.DrawRay(this.transform.position, _direction, UnityEngine.Color.red, 3f);
+
+                if (!hit)
+                {
+                    Destroy();
+                    return;
+                }
 
                 Vector3 reflectVector = Vector3.Reflect(_direction, hit.normal).normalized;
                 float angle = Mathf.Atan2(reflectVector.y, reflectVector.x) * Mathf.Rad2Deg;
 
+
                 Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angle));
                 this.transform.rotation = rotation;
                 _direction = reflectVector;
+                //Debug.DrawRay(this.transform.position, reflectVector, UnityEngine.Color.red, 3f);
             }
-            else
+            else 
             {
-                Destroy(); // Invoke 대신 즉시 호출 - 재사용 총알에 Invoke 잔류 방지
+                Destroy();
             }
             return;
         }
-        /*
         //���� ��ų�� �ƴ� ������ �Ѿ��̶�� ���Ͱ� �ƴ϶�� ����
         else if (targets.ContainsValue((int)BulletTarget.Player)
             && !targets.ContainsValue((int)BulletTarget.Enemy)
             && collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            Invoke("Destroy", 0.01f);
+            Destroy();
             return;
         }
-        */
         //���� ������ �÷��̾��� �Ѿ��̶�� ���϶�����
         else if (Penetrate)
         {
@@ -138,7 +162,7 @@ public class Bullet : MonoBehaviour
         //�÷��̾��� �Ѿ��� ���Ϳ��Ժε����� ����
         else if (targets.ContainsValue((int)BulletTarget.Enemy) && collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            Destroy(); // Invoke 대신 즉시 호출
+            Destroy();
             return;
         }
     }

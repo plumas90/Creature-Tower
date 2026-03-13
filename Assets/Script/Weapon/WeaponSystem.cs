@@ -107,6 +107,11 @@ public class WeaponSystem : MonoBehaviour
     {
         isDamage = true;
         bullet = Resources.Load<GameObject>("Prefabs/Player/Bullet");
+        if (bullet == null)
+        {
+            // Import mismatch fallback: some revisions keep Bullet under PlayerHUD.
+            bullet = Resources.Load<GameObject>("Prefabs/PlayerHUD/Bullet");
+        }
         //pv = GetComponent<PhotonView>(); ���� ����
         _controller = GetComponent<TopDownCharacterController>();
         //_viewID = pv.ViewID; ���� ����
@@ -233,14 +238,14 @@ public class WeaponSystem : MonoBehaviour
 
         _object.transform.localScale = new Vector2(size, size); //ũ�� ó��
         //���� ������/ �ֽ� ������ ó�� ��� - �⺻ ������ * ���� +- ü���� ������  == �⺻������*����(�Ѿ˻����� ó��) �Ѿ� ü�� ������(�Ѿ� �ǽð� ó��)
+        _bullet.locator = locator;
         if (locator)
         {
-            _bullet.locator = true;
             Atk += Atk * 1f;
         }
+        _bullet.sniping = sniping;
         if (sniping)
         {
-            _bullet.sniping = true;
             Atk -= Atk * 0.3f;
         }
         _bullet.ATK = Atk;

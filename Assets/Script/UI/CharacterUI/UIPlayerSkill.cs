@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class UIPlayerSkill : UIBase
 {
+    [SerializeField] private Sprite skillSprite;
     [SerializeField] private Image skillIcon;
     [SerializeField] private Image skillGauge;
     private PlayerStatControl playerStats;
@@ -26,6 +27,40 @@ public class UIPlayerSkill : UIBase
 
         playerCool = GameManager.Instance.playerOBJ.GetComponent<CoolTimeController>();
         playerStats = GameManager.Instance.playerOBJ.GetComponent<PlayerStatControl>();
+
+        if (skillIcon == null)
+        {
+            var t = transform.Find("SkillIcon");
+            if (t != null) skillIcon = t.GetComponent<Image>();
+
+            if (skillIcon == null)
+            {
+                var legacyIcon = transform.Find("Icon");
+                if (legacyIcon != null) skillIcon = legacyIcon.GetComponent<Image>();
+            }
+        }
+        if (skillGauge == null)
+        {
+            var t = transform.Find("SkillIcon/SkillGauge");
+            if (t != null) skillGauge = t.GetComponent<Image>();
+
+            if (skillGauge == null)
+            {
+                var legacyGauge = transform.Find("ForeGround");
+                if (legacyGauge != null) skillGauge = legacyGauge.GetComponent<Image>();
+            }
+        }
+
+        if (skillIcon != null && skillSprite != null)
+            skillIcon.sprite = skillSprite;
+
+        if (skillGauge != null)
+        {
+            skillGauge.type = Image.Type.Filled;
+            skillGauge.fillMethod = Image.FillMethod.Radial360;
+            skillGauge.fillOrigin = (int)Image.Origin360.Top;
+            skillGauge.fillClockwise = true;
+        }
 
         //PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(CustomProperyDefined.CLASS_PROPERTY, out object temp);
         //playerClass = (int)temp;
@@ -59,8 +94,12 @@ public class UIPlayerSkill : UIBase
 
     public void UpdateValue()
     {
-        float numerator = playerCool.curSkillCool;
-        float denominator = 1 / playerStats.SkillCoolTime.total;
-        skillGauge.fillAmount = numerator * denominator;
+        if (playerCool == null || playerStats == null) return;
+
+        float total = Mathf.Max(0.0001f, playerStats.SkillCoolTime.total);
+        float remain = Mathf.Clamp(playerCool.curSkillCool, 0f, total);
+
+        if (skillGauge != null)
+            skillGauge.fillAmount = remain / total;
     }
 }

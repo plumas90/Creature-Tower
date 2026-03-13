@@ -46,8 +46,9 @@ public class TopDownCharacterController : MonoBehaviour
                 !topDownMovement.isRoll
                 && playerStatHandler.CurAmmo > 0
                 && playerStatHandler.CanFire
-                && (playerStatHandler.CanReload)  // ÀÏ¹Ý°ø°Ý Á¶°ÇºÎ
-                    //|| (!playerStatHandler.CanReload && GetComponent<CoolTimeController>().isKeepCount)) // Â÷Áö¼¦ Á¶°ÇºÎ
+                && !playerStatHandler.IsExternalFireBlocked
+                && (playerStatHandler.CanReload)  // ï¿½Ï¹Ý°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Çºï¿½
+                    //|| (!playerStatHandler.CanReload && GetComponent<CoolTimeController>().isKeepCount)) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Çºï¿½
                 )
             {
                 OnAttackEvent?.Invoke();
@@ -55,7 +56,7 @@ public class TopDownCharacterController : MonoBehaviour
             }
             else
             {
-                //Debug.Log("°ø°Ý ÇÒ ¼ö ¾ø½À´Ï´Ù");
+                //Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
             }
         }
         else
@@ -64,6 +65,7 @@ public class TopDownCharacterController : MonoBehaviour
                 !topDownMovement.isRoll
                 && playerStatHandler.CurAmmo >= 0
                 && playerStatHandler.CanFire
+                && !playerStatHandler.IsExternalFireBlocked
                 && playerStatHandler.CanReload
                 )
                 //&& coolTimeController.bulletNum > 0
@@ -102,7 +104,7 @@ public class TopDownCharacterController : MonoBehaviour
     {
         if (playerStatHandler.CanSkill)
         {
-            Debug.Log("callSkillEvent ½ÇÇàÁß");
+            Debug.Log("CallSkillEvent triggered");
             OnSkillEvent?.Invoke();
         }
     }
@@ -127,14 +129,14 @@ public class TopDownCharacterController : MonoBehaviour
         {
             OnRollEvent?.Invoke();
             playerStatHandler.CurRollStack -= 1;
-            //Debug.Log($"±¸¸£±â ½ºÅÃ ±îÀÓ : {playerStatHandler.CurRollStack} ³²À½");
+            //Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : {playerStatHandler.CurRollStack} ï¿½ï¿½ï¿½ï¿½");
             playerStatHandler.CanRoll = false;
             playerStatHandler.Invincibility = true;
             Invoke("CallEndRollEvent", 0.8f);
         }
         else
         {
-            //Debug.Log("±¸¸£±â ÄðÅ¸ÀÓ ÀÔ´Ï´Ù");
+            //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½Ô´Ï´ï¿½");
         }
     }
     public void CompulsoryRoll() 
@@ -147,16 +149,16 @@ public class TopDownCharacterController : MonoBehaviour
     }
     public void CallEndRollEvent()
     {
-        //Debug.Log("±¸¸£±â ³¡ ÀÌº¥Æ®");
+        //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ìºï¿½Æ®");
         playerStatHandler.CanRoll = true;
         playerStatHandler.Invincibility = false;
         OnEndRollEvent?.Invoke();
     }
-    public void CallSiegeModeEvent() // Àç´É ½ÃÁî ¸ðµå Ã¼Å©
+    public void CallSiegeModeEvent() // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¼Å©
     {
         OnSiegeModeEvent?.Invoke();
     }
-    public void CallFlashEvent()// Àç´É Á¡¸ê Ã¼Å© 
+    public void CallFlashEvent()// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å© 
     {
 
         if (playerStatHandler.CanRoll)
@@ -169,7 +171,7 @@ public class TopDownCharacterController : MonoBehaviour
         }
         else
         {
-            Debug.Log("±¸¸£±â ÄðÅ¸ÀÓ ÀÔ´Ï´Ù");
+            Debug.Log("Flash is on cooldown");
         }
     }
 
@@ -177,11 +179,11 @@ public class TopDownCharacterController : MonoBehaviour
     {
         if (playerStatHandler.CanReload && playerStatHandler.CurAmmo != playerStatHandler.AmmoMax.total)
         {
-            Debug.Log("ÀçÀåÀü");
+            Debug.Log("Reload started");
             OnReloadEvent?.Invoke();
         }
     }
-    public void CallAugmentCheck() // ÅÇÅ° ´­·¯¼­ Áõ°­ ¸ñ·Ï Ã¼Å© 
+    public void CallAugmentCheck() // ï¿½ï¿½Å° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¼Å© 
     {
         OnAugmentcheck?.Invoke();
     }

@@ -16,11 +16,11 @@ public class CoolTimeController : MonoBehaviour
     public float curSkillCool = 0;
 
     public float stackedTime = 0;
-    //public bool isKeepCount; ¿¬¼Ó °ø°Ý Ã¼Å© - ²Ú ´©¸£±â 
-    //private bool isCharging; Â÷Â¡ ¸ð¾Æ ½î±â Ã¼Å©
-    //public int bulletNum; Â÷Â¡ Ä«¿îÆ®
+    //public bool isKeepCount; ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å© - ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    //private bool isCharging; ï¿½ï¿½Â¡ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¼Å©
+    //public int bulletNum; ï¿½ï¿½Â¡ Ä«ï¿½ï¿½Æ®
 
-    // Ãß°¡
+    // ï¿½ß°ï¿½
     //public event Action CallTimeCountEvent;
 
     private void Awake()
@@ -37,7 +37,7 @@ public class CoolTimeController : MonoBehaviour
     }
 
 
-    private void Update() // ÄðÅ¸ÀÓ ½Ã ½Ã°£ °¨¼Ò
+    private void Update() // ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
     {
         CountRollCoolTime();
         CountReloadCoolTime();
@@ -63,7 +63,7 @@ public class CoolTimeController : MonoBehaviour
     }
     public void EndRollCoolTime()
     {
-        //Debug.Log("±¸¸£±â ÄðÅ¸ÀÓ Á¾·á ÀÌº¥Æ®");
+        //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®");
         controller.playerStatHandler.CurRollStack += 1;
         controller.playerStatHandler.CanRoll = true;
         controller.playerStatHandler.UseRoll = true;
@@ -109,7 +109,7 @@ public class CoolTimeController : MonoBehaviour
         {
             curReloadCool -= Time.deltaTime;
         }
-        if (controller.playerStatHandler.CanReload == false /*&& curReloadCool <= 0 && !isKeepCount*/)
+        if (controller.playerStatHandler.CanReload == false && curReloadCool <= 0f /*&& !isKeepCount*/)
         {
             EndReloadCoolTime();
         }
@@ -185,29 +185,29 @@ public class CoolTimeController : MonoBehaviour
             stackedTime = 0;
             bulletNum = 0;
             controller.playerStatHandler.CanReload = false;
-            Debug.Log("½Ã°£ ¼¼±â ½ÃÀÛ");
+            Debug.Log("ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         }
         else
         {
             isKeepCount = false;
             controller.playerStatHandler.CanReload = true;
-            Debug.Log($"°ø°Ý À¯ÁöÇÑ ½Ã°£ : {stackedTime}");
-            Debug.Log($"½×ÀÎ ºÒ¸´ ¼ö : {bulletNum}");
-            Debug.Log($"³²Àº ÃÑ¾Ë ¼ö : {controller.playerStatHandler.CurAmmo}");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ : {stackedTime}");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½ ï¿½ï¿½ : {bulletNum}");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ ï¿½ï¿½ : {controller.playerStatHandler.CurAmmo}");
             //GetComponent<WeaponSystem>().ChargeCalculate(stackedTime);
-            // ¿©±â¼­ °ø°Ý ÀÌº¥Æ®¿¡ ÆÄ¶ó¹ÌÅÍ·Î½á? ¼ýÀÚ Á¦°øÇØ¾ßÇÔ.
+            // ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í·Î½ï¿½? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½.
         }
     }*/
 
     /*public IEnumerator CountBullets()
     {
         isCharging = true;
-        Debug.Log($"³²Àº ÀåÅº ¼ö : {controller.playerStatHandler.CurAmmo}");
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Åº ï¿½ï¿½ : {controller.playerStatHandler.CurAmmo}");
         if (controller.playerStatHandler.CurAmmo >= 1)
         {
             controller.playerStatHandler.CurAmmo--;
             bulletNum++;
-            Debug.Log($"ºÒ¸´ ½×´Â Áß {bulletNum}");
+            Debug.Log($"ï¿½Ò¸ï¿½ ï¿½×´ï¿½ ï¿½ï¿½ {bulletNum}");
         }
         yield return new WaitForSeconds(0.15f);
         isCharging = false;

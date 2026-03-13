@@ -226,6 +226,14 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    static public void SetBGMMuted(bool muted)
+    {
+        if (Instance == null || Instance.BGMPlayer == null)
+            return;
+
+        Instance.BGMPlayer.mute = muted;
+    }
+
     static private bool CheckContainKey(string clipName, ClipType clipType)
     {
         var clipDict = Instance.clipDict;

@@ -7,6 +7,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    public event Action OnStageStartEvent;
+
     public PlayerUiManager playerUiManager;
     //TO DO ���� �� �������� ���� ���� ó���� ���� X ���� ���صΰ� ��ǥ�̵����� ���� �� ���°� �������� �׷��� ���� �� ������ ���Ѱ� �ʿ��� �װ� ���ӵ���Ÿ 
     // ��Ŭ���� ���θ� �װſ� �����ϴ½����� üũ �ϴ°� ������ ���ٰ� ������
@@ -26,6 +28,7 @@ public class GameManager : MonoBehaviour
 
     [Header("PlayerData")]
     public GameObject playerOBJ;
+    public GameObject clientPlayer { get { return playerOBJ; } }
     //public PlayerDataSetting characterSetting; // �÷��̾��� ����
     public bool isDie; // �÷��̾� ���� ����
     //public int Gold;  // ���
@@ -279,5 +282,6 @@ public class GameManager : MonoBehaviour
         if (CurrentStage == null) return;
         CurrentStage.ReadyStage();
         playerOBJ.transform.position = CurrentStage.PlayerSpawnPoint.position;
+        OnStageStartEvent?.Invoke();
     }
 }

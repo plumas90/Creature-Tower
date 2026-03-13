@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &278781880884364393
 GameObject:
@@ -5550,7 +5550,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3678474880436223471}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: defd5eb39b929954986056e8888eb5bd, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f818b88dc52a5242a52087ccae987d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   muzzleOfAGun: {fileID: 2297085137936366233}
@@ -6013,3 +6013,4 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1711639255351571575, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
   m_PrefabInstance: {fileID: 7318729524361222090}
   m_PrefabAsset: {fileID: 0}
+

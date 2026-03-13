@@ -76,6 +76,15 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
         }
 
         string callName = "A" + code.ToString();
+        var method = GetType().GetMethod(
+            callName,
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
+        );
+        if (method == null)
+        {
+            Debug.LogError($"[AugmentManager] 증강 핸들러를 찾지 못함 | code={code}, method={callName}");
+            return;
+        }
         //photonView.RPC(callName, RpcTarget.All, PlayerPvNumber);
         // 속도를 원한다면 if(itemCode=="Item001") AItem001(); 이런식으로 모든 애들을 처리하는게 더 빠른데 코드상 너무 비효율적 센드메시지로 보내는게
         // 낫다고 판단됨 그리고 이방법을 한다면 딕셔너리로 액션을 만들어서 하는 방법도 가능 센드메시지를 채용 @@ 단 센드메시지로 성능 떨어짐이생각되면 다 이프 스위치문으로 만들것@@

@@ -22,6 +22,13 @@ public class AmmoUpdate : UIBase
 
     public void InitializeData()
     {
+        if (ammo == null)
+        {
+            var t = transform.Find("AmmoText");
+            if (t != null) ammo = t.GetComponent<TMP_Text>();
+            if (ammo == null)
+                ammo = GetComponentInChildren<TMP_Text>(true);
+        }
 
         player = GameManager.Instance.playerOBJ.GetComponent<PlayerInputController>();
 
@@ -33,6 +40,8 @@ public class AmmoUpdate : UIBase
 
     private void ChangeValue()
     {
+        if (ammo == null || playerStat == null) return;
+
         StringBuilder sb = new StringBuilder();
         sb.Append(playerStat.CurAmmo);
         sb.Append("/");

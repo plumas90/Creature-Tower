@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 public enum ParticleType
@@ -12,17 +11,20 @@ public enum ParticleType
 
 public class ParticleManager : MonoBehaviour
 {
-    public static ParticleManager Instance;
+    public static ParticleManager Instance { get; private set; }
 
     [SerializeField] private List<GameObject> prefabs;
     [SerializeField] private Dictionary<string, GameObject> prefabDict;
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
+        if (Instance != null && Instance != this)
+        {
             Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
         Initialize();
     }
 
@@ -30,81 +32,113 @@ public class ParticleManager : MonoBehaviour
     {
         prefabDict = new Dictionary<string, GameObject>();
 
-        // ����Ʈ�� �÷��� ����Ʈ Dict�� �߰��Ͽ� ĳ��
-        foreach(var prefab in prefabs)
-            prefabDict.Add(prefab.name, prefab);
+        if (prefabs == null)
+            return;
+
+        foreach (var prefab in prefabs)
+        {
+            if (prefab == null)
+                continue;
+
+            if (!prefabDict.ContainsKey(prefab.name))
+                prefabDict.Add(prefab.name, prefab);
+        }
     }
 
-    /// <summary>
-    /// <para>��ƼŬ ������Ʈ�� �����մϴ�.</para>
-    /// <para>ĳ�� ��δ� Resources/Particle/... �Դϴ�.</para>
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="parents"></param>
-    static public void PlayEffectLocal(string name, Vector3 pos, Transform parents)
+    private static bool EnsureReady()
     {
-        var tempDict = Instance.prefabDict;
+        if (Instance == null)
+            return false;
+
+        if (Instance.prefabDict == null)
+            Instance.Initialize();
+
+        return Instance.prefabDict != null;
+    }
+
+    public static void PlayEffectLocal(string name, Vector3 pos, Transform parents)
+    {
+        if (!EnsureReady())
+            return;
 
         if (!CheckContainKey(name))
             return;
 
+        var tempDict = Instance.prefabDict;
         GameObject prefab = Instantiate(tempDict[name], parents);
         prefab.transform.position = pos;
 
-        prefab.GetComponent<ParticleSystem>().Play();
+        ParticleSystem ps = prefab.GetComponent<ParticleSystem>();
+        if (ps != null)
+            ps.Play();
     }
 
-    /// <summary>
-    /// <para>��ƼŬ ������Ʈ�� �����մϴ�.</para>
-    /// <para>ĳ�� ��δ� Resources/Particle/... �Դϴ�.</para>
-    /// <para>��� �÷��̾�� ���̴� ��ƼŬ�Դϴ�. </para>
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="pos"></param>
-    /// <param name="pViewID">�θ� �� ������Ʈ�� ViewID</param>
     public void PlayEffect(string name, Vector3 pos, GameObject parent = null)
     {
+        if (!EnsureReady())
+            return;
+
         if (!CheckContainKey(name))
             return;
 
-        var tempDict = Instance.prefabDict;
         Transform parentTransform = parent != null ? parent.transform : null;
-        GameObject prefab = Instantiate(tempDict[name], pos, Quaternion.identity, parentTransform);
-        prefab.GetComponent<ParticleSystem>().Play();
+        SpawnEffect(name, pos, parentTransform);
     }
 
     public void PlayEffect(string name, Vector3 pos)
     {
+        if (!EnsureReady())
+            return;
+
         if (!CheckContainKey(name))
             return;
 
-        var tempDict = Instance.prefabDict;
-        GameObject prefab = Instantiate(tempDict[name], pos, Quaternion.identity);
-        prefab.GetComponent<ParticleSystem>().Play();
+        SpawnEffect(name, pos, null);
     }
 
-    static private bool CheckContainKey(string name)
+    private void SpawnEffect(string name, Vector3 pos, Transform parent)
     {
+        if (!EnsureReady())
+            return;
+
+        var tempDict = Instance.prefabDict;
+        if (!tempDict.ContainsKey(name))
+            return;
+
+        GameObject prefab = parent != null
+            ? Instantiate(tempDict[name], pos, Quaternion.identity, parent)
+            : Instantiate(tempDict[name], pos, Quaternion.identity);
+
+        ParticleSystem ps = prefab.GetComponent<ParticleSystem>();
+        if (ps != null)
+            ps.Play();
+    }
+
+    private static bool CheckContainKey(string name)
+    {
+        if (!EnsureReady())
+            return false;
+
         var tempDict = Instance.prefabDict;
         if (!tempDict.ContainsKey(name))
         {
-            Debug.Log(name + " is not Contained audioClips.");
             bool result = TryCachingClip(name);
-
             if (!result)
                 return false;
         }
+
         return true;
     }
 
-    static private bool TryCachingClip(string name)
+    private static bool TryCachingClip(string name)
     {
-        var clipDict = Instance.prefabDict;
+        if (!EnsureReady())
+            return false;
 
+        var clipDict = Instance.prefabDict;
         if (!clipDict.ContainsKey(name))
         {
             var clip = Resources.Load<GameObject>("Prefabs/Particle/" + name);
-
             if (clip == null)
             {
                 Debug.LogError("Can't find " + name);
@@ -113,6 +147,7 @@ public class ParticleManager : MonoBehaviour
 
             clipDict.Add(clip.name, clip);
         }
+
         return true;
     }
 }

@@ -159,6 +159,8 @@ public class PlayerStatControl : MonoBehaviour
     [HideInInspector] public bool CanReload;                              //����   ��������
     [HideInInspector] public bool CanSkill;                               //��ų   ��������
     [HideInInspector] public bool CanRoll;                                //������ ��������
+    private int externalFireBlockCount;
+    public bool IsExternalFireBlocked => externalFireBlockCount > 0;
     public bool Invincibility;                          //���� ó�� �ǰݽ� ����
     public bool SkillRollInvincibility;
 
@@ -205,6 +207,7 @@ public class PlayerStatControl : MonoBehaviour
         CanReload = true;
         CanSkill = true;
         CanRoll = true;
+        externalFireBlockCount = 0;
         UseRoll = true;
         Invincibility = false;
         SkillRollInvincibility = false;
@@ -260,6 +263,16 @@ public class PlayerStatControl : MonoBehaviour
             "ũ��Ƽ��",
             "��ź��",
         };
+    }
+
+    public void PushExternalFireBlock()
+    {
+        externalFireBlockCount++;
+    }
+
+    public void PopExternalFireBlock()
+    {
+        externalFireBlockCount = Mathf.Max(0, externalFireBlockCount - 1);
     }
 
     private void stageBuffReset() //������ ���� ���������� �Ѿ�� �ö� ���� ó��

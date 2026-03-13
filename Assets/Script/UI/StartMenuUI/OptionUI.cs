@@ -12,9 +12,11 @@ public class OptionUI : MonoBehaviour
     // Start is called before the first frame update
     public void Awake()
     {
-        if (null == Instance)
+        if (Instance == null)
         {
-            DontDestroyOnLoad(gameObject);
+            Instance = this;
+            GameObject root = transform.root != null ? transform.root.gameObject : gameObject;
+            DontDestroyOnLoad(root);
         }
         else
         {
@@ -23,8 +25,6 @@ public class OptionUI : MonoBehaviour
     }
     void Start()
     {
-
-        DontDestroyOnLoad(this);
         CloseOptionUI();
         IsOpen = false;
     }

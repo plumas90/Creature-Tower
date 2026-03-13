@@ -4,18 +4,33 @@ using UnityEngine;
 
 public class MonkeyPart : BossBase
 {
+    [Header("Monkey Identity")]
+    public MonkeyEffectType effectType = MonkeyEffectType.Eye;
+    public float collisionEffectDuration = 1f;
+
     Vector2 direction = Vector2.zero;
 
     public void Init(Vector2 vecter)
     {
+        bossCount = 1;
         atk = MainSO.atk;
         maxHp = MainSO.hp;
         curHp = MainSO.hp;
         speed = MainSO.speed;
         live = true;
-        Player = GameManager.Instance.playerOBJ;
-        direction = -vecter;
-        invincibility = true;
+
+        if (GameManager.Instance != null)
+            Player = GameManager.Instance.playerOBJ;
+
+        direction = vecter.sqrMagnitude > 0.0001f ? vecter.normalized : Vector2.right;
+        invincibility = false;
+        wait = false;
+    }
+
+    public override void BossDie()
+    {
+        base.BossDie();
+        gameObject.SetActive(false);
     }
 
     public override void Damege(float damege)
@@ -26,21 +41,28 @@ public class MonkeyPart : BossBase
     {
         base.OnCollisionEnter2D(collision);
 
-        if ((collision.gameObject.layer == LayerMask.NameToLayer("Wall")
-            || collision.gameObject.layer == LayerMask.NameToLayer("Player")
-            || collision.gameObject.layer == LayerMask.NameToLayer("Creatuer")))
+        if (collision.gameObject.TryGetComponent(out PlayerStatControl playerStat))
+        {
+            var receiver = playerStat.GetComponent<PlayerBossStatusEffectReceiver>();
+            if (receiver == null)
+                receiver = playerStat.gameObject.AddComponent<PlayerBossStatusEffectReceiver>();
+
+            receiver.ApplyEffect(effectType, collisionEffectDuration);
+        }
+
+        if (IsReflectTargetLayer(collision.gameObject.layer))
             {
-            Debug.Log($"ºÎµúÈù ÀÌ¸§ {collision.gameObject.layer}");
-            Debug.Log($"ºÎµúÈ÷±â Àü ¹æÇâ {direction}");
-            Vector3 normal = collision.contacts[0].normal; // ¹ý¼±º¤ÅÍ
-            direction = Vector3.Reflect(direction, normal).normalized; // ¹Ý»ç
-            Debug.Log($"ºÎµúÈù ÈÄ ¹æÇâ {direction}");
+            Debug.Log($"ï¿½Îµï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ {collision.gameObject.layer}");
+            Debug.Log($"ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ {direction}");
+            Vector3 normal = collision.contacts[0].normal; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            direction = Vector3.Reflect(direction, normal).normalized; // ï¿½Ý»ï¿½
+            Debug.Log($"ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ {direction}");
         }
     }
 
     public void Update()
     {
-        if (wait)
+        if (!live || wait)
         {
 
         }
@@ -48,5 +70,22 @@ public class MonkeyPart : BossBase
         {
             transform.Translate(direction * speed * Time.deltaTime);
         }
+    }
+
+    private bool IsReflectTargetLayer(int layer)
+    {
+        int wall = LayerMask.NameToLayer("Wall");
+        int player = LayerMask.NameToLayer("Player");
+        int creatureTypo = LayerMask.NameToLayer("Creatuer");
+        int creature = LayerMask.NameToLayer("Creature");
+        int enemy = LayerMask.NameToLayer("Enemy");
+        int boss = LayerMask.NameToLayer("Boss");
+
+        return layer == wall
+            || layer == player
+            || layer == enemy
+            || layer == boss
+            || (creatureTypo >= 0 && layer == creatureTypo)
+            || (creature >= 0 && layer == creature);
     }
 }

@@ -48,7 +48,8 @@ public class Potion : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out PlayerStatControl playerStatControl)) 
+        var playerStatControl = collision.GetComponentInParent<PlayerStatControl>();
+        if (playerStatControl != null)
         {
             float getHp = playerStatControl.HP.total;
             getHp = getHp * _persent;

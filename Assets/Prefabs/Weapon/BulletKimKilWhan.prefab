@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 82698874871681136}
   - component: {fileID: 4768043198313855152}
-  - component: {fileID: 1074085900673325052}
   - component: {fileID: 6658766887712863178}
   - component: {fileID: 8290988412406594566}
+  - component: {fileID: 7624387628042765616}
   m_Layer: 0
   m_Name: BulletKimKilWhan
   m_TagString: Untagged
@@ -72,36 +72,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.5, y: 0.3}
   m_Direction: 1
---- !u!114 &1074085900673325052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3260318786757684737}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1f66378554828f4e94399c07418697b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ATK: 0
-  BulletLifeTime: 15
-  BulletSpeed: 15
-  IsDamage: 0
-  fire: 0
-  water: 0
-  ice: 0
-  burn: 0
-  gravity: 0
-  Penetrate: 0
-  canresurrection: 0
-  sniperAtkBuff: 0
-  _direction: {x: 0, y: 0}
-  layerMask: 0
-  locator: 0
-  sniping: 0
-  BulletOwner: 0
-  canAngle: 0
 --- !u!212 &6658766887712863178
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -184,3 +154,33 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &7624387628042765616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3260318786757684737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56a125d73e9cd9b4198e6666e2f1e52c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ATK: 0
+  BulletLifeTime: 0
+  BulletSpeed: 15
+  IsDamage: 0
+  fire: 0
+  water: 0
+  ice: 0
+  burn: 0
+  gravity: 0
+  Penetrate: 0
+  canresurrection: 0
+  sniperAtkBuff: 0
+  _direction: {x: 0, y: 0}
+  layerMask: 0
+  locator: 0
+  sniping: 0
+  BulletOwner: 0
+  canAngle: 0

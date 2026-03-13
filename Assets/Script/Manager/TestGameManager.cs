@@ -86,8 +86,14 @@ public class TestGameManager : MonoBehaviour
         // 씬에 GameManager 오브젝트가 반드시 존재해야 한다.
         if (stage != null)
         {
+            // Stage에 bossPrefab만 설정되어 있어도 테스트 시작 시 보스 인스턴스를 준비한다.
+            stage.PrepareBossForRuntime();
             stage.ObjActiveTrue();
             stage.ReadyStage();
         }
+
+        // 테스트룸도 메인 게임과 동일한 HUD 흐름을 사용한다.
+        if (GameManager.Instance != null && GameManager.Instance.playerUiManager != null)
+            GameManager.Instance.playerUiManager.SetupData();
     }
 }

@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 4518299384971246651}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 20, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -45,6 +45,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4518299384971246651}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -68,7 +69,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: -0.009592652, y: -0.21583521}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -79,7 +81,6 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 3.1487586, y: 2.4868639}
   m_EdgeRadius: 0
 --- !u!114 &7366481756909002281
@@ -95,25 +96,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainSO: {fileID: 11400000, guid: d042b5b8ad1a9b14d9d1308de31856e4, type: 2}
-  atk: 0
-  maxHp: 0
-  curHp: 0
+  atk: 10
+  maxHp: 1000
+  curHp: 1000
   speed: 0
-  bossCount: 0
-  live: 0
+  bossCount: 1
+  live: 1
   Player: {fileID: 0}
-  wait: 1
+  IntroTime: 0
+  wait: 0
   invincibility: 0
   secondMouseMonkeySO: {fileID: 11400000, guid: e8b198e3e84058f40b1e936bf1ac07d7, type: 2}
   LastEarMonkeySO: {fileID: 11400000, guid: 004d7c59e510b984e8a34eadc2fcd45c, type: 2}
   tower3EarOBJ: {fileID: 6691639852510029620}
   tower2MouseOBJ: {fileID: 6673706067138848069}
   tower1EyeOBJ: {fileID: 8149864871085130338}
-  prefab1TowerEye: {fileID: 0}
-  prefab2TowerMouse: {fileID: 0}
+  prefab1TowerEye: {fileID: 8132784765736517952, guid: 188056f0344715544b8e7fc3011eb23f, type: 3}
+  prefab2TowerMouse: {fileID: 2649612889583031476, guid: e54ebd905c487cf459366102565eb8cd, type: 3}
+  eyeDetachedPrefab: {fileID: 0}
+  earDetachedPrefab: {fileID: 0}
+  mouthDetachedPrefab: {fileID: 0}
+  collisionEffectDuration: 1
+  introRotateAngle: 35
 --- !u!50 &6007049222260109198
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -124,8 +131,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -188,6 +195,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -211,7 +221,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 14
   m_Sprite: {fileID: 361612446, guid: 77e4c2a40848aae43acd97200457c202, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -225,7 +235,7 @@ SpriteRenderer:
   m_SpriteSortPoint: 0
 --- !u!95 &5581580561345543462
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -239,6 +249,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -294,6 +305,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -317,7 +331,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 15
   m_Sprite: {fileID: 1166210482, guid: 5f33f0533ddca634ca141b12663edd8f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -331,7 +345,7 @@ SpriteRenderer:
   m_SpriteSortPoint: 0
 --- !u!95 &1700583078671193624
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -345,6 +359,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -400,6 +415,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -423,7 +441,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 13
   m_Sprite: {fileID: -957285907, guid: 906f31fdcbaf1874e96d06e13c0d6d6a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -437,7 +455,7 @@ SpriteRenderer:
   m_SpriteSortPoint: 0
 --- !u!95 &5640249794599028174
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -451,6 +469,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1

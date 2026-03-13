@@ -36,14 +36,12 @@ public class AudioLibrary : MonoBehaviour
 
     void Start()
     {
-        /*
         if (GameManager.Instance != null)
         {
             player = GameManager.Instance.clientPlayer;
             SetupPlayerSE();
             AttachPlayerSE();
         }
-        */
     }
 
 
@@ -73,7 +71,11 @@ public class AudioLibrary : MonoBehaviour
     {
         if (player == null)
             return;
+
         var stats = player.GetComponent<PlayerStatControl>();
+        if (stats == null)
+            return;
+
         player_attack = stats.atkClip;
         reloadStart = stats.reloadStartClip;
         reloadFinish = stats.reloadFinishClip;
@@ -81,24 +83,28 @@ public class AudioLibrary : MonoBehaviour
 
     void AttachPlayerSE()
     {
+        if (player == null)
+            return;
+
         var controller = player.GetComponent<PlayerInputController>();
         var stats = player.GetComponent<PlayerStatControl>();
 
-        // Á¶ÀÛ °ü·Ã È¿°úÀ½
+        if (controller == null || stats == null)
+            return;
+
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½
         controller.OnAttackEvent += PlayShotSE;
         controller.OnRollEvent += PlayRollingSE;
         controller.OnReloadEvent += PlayReloadStartSE;
         controller.OnEndReloadEvent += PlayReloadFinishSE;
 
-        // ÇÇ°Ý ÆÇÁ¤ È¿°úÀ½
+        // ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½
         stats.HitEvent += PlayHitSE;
     }
 
     void PlayClip(string name, Vector3 pos)
     {
-        //var pv = gameObject.GetPhotonView();
-        //pv.RPC("SpreadClip", RpcTarget.All, name, pos);
-        SpreadClip(name,pos);
+        SpreadClip(name, pos);
     }
 
     public void PlayMonsterAttack(Vector3 pos)
@@ -113,26 +119,41 @@ public class AudioLibrary : MonoBehaviour
 
     void PlayShotSE()
     {
+        if (player_attack == null || player == null)
+            return;
+
         PlayClip(player_attack.name, player.transform.position);
     }
 
     void PlayRollingSE()
     {
+        if (player_rolling == null || player == null)
+            return;
+
         PlayClip(player_rolling.name, player.transform.position); 
     }
 
     void PlayHitSE()
     {
+         if (player_hit == null || player == null)
+                return;
+
        PlayClip(player_hit.name, player.transform.position); 
     }
 
     void PlayReloadStartSE()
     {
+        if (reloadStart == null || player == null)
+            return;
+
         PlayClip(reloadStart.name, player.transform.position);
     }
 
     void PlayReloadFinishSE()
     {
+        if (reloadFinish == null || player == null)
+            return;
+
         PlayClip(reloadFinish.name, player.transform.position);
     }
 

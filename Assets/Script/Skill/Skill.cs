@@ -1,67 +1,84 @@
-
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Skill : MonoBehaviour
 {
-    //¹öÃß¾ó ÇÔ¼ö´Â ¿À¹ö¶óÀÌµù ÈÄ ²À º£ÀÌ½º¸¦ È£Ãâ ÇØ¾ßÇÔ
+    //ï¿½ï¿½ï¿½ß¾ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½ï¿½
 
     protected TopDownCharacterController controller;
     protected PlayerStatControl playerStats;
     public bool isLink;
 
+    protected Sprite[] icons;
+    protected Sprite skillIcon;
+    public Sprite Skillicon { get { return skillIcon; } }
 
-    public void Awake()
+    protected virtual void Awake()
     {
         controller = GetComponent<TopDownCharacterController>();
         playerStats = GetComponent<PlayerStatControl>();
+        icons = Resources.LoadAll<Sprite>("Images/Skill_icon-Sheet");
+
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Î¸ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ï¿½ï¿½ È£È¯ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        if (icons == null || icons.Length == 0)
+            icons = Resources.LoadAll<Sprite>("sprite/Skill_icon-Sheet");
     }
 
     public void SkillLinkOff()
     {
-            if (isLink) 
+        if (isLink) 
+        {
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½Å‰ï¿½Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            if (controller != null)
             {
-                Debug.Log("¾ÈÀüÇÏ°Ô Á¦°Å‰ç´Ù°í »ý°¢µÊ");
                 controller.OnSkillEvent -= SkillStart;
-                isLink = false;
+                controller.SkillMinusEvent -= SkillLinkOff;
             }
+            isLink = false;
+        }
     }
 
     public virtual void SkillStart()
     {
-            playerStats.CurSkillStack -= 1;
-            Debug.Log($"½ºÅ³ »ç¿ë Á÷ÈÄ, ÇöÀç ½ºÅ³ ½ºÅÃ ¼ö : {controller.playerStatHandler.CurSkillStack}");
-            controller.playerStatHandler.CanSkill = false;
-            controller.playerStatHandler.useSkill = true;
+        if (controller == null || playerStats == null)
+            return;
 
-            Debug.Log("½ºÅ³ ¹ßµ¿");
+        if (playerStats.CurSkillStack <= 0)
+            return;
+
+        playerStats.CurSkillStack -= 1;
+        Debug.Log($"ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ : {controller.playerStatHandler.CurSkillStack}");
+        controller.playerStatHandler.CanSkill = false;
+        controller.playerStatHandler.useSkill = true;
+
+        Debug.Log("ï¿½ï¿½Å³ ï¿½ßµï¿½");
     }
 
     public virtual void SkillEnd()
     {
-     
-            //½ºÅ³ÀÌ ³¡³ª¸é ÄðÅ¸ÀÓÀ» °è»êÇÏ°í ÄðÅ¸ÀÓÀÌ ³¡³ª¸é  controller.playerStatHandler.CanSkill = Áø½Ç; ·Î ¹Ù²ãÁÜ
-            Debug.Log("½ºÅ³ Á¾·á");
-            controller.playerStatHandler.useSkill = false;
-            if (controller.playerStatHandler.CurSkillStack > 0)
-            {
-                controller.playerStatHandler.CanSkill = true;
-            }
-            controller.CallEndSkillEvent();
+        if (controller == null)
+            return;
+
+        //ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  controller.playerStatHandler.CanSkill = ï¿½ï¿½ï¿½ï¿½; ï¿½ï¿½ ï¿½Ù²ï¿½ï¿½ï¿½
+        Debug.Log("ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½");
+        controller.playerStatHandler.useSkill = false;
+        if (controller.playerStatHandler.CurSkillStack > 0)
+        {
+            controller.playerStatHandler.CanSkill = true;
+        }
+        controller.CallEndSkillEvent();
     }
 
-    public void OnDestroy()
+    protected virtual void OnDestroy()
     {
-        /*
-        if (NetworkManager.Instance != null)
-        {
-            return;
-        }
-
-        if (photonView.IsMine)
+        if (controller != null)
         {
             controller.OnSkillEvent -= SkillStart;
+            controller.SkillMinusEvent -= SkillLinkOff;
+        }
+
+        if (playerStats != null)
             playerStats.CurSkillStack = playerStats.MaxSkillStack;
-        }     
-        */
     }
 }
