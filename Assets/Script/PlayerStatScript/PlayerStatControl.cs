@@ -165,6 +165,7 @@ public class PlayerStatControl : MonoBehaviour
     public bool SkillRollInvincibility;
 
     public bool useSkill;
+    [HideInInspector] public int ActiveSkillCastCount;
     public bool UseRoll;
     //public bool ImGhost;
 
@@ -208,6 +209,7 @@ public class PlayerStatControl : MonoBehaviour
         CanSkill = true;
         CanRoll = true;
         externalFireBlockCount = 0;
+        ActiveSkillCastCount = 0;
         UseRoll = true;
         Invincibility = false;
         SkillRollInvincibility = false;

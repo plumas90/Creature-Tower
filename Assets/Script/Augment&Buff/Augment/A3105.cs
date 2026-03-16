@@ -23,16 +23,23 @@ public class A3105 : MonoBehaviour
             controller.OnSkillEvent += SetPower;
             controller.OnEndAttackEvent += LostPower;
 
-            controller.SkillReset();//¿©±âºÎÅÍÂü°í
+            controller.SkillReset();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             controller.SkillMinusEvent += SkillLinkOff;
             isLink = true;
     }
     // Update is called once per frame
     void SetPower()
     {
+        if (controller == null || playerStat == null)
+            return;
+
+        if (playerStat.CurSkillStack <= 0)
+            return;
+
         playerStat.CurSkillStack -= 1;
-        controller.playerStatHandler.CanSkill = false;
-        controller.playerStatHandler.useSkill = true;
+        controller.playerStatHandler.CanSkill = (playerStat.CurSkillStack > 0);
+        controller.playerStatHandler.ActiveSkillCastCount += 1;
+        controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
         if (ready) 
         {
             nowPower = playerStat.ATK.total * 2f;
@@ -56,7 +63,14 @@ public class A3105 : MonoBehaviour
     }
     public void SkillEnd()
     {
-            controller.playerStatHandler.useSkill = false;
+            if (controller == null || controller.playerStatHandler == null)
+                return;
+
+            if (controller.playerStatHandler.ActiveSkillCastCount <= 0)
+                return;
+
+            controller.playerStatHandler.ActiveSkillCastCount = Mathf.Max(0, controller.playerStatHandler.ActiveSkillCastCount - 1);
+            controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
             if (controller.playerStatHandler.CurSkillStack > 0)
             {
                 controller.playerStatHandler.CanSkill = true;

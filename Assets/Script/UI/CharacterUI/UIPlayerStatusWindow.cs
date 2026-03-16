@@ -92,17 +92,29 @@ public class UIPlayerStatusWindow : MonoBehaviour
 
         float rollTotal = Mathf.Max(0.0001f, playerStat.RollCoolTime.total);
         float rollRemain = Mathf.Clamp(coolTime.curRollCool, 0f, rollTotal);
+        int rollCurStack = Mathf.Clamp(playerStat.CurRollStack, 0, Mathf.Max(1, playerStat.MaxRollStack));
+        int rollMaxStack = Mathf.Max(1, playerStat.MaxRollStack);
 
         float skillTotal = Mathf.Max(0.0001f, playerStat.SkillCoolTime.total);
         float skillRemain = Mathf.Clamp(coolTime.curSkillCool, 0f, skillTotal);
+        int skillCurStack = Mathf.Clamp(playerStat.CurSkillStack, 0, Mathf.Max(1, playerStat.MaxSkillStack));
+        int skillMaxStack = Mathf.Max(1, playerStat.MaxSkillStack);
 
         float reloadTotal = Mathf.Max(0.0001f, playerStat.ReloadCoolTime.total);
         float reloadRemain = Mathf.Clamp(coolTime.curReloadCool, 0f, reloadTotal);
 
+        string rollText = rollCurStack >= rollMaxStack
+            ? $"Roll: {rollCurStack}/{rollMaxStack} (Ready)"
+            : $"Roll: {rollCurStack}/{rollMaxStack} (Next {rollRemain:0.00}s)";
+
+        string skillText = skillCurStack >= skillMaxStack
+            ? $"Skill: {skillCurStack}/{skillMaxStack} (Ready)"
+            : $"Skill: {skillCurStack}/{skillMaxStack} (Next {skillRemain:0.00}s)";
+
         statusText.text =
             $"HP: {Mathf.CeilToInt(curHp)} / {Mathf.CeilToInt(maxHp)}\n" +
-            $"Roll CT: {rollRemain:0.00}s / {rollTotal:0.00}s\n" +
-            $"Skill CT: {skillRemain:0.00}s / {skillTotal:0.00}s\n" +
+            $"{rollText}\n" +
+            $"{skillText}\n" +
             $"Ammo: {Mathf.CeilToInt(playerStat.CurAmmo)} / {Mathf.CeilToInt(playerStat.AmmoMax.total)}\n" +
             $"Reload CT: {reloadRemain:0.00}s / {reloadTotal:0.00}s";
     }

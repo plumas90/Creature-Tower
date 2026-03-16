@@ -102,7 +102,7 @@ public class CharPickUI : MonoBehaviour
     {
 
 
-        //�·� �б�
+        //�·� �б�
         Vector3[] localScales = new Vector3[pickList.Length];
         Vector3[] anchoredPositions = new Vector3[pickList.Length];
         for (int i = 0; i <= pickList.Length - 1; i++)
@@ -111,7 +111,7 @@ public class CharPickUI : MonoBehaviour
             anchoredPositions[i] = pickList[i].rectTransform.anchoredPosition;
         }
 
-            //��������ĭ
+            //��������ĭ
         PlayerSlot temp = pickList[pickList.Length - 1];
         Vector3 tempRectTransform = pickList[0].rectTransform.anchoredPosition;
         Vector3 tempScale = pickList[0].rectTransform.localScale;
@@ -172,7 +172,7 @@ public class CharPickUI : MonoBehaviour
         }
         Debug.Log(localScales.Length);
 
-        //��� �б� �ڷ� ��ĭ
+        //��� �б� �ڷ� ��ĭ
         PlayerSlot temp = pickList[0];
         Vector3 tempRectTransform = pickList[pickList.Length - 1].rectTransform.anchoredPosition;
         Vector3 tempScale = pickList[pickList.Length - 1].rectTransform.localScale;
@@ -193,30 +193,45 @@ public class CharPickUI : MonoBehaviour
     }
     public void PickButton() 
     {
+        // 현재 중앙 슬롯 기준으로 최종 선택 캐릭터를 다시 확정한다.
+        PlayerSOSet();
+        if (_playerso == null)
+            return;
+
+        GameObject selectedPlayer = null;
+
         switch (_playerso.CharacterClass) 
         {
             case (int)ClassName.TV:
-                playerTV.SetActive(true);
-                GameManager.Instance.Init(playerTV);
-                Destroy(playerCharlie);
-                Destroy(playerKimKilWhan);
+                selectedPlayer = playerTV;
+                if (playerTV != null) playerTV.SetActive(true);
+                if (playerCharlie != null) Destroy(playerCharlie);
+                if (playerKimKilWhan != null) Destroy(playerKimKilWhan);
                 break;
 
             case (int)ClassName.Charlie:
-                playerCharlie.SetActive(true);
-                GameManager.Instance.Init(playerCharlie);
-                Destroy(playerTV);
-                Destroy(playerKimKilWhan);
+                selectedPlayer = playerCharlie;
+                if (playerCharlie != null) playerCharlie.SetActive(true);
+                if (playerTV != null) Destroy(playerTV);
+                if (playerKimKilWhan != null) Destroy(playerKimKilWhan);
                 break;
 
             case (int)ClassName.KimKilWhan:
-                playerKimKilWhan.SetActive(true);
-                GameManager.Instance.Init(playerKimKilWhan);
-                Destroy(playerTV);
-                Destroy(playerCharlie);
+                selectedPlayer = playerKimKilWhan;
+                if (playerKimKilWhan != null) playerKimKilWhan.SetActive(true);
+                if (playerTV != null) Destroy(playerTV);
+                if (playerCharlie != null) Destroy(playerCharlie);
                 break;
 
         }
+
+        if (selectedPlayer != null && GameManager.Instance != null)
+        {
+            GameManager.Instance.Init(selectedPlayer);
+        }
+
+        // 메인 씬/테스트 씬 모두 선택 완료 즉시 캐릭터 선택 UI를 닫는다.
+        OffPickUi();
     }
     public void OnPickUi() 
     {

@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class A3206 : MonoBehaviour // °øº´ »ý¼ºÇü
+public class A3206 : MonoBehaviour // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
     private TopDownCharacterController controller;
     private PlayerStatControl playerStat;
@@ -13,15 +13,22 @@ public class A3206 : MonoBehaviour // °øº´ »ý¼ºÇü
             controller = GetComponent<TopDownCharacterController>();
             playerStat = GetComponent<PlayerStatControl>();
             controller.OnSkillEvent += MakeWall;
-            controller.SkillReset();//¿©±âºÎÅÍÂü°í
+            controller.SkillReset();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             controller.SkillMinusEvent += SkillLinkOff;
             isLink = true;
     }
     private void MakeWall() 
     {
+        if (controller == null || playerStat == null)
+            return;
+
+        if (playerStat.CurSkillStack <= 0)
+            return;
+
         playerStat.CurSkillStack -= 1;
-        controller.playerStatHandler.CanSkill = false;
-        controller.playerStatHandler.useSkill = true;
+        controller.playerStatHandler.CanSkill = (playerStat.CurSkillStack > 0);
+        controller.playerStatHandler.ActiveSkillCastCount += 1;
+        controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
         Vector2 player =  transform.position;
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -35,7 +42,14 @@ public class A3206 : MonoBehaviour // °øº´ »ý¼ºÇü
 
     public void SkillEnd()
     {
-            controller.playerStatHandler.useSkill = false;
+            if (controller == null || controller.playerStatHandler == null)
+                return;
+
+            if (controller.playerStatHandler.ActiveSkillCastCount <= 0)
+                return;
+
+            controller.playerStatHandler.ActiveSkillCastCount = Mathf.Max(0, controller.playerStatHandler.ActiveSkillCastCount - 1);
+            controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
             if (controller.playerStatHandler.CurSkillStack > 0)
             {
                 controller.playerStatHandler.CanSkill = true;

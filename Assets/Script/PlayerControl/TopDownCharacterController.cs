@@ -29,6 +29,9 @@ public class TopDownCharacterController : MonoBehaviour
     public TopDownMoveBase topDownMovement;
     public CoolTimeController coolTimeController;
 
+    public bool IsSkillRollActive { get; private set; }
+    private bool isCompulsoryRollRunning;
+
 
 
     private bool AtkKeyhold = false;
@@ -102,11 +105,19 @@ public class TopDownCharacterController : MonoBehaviour
 
     public void CallSkillEvent()
     {
-        if (playerStatHandler.CanSkill)
+        if (!playerStatHandler.CanSkill)
         {
-            Debug.Log("CallSkillEvent triggered");
-            OnSkillEvent?.Invoke();
+            return;
         }
+
+        // 스킬 구르기 세션이 이미 진행 중이면 중복 시전을 막는다.
+        if (isCompulsoryRollRunning)
+        {
+            return;
+        }
+
+        Debug.Log("CallSkillEvent triggered");
+        OnSkillEvent?.Invoke();
     }
     public void SkillReset()
     {
@@ -119,6 +130,12 @@ public class TopDownCharacterController : MonoBehaviour
 
     public void CallRollEvent()
     {
+        // 스킬 구르기 세션 중 일반 구르기 입력은 무시한다.
+        if (isCompulsoryRollRunning)
+        {
+            return;
+        }
+
         //A1207 a1207 = gameObject.GetComponent<A1207>();
         //if (a1207 != null)
         //{
@@ -139,13 +156,40 @@ public class TopDownCharacterController : MonoBehaviour
             //Debug.Log("������ ��Ÿ�� �Դϴ�");
         }
     }
-    public void CompulsoryRoll() 
+    public void BeginSkillRoll()
     {
+        IsSkillRollActive = true;
+    }
+
+    public void EndSkillRoll()
+    {
+        isCompulsoryRollRunning = false;
+        IsSkillRollActive = false;
+    }
+
+    public void CompulsoryRoll()
+    {
+        // 한 세션에서 중복 강제 구르기를 막는다.
+        if (isCompulsoryRollRunning)
+        {
+            return;
+        }
+
+        isCompulsoryRollRunning = true;
+        IsSkillRollActive = true;
         OnRollEvent?.Invoke();
     }
-    public void CompulsoryRollEnd() 
+
+    public void CompulsoryRollEnd()
     {
+        if (!isCompulsoryRollRunning)
+        {
+            return;
+        }
+
+        isCompulsoryRollRunning = false;
         OnEndRollEvent?.Invoke();
+        IsSkillRollActive = false;
     }
     public void CallEndRollEvent()
     {

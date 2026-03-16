@@ -24,19 +24,26 @@ public class A2303 : MonoBehaviour
 
             controller.OnSkillEvent += AcroboticShot;
 
-            controller.SkillReset();//¿©±âºÎÅÍÂü°í
+            controller.SkillReset();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             controller.SkillMinusEvent += SkillLinkOff;
             isLink = true;
     }
 
     private void AcroboticShot() 
     {
-        playerStat.CurSkillStack -= 1;
-        controller.playerStatHandler.CanSkill = false;
-        controller.playerStatHandler.useSkill = true;
+        if (controller == null || playerStat == null)
+            return;
 
-        coolTimeController.EndRollCoolTime();//±¸¸£±â ÄðÅ¸ÀÓ ÃÊ±âÈ­ 
-        playerInputController.CallRollEvent(); // ±¸¸£±â ½ÃÀü 
+        if (playerStat.CurSkillStack <= 0)
+            return;
+
+        playerStat.CurSkillStack -= 1;
+        controller.playerStatHandler.CanSkill = (playerStat.CurSkillStack > 0);
+        controller.playerStatHandler.ActiveSkillCastCount += 1;
+        controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
+
+        coolTimeController.EndRollCoolTime();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½Ê±ï¿½È­ 
+        playerInputController.CallRollEvent(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
         Invoke("shoting",0.6f);
         //controller.CallEndSkillEvent();
         SkillEnd();
@@ -56,9 +63,15 @@ public class A2303 : MonoBehaviour
 
     public void SkillEnd()
     {
-            //½ºÅ³ÀÌ ³¡³ª¸é ÄðÅ¸ÀÓÀ» °è»êÇÏ°í ÄðÅ¸ÀÓÀÌ ³¡³ª¸é  controller.playerStatHandler.CanSkill = Áø½Ç; ·Î ¹Ù²ãÁÜ
-            Debug.Log("½ºÅ³ Á¾·á");
-            controller.playerStatHandler.useSkill = false;
+            if (controller == null || controller.playerStatHandler == null)
+                return;
+
+            if (controller.playerStatHandler.ActiveSkillCastCount <= 0)
+                return;
+
+            Debug.Log("ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½");
+            controller.playerStatHandler.ActiveSkillCastCount = Mathf.Max(0, controller.playerStatHandler.ActiveSkillCastCount - 1);
+            controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
             if (controller.playerStatHandler.CurSkillStack > 0)
             {
                 controller.playerStatHandler.CanSkill = true;

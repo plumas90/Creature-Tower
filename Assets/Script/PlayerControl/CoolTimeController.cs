@@ -48,29 +48,58 @@ public class CoolTimeController : MonoBehaviour
 
     private void RollCoolTime()
     {
-        float coolTime = controller.playerStatHandler.RollCoolTime.total;
-        if (controller.playerStatHandler.CurRollStack > 0)
+        // TV 스킬의 강제 구르기(CompulsoryRoll)는 롤 자원/쿨과 분리한다.
+        if (controller.IsSkillRollActive)
+        {
+            return;
+        }
+
+        // 이미 최대 스택이면 롤 쿨타임을 시작할 필요가 없다.
+        if (controller.playerStatHandler.CurRollStack >= controller.playerStatHandler.MaxRollStack)
         {
             controller.playerStatHandler.CanRoll = true;
+            controller.playerStatHandler.UseRoll = true;
+            curRollCool = 0f;
+            return;
         }
-        else
+
+        float coolTime = controller.playerStatHandler.RollCoolTime.total;
+        controller.playerStatHandler.CanRoll = (controller.playerStatHandler.CurRollStack > 0);
+
+        // 이미 진행 중인 쿨타임이 있으면 중복 이벤트로 리셋하지 않는다.
+        if (curRollCool <= 0f)
         {
-            controller.playerStatHandler.CanRoll = false;
+            curRollCool = Mathf.Max(0.0001f, coolTime);
         }
-        //controller.playerStatHandler.Invincibility = true;
-        curRollCool = coolTime;
         controller.playerStatHandler.UseRoll = false;
     }
     public void EndRollCoolTime()
     {
-        //Debug.Log("������ ��Ÿ�� ���� �̺�Ʈ");
-        controller.playerStatHandler.CurRollStack += 1;
+        // 이미 최대면 안전하게 상태만 정리한다.
+        if (controller.playerStatHandler.CurRollStack >= controller.playerStatHandler.MaxRollStack)
+        {
+            controller.playerStatHandler.CurRollStack = controller.playerStatHandler.MaxRollStack;
+            controller.playerStatHandler.CanRoll = true;
+            controller.playerStatHandler.UseRoll = true;
+            curRollCool = 0f;
+            return;
+        }
+
+        controller.playerStatHandler.CurRollStack = Mathf.Min(
+            controller.playerStatHandler.MaxRollStack,
+            controller.playerStatHandler.CurRollStack + 1
+        );
         controller.playerStatHandler.CanRoll = true;
-        controller.playerStatHandler.UseRoll = true;
-        //controller.playerStatHandler.Invincibility = false;
+
         if (controller.playerStatHandler.CurRollStack < controller.playerStatHandler.MaxRollStack)
         {
-            RollCoolTime();
+            controller.playerStatHandler.UseRoll = false;
+            curRollCool = Mathf.Max(0.0001f, controller.playerStatHandler.RollCoolTime.total);
+        }
+        else
+        {
+            controller.playerStatHandler.UseRoll = true;
+            curRollCool = 0f;
         }
     }
 
@@ -80,11 +109,10 @@ public class CoolTimeController : MonoBehaviour
         {
             curRollCool -= Time.deltaTime;
         }
-        if (
-            curRollCool <= 0
+
+        if (curRollCool <= 0f
             && controller.playerStatHandler.UseRoll == false
-            && (controller.playerStatHandler.CurRollStack < controller.playerStatHandler.MaxRollStack || controller.playerStatHandler.CanRoll == false)
-            )
+            && controller.playerStatHandler.CurRollStack < controller.playerStatHandler.MaxRollStack)
         {
             EndRollCoolTime();
         }
@@ -141,25 +169,48 @@ public class CoolTimeController : MonoBehaviour
 
     private void SkillCoolTime()
     {
-        float coolTime = controller.playerStatHandler.SkillCoolTime.total;
-        if (controller.playerStatHandler.CurSkillStack > 0)
+        // 이미 최대 스택이면 스킬 쿨타임을 시작할 필요가 없다.
+        if (controller.playerStatHandler.CurSkillStack >= controller.playerStatHandler.MaxSkillStack)
         {
             controller.playerStatHandler.CanSkill = true;
+            curSkillCool = 0f;
+            return;
         }
-        else
+
+        float coolTime = controller.playerStatHandler.SkillCoolTime.total;
+        controller.playerStatHandler.CanSkill = (controller.playerStatHandler.CurSkillStack > 0);
+
+        // 이미 진행 중인 쿨타임이 있으면 중복 이벤트로 누적하지 않는다.
+        if (curSkillCool <= 0f)
         {
-            controller.playerStatHandler.CanSkill = false;
+            curSkillCool = Mathf.Max(0.0001f, coolTime);
         }
-        curSkillCool += coolTime;
     }
 
     private void EndSkillCoolTime()
     {
-        controller.playerStatHandler.CurSkillStack += 1;
+        // 이미 최대면 안전하게 상태만 정리한다.
+        if (controller.playerStatHandler.CurSkillStack >= controller.playerStatHandler.MaxSkillStack)
+        {
+            controller.playerStatHandler.CurSkillStack = controller.playerStatHandler.MaxSkillStack;
+            controller.playerStatHandler.CanSkill = true;
+            curSkillCool = 0f;
+            return;
+        }
+
+        controller.playerStatHandler.CurSkillStack = Mathf.Min(
+            controller.playerStatHandler.MaxSkillStack,
+            controller.playerStatHandler.CurSkillStack + 1
+        );
         controller.playerStatHandler.CanSkill = true;
+
         if (controller.playerStatHandler.CurSkillStack < controller.playerStatHandler.MaxSkillStack)
         {
-            SkillCoolTime();
+            curSkillCool = Mathf.Max(0.0001f, controller.playerStatHandler.SkillCoolTime.total);
+        }
+        else
+        {
+            curSkillCool = 0f;
         }
     }
 
@@ -169,9 +220,10 @@ public class CoolTimeController : MonoBehaviour
         {
             curSkillCool -= Time.deltaTime;
         }
-        if (curSkillCool <= 0
+
+        if (curSkillCool <= 0f
             && controller.playerStatHandler.useSkill == false
-            && (controller.playerStatHandler.CurSkillStack < controller.playerStatHandler.MaxSkillStack || controller.playerStatHandler.CanSkill == false))
+            && controller.playerStatHandler.CurSkillStack < controller.playerStatHandler.MaxSkillStack)
         {
             EndSkillCoolTime();
         }

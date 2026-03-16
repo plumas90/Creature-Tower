@@ -49,8 +49,10 @@ public class Skill : MonoBehaviour
 
         playerStats.CurSkillStack -= 1;
         Debug.Log($"��ų ��� ����, ���� ��ų ���� �� : {controller.playerStatHandler.CurSkillStack}");
-        controller.playerStatHandler.CanSkill = false;
-        controller.playerStatHandler.useSkill = true;
+        // 스택 기반: 남은 스택이 있으면 즉시 다음 스킬 사용을 허용한다.
+        controller.playerStatHandler.CanSkill = (playerStats.CurSkillStack > 0);
+        controller.playerStatHandler.ActiveSkillCastCount += 1;
+        controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
 
         Debug.Log("��ų �ߵ�");
     }
@@ -60,9 +62,18 @@ public class Skill : MonoBehaviour
         if (controller == null)
             return;
 
+        if (controller.playerStatHandler == null)
+            return;
+
+        // 유효한 스킬 캐스트가 없는데 들어온 종료 호출은 무시한다.
+        // (예: 파생 스킬에서 base.SkillStart()가 실패했는데 SkillEnd()가 호출된 경우)
+        if (controller.playerStatHandler.ActiveSkillCastCount <= 0)
+            return;
+
         //��ų�� ������ ��Ÿ���� ����ϰ� ��Ÿ���� ������  controller.playerStatHandler.CanSkill = ����; �� �ٲ���
         Debug.Log("��ų ����");
-        controller.playerStatHandler.useSkill = false;
+        controller.playerStatHandler.ActiveSkillCastCount = Mathf.Max(0, controller.playerStatHandler.ActiveSkillCastCount - 1);
+        controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
         if (controller.playerStatHandler.CurSkillStack > 0)
         {
             controller.playerStatHandler.CanSkill = true;
@@ -76,6 +87,12 @@ public class Skill : MonoBehaviour
         {
             controller.OnSkillEvent -= SkillStart;
             controller.SkillMinusEvent -= SkillLinkOff;
+
+            if (controller.playerStatHandler != null)
+            {
+                controller.playerStatHandler.ActiveSkillCastCount = 0;
+                controller.playerStatHandler.useSkill = false;
+            }
         }
 
         if (playerStats != null)

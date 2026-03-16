@@ -32,6 +32,8 @@ public class UIReloadHUD: UIBase
         if (player == null)
             return;
 
+        EnsureGaugeReference();
+
         targetCamera = Camera.main;
 
         controller = player.GetComponent<CoolTimeController>();
@@ -103,64 +105,63 @@ public class UIReloadHUD: UIBase
             rt.position = screenPos;
     }
 
-    private void BuildIfNeeded()
+    private void EnsureGaugeReference()
     {
-        if (reloadGauge != null)
-            return;
-
-        var bgTr = transform.Find("Reload_BG");
-        if (bgTr != null)
+        if (reloadGauge == null)
         {
-            var bgImg = bgTr.GetComponent<Image>();
-            if (bgImg != null && reloadBackgroundSprite != null)
-                bgImg.sprite = reloadBackgroundSprite;
-
-            var gaugeTr = bgTr.Find("Reload_Gauge");
-            if (gaugeTr != null)
+            var bgTr = transform.Find("Reload_BG");
+            if (bgTr != null)
             {
-                reloadGauge = gaugeTr.GetComponent<Image>();
-                if (reloadGauge != null && reloadGaugeSprite != null)
-                    reloadGauge.sprite = reloadGaugeSprite;
+                var gaugeTr = bgTr.Find("Reload_Gauge");
+                if (gaugeTr != null)
+                    reloadGauge = gaugeTr.GetComponent<Image>();
+
+                if (reloadGauge == null)
+                {
+                    var altGauge = bgTr.Find("Reload_Fill");
+                    if (altGauge != null)
+                        reloadGauge = altGauge.GetComponent<Image>();
+                }
             }
         }
 
-        if (reloadGauge != null)
+        if (reloadGauge == null)
         {
-            reloadGauge.type = Image.Type.Simple;
-            return;
+            // Prefab에 Reload HUD가 없을 때만 최소 구성 생성
+            RectTransform root = GetComponent<RectTransform>();
+            if (root != null)
+                root.sizeDelta = new Vector2(180f, 32f);
+
+            GameObject bgObj = new GameObject("Reload_BG", typeof(RectTransform), typeof(Image));
+            bgObj.transform.SetParent(transform, false);
+            RectTransform bgRt = bgObj.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.offsetMin = Vector2.zero;
+            bgRt.offsetMax = Vector2.zero;
+
+            Image bgImage = bgObj.GetComponent<Image>();
+            bgImage.color = Color.white;
+            if (reloadBackgroundSprite != null)
+                bgImage.sprite = reloadBackgroundSprite;
+
+            GameObject fillObj = new GameObject("Reload_Gauge", typeof(RectTransform), typeof(Image));
+            fillObj.transform.SetParent(bgObj.transform, false);
+            RectTransform fillRt = fillObj.GetComponent<RectTransform>();
+            fillRt.anchorMin = new Vector2(0f, 0.5f);
+            fillRt.anchorMax = new Vector2(0f, 0.5f);
+            fillRt.pivot = new Vector2(0.5f, 0.5f);
+            fillRt.anchoredPosition = gaugeStartLocalPos;
+            fillRt.sizeDelta = new Vector2(10f, 16f);
+
+            reloadGauge = fillObj.GetComponent<Image>();
+            reloadGauge.color = Color.white;
+            if (reloadGaugeSprite != null)
+                reloadGauge.sprite = reloadGaugeSprite;
         }
 
-        RectTransform root = GetComponent<RectTransform>();
-        if (root != null)
-            root.sizeDelta = new Vector2(180f, 32f);
-
-        GameObject bgObj = new GameObject("Reload_BG", typeof(RectTransform), typeof(Image));
-        bgObj.transform.SetParent(transform, false);
-        RectTransform bgRt = bgObj.GetComponent<RectTransform>();
-        bgRt.anchorMin = Vector2.zero;
-        bgRt.anchorMax = Vector2.one;
-        bgRt.offsetMin = Vector2.zero;
-        bgRt.offsetMax = Vector2.zero;
-
-        Image bgImage = bgObj.GetComponent<Image>();
-        bgImage.color = Color.white;
-        if (reloadBackgroundSprite != null)
-            bgImage.sprite = reloadBackgroundSprite;
-
-        GameObject fillObj = new GameObject("Reload_Fill", typeof(RectTransform), typeof(Image));
-        fillObj.transform.SetParent(bgObj.transform, false);
-        RectTransform fillRt = fillObj.GetComponent<RectTransform>();
-        fillRt.anchorMin = new Vector2(0f, 0.5f);
-        fillRt.anchorMax = new Vector2(0f, 0.5f);
-        fillRt.pivot = new Vector2(0.5f, 0.5f);
-        fillRt.anchoredPosition = gaugeStartLocalPos;
-        fillRt.sizeDelta = new Vector2(10f, 16f);
-
-        reloadGauge = fillObj.GetComponent<Image>();
-        reloadGauge.type = Image.Type.Simple;
-        reloadGauge.color = Color.white;
-        if (reloadGaugeSprite != null)
-            reloadGauge.sprite = reloadGaugeSprite;
+        if (reloadGauge != null)
+            reloadGauge.type = Image.Type.Simple;
     }
 
     private GameObject ResolvePlayer()

@@ -60,6 +60,28 @@ public class UIPlayerHP : UIBase
                 var legacyText = transform.Find("Text");
                 if (legacyText != null) hpText = legacyText.GetComponent<TMP_Text>();
             }
+
+            if (hpText == null)
+            {
+                Transform parent = transform.Find("HP_BG");
+                if (parent == null)
+                    parent = transform;
+
+                GameObject textObj = new GameObject("HP_Text", typeof(RectTransform), typeof(TextMeshProUGUI));
+                textObj.transform.SetParent(parent, false);
+
+                RectTransform textRt = textObj.GetComponent<RectTransform>();
+                textRt.anchorMin = new Vector2(1f, 0.5f);
+                textRt.anchorMax = new Vector2(1f, 0.5f);
+                textRt.pivot = new Vector2(1f, 0.5f);
+                textRt.anchoredPosition = new Vector2(-8f, 0f);
+                textRt.sizeDelta = new Vector2(160f, 28f);
+
+                hpText = textObj.GetComponent<TextMeshProUGUI>();
+                hpText.fontSize = 18f;
+                hpText.alignment = TextAlignmentOptions.Right;
+                hpText.color = Color.white;
+            }
         }
 
         var bg = transform.Find("HP_BG");

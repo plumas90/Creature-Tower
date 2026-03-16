@@ -145,10 +145,22 @@ public class UIPlayerSkill : UIBase
     {
         if (playerCool == null || playerStats == null) return;
 
+        int maxStack = Mathf.Max(1, playerStats.MaxSkillStack);
+        int curStack = Mathf.Clamp(playerStats.CurSkillStack, 0, maxStack);
+
+        // 스택이 1개 이상 남아 있으면 즉시 사용 가능 상태로 표시한다.
+        if (curStack > 0)
+        {
+            if (skillGauge != null)
+                skillGauge.fillAmount = 0f;
+            return;
+        }
+
         float total = Mathf.Max(0.0001f, playerStats.SkillCoolTime.total);
         float remain = Mathf.Clamp(playerCool.curSkillCool, 0f, total);
+        float overlayFill = remain / total;
 
         if (skillGauge != null)
-            skillGauge.fillAmount = remain / total;
+            skillGauge.fillAmount = overlayFill;
     }
 }

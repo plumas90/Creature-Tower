@@ -154,9 +154,19 @@ public class UiPlayerRoll : UIBase
     {
         if (playerStat == null || playerCool == null) return;
 
-        float total = Mathf.Max(0.0001f, playerStat.RollCoolTime.total);
-        float remain = Mathf.Clamp(playerCool.curRollCool, 0f, total);
-        float fill = 1f - (remain / total);
+        int maxStack = Mathf.Max(1, playerStat.MaxRollStack);
+        int curStack = Mathf.Clamp(playerStat.CurRollStack, 0, maxStack);
+
+        float rechargeProgress = 0f;
+        if (curStack < maxStack)
+        {
+            float total = Mathf.Max(0.0001f, playerStat.RollCoolTime.total);
+            float remain = Mathf.Clamp(playerCool.curRollCool, 0f, total);
+            rechargeProgress = 1f - (remain / total);
+        }
+
+        // 스택형 표시: (보유 스택 + 다음 충전 진행도) / 최대 스택
+        float fill = Mathf.Clamp01((curStack + rechargeProgress) / maxStack);
 
         if (dodgeGauge != null)
             dodgeGauge.fillAmount = fill;
@@ -164,8 +174,8 @@ public class UiPlayerRoll : UIBase
         if (dodgeSlider != null)
         {
             dodgeSlider.minValue = 0f;
-            dodgeSlider.maxValue = total;
-            dodgeSlider.value = total - remain;
+            dodgeSlider.maxValue = 1f;
+            dodgeSlider.value = fill;
         }
 
     }

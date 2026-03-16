@@ -61,6 +61,14 @@ public class TopDownMoveBase : MonoBehaviour
 
     private void Roll()
     {
+        CancelInvoke("EndRoll");
+        isRoll = true;
+        Invoke("EndRoll", 0.6f);
+    }
+
+    public void ForceRoll()
+    {
+        CancelInvoke("EndRoll");
         isRoll = true;
         Invoke("EndRoll", 0.6f);
     }
