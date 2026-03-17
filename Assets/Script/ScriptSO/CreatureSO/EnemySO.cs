@@ -6,42 +6,49 @@ using UnityEngine.U2D.Animation;
 public class EnemySO : ScriptableObject
 {
     [Header("EnemySO")]
-    public string enemyName;      // ÀÌ¸§
-    //public EnemyType type;        // Àû À¯Çü(BT±â¹Ý Çàµ¿ Á¦¾î¸¦ ÇÒ°Å¶ó ÇÊ¿ä¾øÀ¸¸é Áö¿ì±â)
-    public float atk;             // °ø°Ý·Â
-    public float hp;              // Ã¼·Â
+    public string enemyName;      // ï¿½Ì¸ï¿½
+    //public EnemyType type;        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(BTï¿½ï¿½ï¿½ ï¿½àµ¿ ï¿½ï¿½ï¿½î¸¦ ï¿½Ò°Å¶ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½)
+    public float atk;             // ï¿½ï¿½ï¿½Ý·ï¿½
+    public float hp;              // Ã¼ï¿½ï¿½
     public float speed;
     public int bossCount;
     public float IntroAnimationTime;
 
-    //public float bulletSpeed;     // ÅºÈ¯ ¼Óµµ
-    //public float atkDelay;        // °ø°Ý µô·¹ÀÌ
-    //public float SpecialAttackDelay; // Æ¯¼ö °ø°Ý µô·¹ÀÌ
-    //public float patrolDelay;     // ¼øÂû µô·¹ÀÌ
-    //public float chaseTime;       // ÃßÀû À¯Áö½Ã°£
-    //public float groggyTiem;      // ±âÀý ½Ã°£
-    //public float bulletLifeTime;  // ÃÑ¾Ë À¯Áö ½Ã°£
-    //public float breathAttackDelay; // ºê·¹½º °ø°Ý ÆÇÁ¤
-    //public float enemyMoveSpeed;  // ±âº» ÀÌµ¿¼Óµµ
-    //public float enemyChaseSpeed; // ±âº» ÃßÀû¼Óµµ
-    //public float viewAngle;       // Å½Áö ¹üÀ§
-    //public float viewDistance;     // Å½Áö ±æÀÌ
-    //public float attackRange;     // °ø°Ý ¹üÀ§
-    //public int dropGold;          // ÁÖ´Â ÀçÈ­ÀÇ ¾ç
-    //public int unitScale;         // À¯´Ö Å©±â
+    //public float bulletSpeed;     // ÅºÈ¯ ï¿½Óµï¿½
+    //public float atkDelay;        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //public float SpecialAttackDelay; // Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //public float patrolDelay;     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //public float chaseTime;       // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½
+    //public float groggyTiem;      // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    //public float bulletLifeTime;  // ï¿½Ñ¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    //public float breathAttackDelay; // ï¿½ê·¹ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //public float enemyMoveSpeed;  // ï¿½âº» ï¿½Ìµï¿½ï¿½Óµï¿½
+    //public float enemyChaseSpeed; // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½
+    //public float viewAngle;       // Å½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //public float viewDistance;     // Å½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //public float attackRange;     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //public int dropGold;          // ï¿½Ö´ï¿½ ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½
+    //public int unitScale;         // ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½
     //public SpriteLibraryAsset enemySpriteLibrary;
     //public Bullet enemyBulletPrefab;
 
-    //º¸½º
+    //ï¿½ï¿½ï¿½ï¿½
 
     public float bossPatternTime;
+
+    [Header("Boss BT")]
+    public float btChaseRange = 100f;
+    public float btStopDistance = 0.6f;
+    public float btRepathInterval = 0.15f;
+    public float btMoveSpeedMultiplier = 1f;
+    [Range(0f, 1f)] public float btChaseChance = 1f;
 }
 /*
  * public enum EnemyType
 {
-    Melee,                                       // ±Ù°Å¸®
-    Ranged,                                      // ¿ø°Å¸®
-    Coward,                                      // °ÌÀïÀÌ : ÀÏÁ¤ Ã¼·Â ÀÌÇÏ¸é, ÀÏÁ¤ ½Ã°£ ´Þ¾Æ³²
-                                                 //TODO Èú·¯
+    Melee,                                       // ï¿½Ù°Å¸ï¿½
+    Ranged,                                      // ï¿½ï¿½ï¿½Å¸ï¿½
+    Coward,                                      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Þ¾Æ³ï¿½
+                                                 //TODO ï¿½ï¿½ï¿½ï¿½
 }
 */

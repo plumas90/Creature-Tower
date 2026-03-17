@@ -31,7 +31,6 @@ public class TopDownMoveBase : MonoBehaviour
     {
         if (!isRoll)
         {
-            //Debug.Log("�����׽�Ʈ");
             ApplyMovment(_movemewtDirection);
         }
         else

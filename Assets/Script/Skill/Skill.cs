@@ -70,8 +70,6 @@ public class Skill : MonoBehaviour
         if (controller.playerStatHandler.ActiveSkillCastCount <= 0)
             return;
 
-        //��ų�� ������ ��Ÿ���� ����ϰ� ��Ÿ���� ������  controller.playerStatHandler.CanSkill = ����; �� �ٲ���
-        Debug.Log("��ų ����");
         controller.playerStatHandler.ActiveSkillCastCount = Mathf.Max(0, controller.playerStatHandler.ActiveSkillCastCount - 1);
         controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
         if (controller.playerStatHandler.CurSkillStack > 0)

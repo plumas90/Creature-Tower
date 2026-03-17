@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.5, y: 20, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1243643195706074102}
@@ -71,7 +71,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.009592652, y: -0.21583521}
+  m_Offset: {x: -0.009592652, y: -0.6847012}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -81,7 +81,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 3.1487586, y: 2.4868639}
+  m_Size: {x: 3.1487586, y: 1.5491319}
   m_EdgeRadius: 0
 --- !u!114 &7366481756909002281
 MonoBehaviour:
@@ -103,9 +103,12 @@ MonoBehaviour:
   bossCount: 1
   live: 1
   Player: {fileID: 0}
+  StageOwner: {fileID: 0}
   IntroTime: 0
   wait: 0
   invincibility: 0
+  forceKinematicBody2D: 1
+  enableBTChecklistLog: 0
   secondMouseMonkeySO: {fileID: 11400000, guid: e8b198e3e84058f40b1e936bf1ac07d7, type: 2}
   LastEarMonkeySO: {fileID: 11400000, guid: 004d7c59e510b984e8a34eadc2fcd45c, type: 2}
   tower3EarOBJ: {fileID: 6691639852510029620}
@@ -118,6 +121,17 @@ MonoBehaviour:
   mouthDetachedPrefab: {fileID: 0}
   collisionEffectDuration: 1
   introRotateAngle: 35
+  postIntroDelay: 1
+  eyeIntroClip: {fileID: 7400000, guid: e30b78473884e6f4d89daf60ff3cdd7c, type: 2}
+  mouseIntroClip: {fileID: 7400000, guid: 17912bf2676622c46bce54ccfaf6c517, type: 2}
+  earIntroClip: {fileID: 7400000, guid: 66f57bd7f34811144877d57077fe904b, type: 2}
+  eyeIntroStateName: EyeMonkeyIntro
+  mouseIntroStateName: MouseMonkeyIntro
+  earIntroStateName: EarsMonkeyIntro
+  eyeIntroAnimator: {fileID: 0}
+  mouseIntroAnimator: {fileID: 0}
+  earIntroAnimator: {fileID: 0}
+  verboseIntroLog: 1
 --- !u!50 &6007049222260109198
 Rigidbody2D:
   serializedVersion: 5

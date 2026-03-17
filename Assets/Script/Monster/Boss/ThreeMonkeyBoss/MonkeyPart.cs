@@ -9,6 +9,7 @@ public class MonkeyPart : BossBase
     public float collisionEffectDuration = 1f;
 
     Vector2 direction = Vector2.zero;
+    private float btMoveSpeedMultiplier = 1f;
 
     public void Init(Vector2 vecter)
     {
@@ -17,6 +18,7 @@ public class MonkeyPart : BossBase
         maxHp = MainSO.hp;
         curHp = MainSO.hp;
         speed = MainSO.speed;
+        btMoveSpeedMultiplier = MainSO != null ? Mathf.Max(0.01f, MainSO.btMoveSpeedMultiplier) : 1f;
         live = true;
 
         if (GameManager.Instance != null)
@@ -62,14 +64,22 @@ public class MonkeyPart : BossBase
 
     public void Update()
     {
-        if (!live || wait)
-        {
+        TickBehaviorTree();
+    }
 
-        }
-        else
-        {
-            transform.Translate(direction * speed * Time.deltaTime);
-        }
+    protected override BossBTNode CreateBehaviorTree()
+    {
+        return new BossSelectorNode(
+            new BossSequenceNode(
+                new BossConditionNode(() => live && !wait),
+                new BossActionNode(() =>
+                {
+                    transform.Translate(direction * speed * btMoveSpeedMultiplier * Time.deltaTime);
+                    return BossBTState.Running;
+                })
+            ),
+            new BossActionNode(() => BossBTState.Running)
+        );
     }
 
     private bool IsReflectTargetLayer(int layer)

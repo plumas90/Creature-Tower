@@ -240,15 +240,19 @@ public class GameManager : MonoBehaviour
     }
     public void BossCountSet(int i) 
     {
-        bossCount = i;
+        bossCount = Mathf.Max(0, i);
     }
+
+    public void BossCountAdd(int i)
+    {
+        if (i <= 0) return;
+        bossCount += i;
+    }
+
     public void BossCountMinus(int i)
     {
-        bossCount -= i;
-        if (bossCount <= 0) 
-        {
-            CurrentStage.OpenTopDoor();
-        }
+        if (i <= 0) return;
+        bossCount = Mathf.Max(0, bossCount - i);
     }
 
     public void NextLevel() 

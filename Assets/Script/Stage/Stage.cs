@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class Stage : MonoBehaviour
 {
@@ -27,8 +27,12 @@ public class Stage : MonoBehaviour
     public Transform BossSpawnPoint;
     public SpriteRenderer bossSpawnSprite;
 
+    [Header("Boss Entry Sequence")]
+    [Min(0f)] public float bossNameShowDuration = 1.2f;
+
 
     private bool firstIn;
+    private int aliveBossCount;
 
     private void OnValidate()
     {
@@ -84,6 +88,9 @@ public class Stage : MonoBehaviour
         {
             if (BossSpawnPoint != null)
                 bossOBJ.transform.position = BossSpawnPoint.position;
+
+            if (BossBase != null)
+                BossBase.StageOwner = this;
 
             bossOBJ.SetActive(false);
         }
@@ -147,11 +154,12 @@ public class Stage : MonoBehaviour
     {
         PrepareBossForRuntime();
         ObjActiveTrue();
+        aliveBossCount = 0;
         // 위 문은 보스 처치 전까지 잠금 (근접 감지 비활성)
         topDoor.Lock();
         // botDoor는 잠금 없이 활성 상태 유지 → 근접 시 자동 열림
-        if (GameManager.Instance != null && BossBase != null)
-            GameManager.Instance.bossCount = BossBase.bossCount;
+        if (GameManager.Instance != null)
+            GameManager.Instance.BossCountSet(0);
     }
     //public void NextGo(GameObject player)  ���� ��¼�ٺ��� �ؽ�Ʈ�����������׾�� ���ӸŴ��� ȣ���ؼ� ������
     //{
@@ -165,10 +173,23 @@ public class Stage : MonoBehaviour
             Debug.Log($"[Stage] InCheckClear on '{name}' | player={player?.name}");
             // 문 잠금을 먼저 처리 — 보스 세팅 예외와 무관하게 반드시 실행
             CloseBotDoor();
-            SummonBoss();
-            MovePlayerInside(player);
             firstIn = false;
+
+            StartCoroutine(BossRoomEnterSequence(player));
         }
+    }
+
+    private IEnumerator BossRoomEnterSequence(GameObject player)
+    {
+        BossBase summonedBoss = SummonBossObjectOnly();
+        MovePlayerInside(player);
+
+        if (summonedBoss == null)
+            yield break;
+
+        yield return ShowBossNameRoutine(summonedBoss.GetDisplayName(), bossNameShowDuration);
+
+        BeginBossBattle(summonedBoss);
     }
 
     private void MovePlayerInside(GameObject player)
@@ -182,23 +203,104 @@ public class Stage : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
     }
 
-    public void SummonBoss() 
+    public void SummonBoss()
+    {
+        BossBase summonedBoss = SummonBossObjectOnly();
+        if (summonedBoss == null)
+            return;
+
+        BeginBossBattle(summonedBoss);
+    }
+
+    private BossBase SummonBossObjectOnly()
     {
         PrepareBossForRuntime();
         if (BossBase == null || bossOBJ == null)
         {
             Debug.LogWarning($"[Stage] SummonBoss failed on '{name}': bossOBJ/BossBase is null. Assign bossPrefab or a boss scene instance.");
-            return;
+            return null;
         }
 
         if (BossSpawnPoint != null)
             bossOBJ.transform.position = BossSpawnPoint.position;
 
-        BossBase.StatSet();
+        BossBase.StageOwner = this;
         bossOBJ.SetActive(true);
-        UIBossHP.NotifyBossEngaged(BossBase);
+        BossBase.OnBossActivatedBeforeIntro();
 
-        Debug.Log($"[Stage] Boss summoned on '{name}' => {bossOBJ.name}");
+        Debug.Log($"[Stage] Boss object activated on '{name}' => {bossOBJ.name}");
+        return BossBase;
+    }
+
+    private void BeginBossBattle(BossBase boss)
+    {
+        if (boss == null)
+            return;
+
+        boss.StatSet();
+        RegisterBossSpawnCount(boss.bossCount);
+
+        Debug.Log($"[Stage] Boss battle started on '{name}' => {boss.name}");
+    }
+
+    public void RegisterBossSpawnCount(int count)
+    {
+        if (count <= 0)
+            return;
+
+        aliveBossCount += count;
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.BossCountAdd(count);
+    }
+
+    public void NotifyBossDied(BossBase deadBoss, int count)
+    {
+        if (count <= 0)
+            count = 1;
+
+        aliveBossCount = Mathf.Max(0, aliveBossCount - count);
+
+        if (aliveBossCount <= 0)
+            OpenTopDoor();
+    }
+
+    private IEnumerator ShowBossNameRoutine(string bossDisplayName, float duration)
+    {
+        if (duration <= 0f)
+            yield break;
+
+        Canvas canvas = FindObjectOfType<Canvas>(true);
+        if (canvas == null)
+        {
+            GameObject canvasObj = new GameObject("Canvas");
+            canvas = canvasObj.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvasObj.AddComponent<CanvasScaler>();
+            canvasObj.AddComponent<GraphicRaycaster>();
+        }
+
+        GameObject titleObj = new GameObject("BossNameTitle", typeof(RectTransform), typeof(Text));
+        titleObj.transform.SetParent(canvas.transform, false);
+
+        RectTransform rt = titleObj.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = Vector2.zero;
+        rt.sizeDelta = new Vector2(1000f, 120f);
+
+        Text txt = titleObj.GetComponent<Text>();
+        txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        txt.fontSize = 44;
+        txt.alignment = TextAnchor.MiddleCenter;
+        txt.color = Color.white;
+        txt.text = string.IsNullOrEmpty(bossDisplayName) ? "BOSS" : bossDisplayName;
+
+        yield return new WaitForSeconds(duration);
+
+        if (titleObj != null)
+            Destroy(titleObj);
     }
 
     public void ResultSummon() 

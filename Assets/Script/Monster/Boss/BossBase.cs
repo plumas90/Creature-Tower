@@ -19,6 +19,7 @@ public class BossBase : MonoBehaviour
     public bool live;
     //[HideInInspector] 
     public GameObject Player;
+    public Stage StageOwner;
     public float IntroTime;
 
     public bool wait =true;
@@ -28,6 +29,14 @@ public class BossBase : MonoBehaviour
     [SerializeField] private bool forceKinematicBody2D = true;
 
     protected bool isDead;
+    protected BossBTNode behaviorTreeRoot;
+    protected bool brainRunning;
+
+    [Header("BT Debug")]
+    [SerializeField] private bool enableBTChecklistLog;
+
+    private int firstCallCount;
+    private int brainStartCount;
 
     private Rigidbody2D _rb2d;
 
@@ -44,24 +53,67 @@ public class BossBase : MonoBehaviour
         maxHp = MainSO.hp;
         curHp = MainSO.hp;
         speed = MainSO.speed;
-        IntroTime = MainSO.IntroAnimationTime;
+        IntroTime = ResolveIntroTime();
+        float postIntroDelay = Mathf.Max(0f, ResolvePostIntroDelay());
+        float battleStartDelay = IntroTime + postIntroDelay;
         live = true;
         isDead = false;
+        brainRunning = false;
+        firstCallCount = 0;
+        brainStartCount = 0;
 
         if (GameManager.Instance != null)
             Player = GameManager.Instance.playerOBJ;
 
-        // ��ġ ���� ������ this.pos this.transform.position = ���� ���� ������
-        if (GameManager.Instance != null)
-            GameManager.Instance.bossCount = MainSO.bossCount;
-        
+        OnBeforeIntroStart();
+
         //�Ʒ� �ð� ��� ���� ���� ���� ���� ���� ���� �ִϸ��̼��� �ִٸ� �׷����� �ƴϸ� 1�ʰ���
         // �׷��� �ȴٸ� 1�ʸ� ���׹� ���̽��� ���� ��ŸƮ ��� ������ �����ɷ� �����߰���
-        StartInvincibilityNSecond(IntroTime);
-        WaitPls(IntroTime);
-        FirstPls(IntroTime);
+        StartInvincibilityNSecond(battleStartDelay);
+        WaitPls(battleStartDelay);
+        FirstPls(battleStartDelay);
+
+        behaviorTreeRoot = CreateBehaviorTree();
 
         UIBossHP.NotifyBossEngaged(this);
+    }
+
+    // 보스 오브젝트가 활성화된 직후(이름 표시 전)에 호출되는 훅.
+    // 파생 보스에서 기본 애니메이션 잠금 등 사전 준비에 사용한다.
+    public virtual void OnBossActivatedBeforeIntro()
+    {
+    }
+
+    // StatSet 시작 시점에 호출되는 훅.
+    // 파생 보스에서 인트로 시작 직전 상태 복구에 사용한다.
+    protected virtual void OnBeforeIntroStart()
+    {
+    }
+
+    protected virtual BossBTNode CreateBehaviorTree()
+    {
+        return null;
+    }
+
+    protected virtual float ResolveIntroTime()
+    {
+        return MainSO != null ? Mathf.Max(0f, MainSO.IntroAnimationTime) : 0f;
+    }
+
+    protected virtual float ResolvePostIntroDelay()
+    {
+        return 0f;
+    }
+
+    protected void TickBehaviorTree()
+    {
+        if (!live || wait || !brainRunning)
+            return;
+
+        if (behaviorTreeRoot != null)
+        {
+            behaviorTreeRoot.Tick();
+        }
     }
 
     protected virtual void Awake()
@@ -108,12 +160,56 @@ public class BossBase : MonoBehaviour
 
     public void FirstPls(float second) 
     {
-        CancelInvoke(nameof(First));
-        Invoke(nameof(First), second);
+        CancelInvoke(nameof(InvokeFirstOnce));
+        Invoke(nameof(InvokeFirstOnce), second);
     }
+
+    private void InvokeFirstOnce()
+    {
+        if (!live || isDead)
+            return;
+
+        if (firstCallCount > 0)
+        {
+            if (enableBTChecklistLog)
+                Debug.LogWarning($"[BossBTChecklist] Duplicate First blocked: {name}");
+            return;
+        }
+
+        firstCallCount++;
+        StartBrain();
+        First();
+
+        if (enableBTChecklistLog)
+            Debug.Log($"[BossBTChecklist] First invoked once: {name}");
+    }
+
     public virtual void First() 
     { 
 
+    }
+
+    protected virtual void StartBrain()
+    {
+        if (brainRunning)
+            return;
+
+        brainRunning = true;
+        brainStartCount++;
+
+        if (enableBTChecklistLog)
+            Debug.Log($"[BossBTChecklist] Brain started: {name} (count={brainStartCount})");
+    }
+
+    protected virtual void StopBrain()
+    {
+        if (!brainRunning)
+            return;
+
+        brainRunning = false;
+
+        if (enableBTChecklistLog)
+            Debug.Log($"[BossBTChecklist] Brain stopped: {name}");
     }
 
     public virtual void OnCollisionEnter2D(Collision2D collision)
@@ -122,7 +218,6 @@ public class BossBase : MonoBehaviour
         if (playerStat) 
         {
             playerStat.Damage(atk);
-            Debug.Log($"����ü�� {playerStat}");
         }
     }
 
@@ -152,9 +247,14 @@ public class BossBase : MonoBehaviour
         if (isDead) return;
         isDead = true;
         live = false;
+        StopBrain();
+        behaviorTreeRoot = null;
 
         if (GameManager.Instance != null)
             GameManager.Instance.BossCountMinus(bossCount);
+
+        if (StageOwner != null)
+            StageOwner.NotifyBossDied(this, bossCount);
 
         UIBossHP.NotifyBossDied(this);
 
@@ -202,5 +302,34 @@ public class BossBase : MonoBehaviour
     protected virtual void OnDisable()
     {
         CancelInvoke();
+        StopBrain();
+        behaviorTreeRoot = null;
+    }
+
+    [ContextMenu("BT/Print Checklist Report")]
+    private void PrintBTChecklistReport()
+    {
+        Debug.Log(BuildBTChecklistReport());
+    }
+
+    public string BuildBTChecklistReport()
+    {
+        bool introGateReady = wait || !brainRunning;
+        bool firstOnce = firstCallCount <= 1;
+        bool brainStartOnce = brainStartCount <= 1;
+
+        return $"[BossBTChecklist] {name}\n" +
+               $"- intro gate safe(wait || !brainRunning): {introGateReady}\n" +
+               $"- first invoked <= 1: {firstOnce} (count={firstCallCount})\n" +
+               $"- brain started <= 1: {brainStartOnce} (count={brainStartCount})\n" +
+               $"- live={live}, wait={wait}, invincibility={invincibility}, brainRunning={brainRunning}";
+    }
+
+    public string GetDisplayName()
+    {
+        if (MainSO != null && !string.IsNullOrEmpty(MainSO.enemyName))
+            return MainSO.enemyName;
+
+        return name;
     }
 }

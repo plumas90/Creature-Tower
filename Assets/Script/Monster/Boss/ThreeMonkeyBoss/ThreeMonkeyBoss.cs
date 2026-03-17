@@ -1,4 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 using UnityEngine;
 
 public class ThreeMonkeyBoss : BossBase
@@ -33,6 +36,21 @@ public class ThreeMonkeyBoss : BossBase
 
     [Header("Intro Animation")]
     [Min(0f)] public float introRotateAngle = 35f;
+    [Min(0f)] [SerializeField] private float postIntroDelay = 1f;
+    [SerializeField] private AnimationClip eyeIntroClip;
+    [SerializeField] private AnimationClip mouseIntroClip;
+    [SerializeField] private AnimationClip earIntroClip;
+    [SerializeField] private string eyeIntroStateName = "EyeMonkeyIntro";
+    [SerializeField] private string mouseIntroStateName = "MouseMonkeyIntro";
+    [SerializeField] private string earIntroStateName = "EarsMonkeyIntro";
+    [SerializeField] private Animator eyeIntroAnimator;
+    [SerializeField] private Animator mouseIntroAnimator;
+    [SerializeField] private Animator earIntroAnimator;
+    [SerializeField] private bool verboseIntroLog = true;
+
+    private bool introAutoConfiguredLogged;
+    private readonly List<PlayableGraph> introPlayableGraphs = new List<PlayableGraph>();
+    private readonly List<Animator> frozenAnimators = new List<Animator>();
 
     private bool eyeDetached;
     private bool earDetached;
@@ -45,15 +63,20 @@ public class ThreeMonkeyBoss : BossBase
     Transform targetPlayerTransform;
     Vector2 direction = Vector2.zero;
 
+    private float btChaseRange = 100f;
+    private float btStopDistance = 0.6f;
+    private float btRepathInterval = 0.15f;
+    private float btMoveSpeedMultiplier = 1f;
+    private float btChaseChance = 1f;
+
     public override void StatSet() 
     {
+        StopIntroPlayableGraphs();
         base.StatSet();
         _boxCollider2D = this.GetComponent<BoxCollider2D>();
 
         // 분리형 보스 카운트 규칙: 시작은 본체 1마리
         bossCount = 1;
-        if (GameManager.Instance != null)
-            GameManager.Instance.bossCount = 1;
 
         eyeDetached = false;
         earDetached = false;
@@ -61,14 +84,48 @@ public class ThreeMonkeyBoss : BossBase
         currentBottomEffect = MonkeyEffectType.Eye;
 
         EnsureVisualState();
+        ResolveBTParams(MainSO);
 
         if (Player != null)
             targetPlayerTransform = Player.transform;
 
-        if (IntroTime > 0f)
+        if (!TryPlayAnimatorIntro() && IntroTime > 0f)
             StartCoroutine(PlayStackIntroAnimation(IntroTime));
 
+        if (introPlayableGraphs.Count > 0 && IntroTime > 0f)
+            StartCoroutine(StopIntroPlayableGraphsAfterDelay(IntroTime + 0.1f));
+
         Debug.Log($"[ThreeMonkeyBoss] StatSet done | pos={transform.position} | active={gameObject.activeSelf}");
+    }
+
+    public override void OnBossActivatedBeforeIntro()
+    {
+        EnsurePartIntroAnimators();
+        FreezeAnimator(eyeIntroAnimator);
+        FreezeAnimator(mouseIntroAnimator);
+        FreezeAnimator(earIntroAnimator);
+
+        if (verboseIntroLog)
+            Debug.Log($"[ThreeMonkeyBoss][Intro] pre-intro freeze | eye={eyeIntroAnimator != null} mouse={mouseIntroAnimator != null} ear={earIntroAnimator != null}");
+    }
+
+    protected override void OnBeforeIntroStart()
+    {
+        RestoreFrozenAnimators();
+    }
+
+    protected override float ResolveIntroTime()
+    {
+        float clipDuration = GetConfiguredIntroDuration();
+        if (clipDuration > 0f)
+            return clipDuration;
+
+        return base.ResolveIntroTime();
+    }
+
+    protected override float ResolvePostIntroDelay()
+    {
+        return Mathf.Max(0f, postIntroDelay);
     }
 
     private void EnsureVisualState()
@@ -98,19 +155,372 @@ public class ThreeMonkeyBoss : BossBase
     // Update is called once per frame
     public void Update()
     {
-        if (wait)
-        {
+        TickBehaviorTree();
+    }
 
-        }
-        else 
+    protected override BossBTNode CreateBehaviorTree()
+    {
+        return new BossSelectorNode(
+            new BossSequenceNode(
+                new BossConditionNode(() => live && !wait),
+                new BossConditionNode(() => EnsureTarget()),
+                new BossConditionNode(() => IsTargetInRange()),
+                new BossRandomChanceNode(() => btChaseChance, new BossActionNode(() => BossBTState.Success)),
+                new BossSelectorNode(
+                    new BossCooldownNode(() => btRepathInterval, new BossActionNode(() =>
+                    {
+                        GetDirection();
+                        return BossBTState.Success;
+                    })),
+                    new BossActionNode(() => BossBTState.Success)
+                ),
+                new BossActionNode(() =>
+                {
+                    MoveTowardTarget();
+                    return BossBTState.Running;
+                })
+            ),
+            new BossActionNode(() => BossBTState.Running)
+        );
+    }
+
+    private bool EnsureTarget()
+    {
+        if (targetPlayerTransform == null && Player != null)
+            targetPlayerTransform = Player.transform;
+
+        return targetPlayerTransform != null;
+    }
+
+    private bool IsTargetInRange()
+    {
+        if (targetPlayerTransform == null)
+            return false;
+
+        float sqrDist = ((Vector2)targetPlayerTransform.position - (Vector2)transform.position).sqrMagnitude;
+        return sqrDist <= btChaseRange * btChaseRange;
+    }
+
+    private void MoveTowardTarget()
+    {
+        if (targetPlayerTransform == null)
+            return;
+
+        Vector2 toTarget = (Vector2)targetPlayerTransform.position - (Vector2)transform.position;
+        if (toTarget.sqrMagnitude <= btStopDistance * btStopDistance)
+            return;
+
+        transform.Translate(direction * speed * btMoveSpeedMultiplier * Time.deltaTime);
+    }
+
+    private void ResolveBTParams(EnemySO so)
+    {
+        if (so == null)
         {
-            transform.Translate(direction * speed * Time.deltaTime);
+            btChaseRange = 100f;
+            btStopDistance = 0.6f;
+            btRepathInterval = 0.15f;
+            btMoveSpeedMultiplier = 1f;
+            btChaseChance = 1f;
+            return;
         }
+
+        btChaseRange = Mathf.Max(0.01f, so.btChaseRange);
+        btStopDistance = Mathf.Max(0f, so.btStopDistance);
+        btRepathInterval = Mathf.Max(0f, so.btRepathInterval);
+        btMoveSpeedMultiplier = Mathf.Max(0.01f, so.btMoveSpeedMultiplier);
+        btChaseChance = Mathf.Clamp01(so.btChaseChance);
+    }
+
+    private float GetConfiguredIntroDuration()
+    {
+        EnsurePartIntroAnimators();
+
+        float eye = ResolvePartIntroDuration(eyeIntroClip, eyeIntroAnimator, eyeIntroStateName);
+        float mouse = ResolvePartIntroDuration(mouseIntroClip, mouseIntroAnimator, mouseIntroStateName);
+        float ear = ResolvePartIntroDuration(earIntroClip, earIntroAnimator, earIntroStateName);
+
+        return Mathf.Max(eye, Mathf.Max(mouse, ear));
+    }
+
+    private bool TryPlayAnimatorIntro()
+    {
+        EnsurePartIntroAnimators();
+
+        bool eyePlayed = PlayPartIntro("Eye", eyeIntroAnimator, eyeIntroClip, eyeIntroStateName);
+        bool mousePlayed = PlayPartIntro("Mouse", mouseIntroAnimator, mouseIntroClip, mouseIntroStateName);
+        bool earPlayed = PlayPartIntro("Ear", earIntroAnimator, earIntroClip, earIntroStateName);
+
+        return eyePlayed || mousePlayed || earPlayed;
+    }
+
+    private void EnsurePartIntroAnimators()
+    {
+        EnsurePartObjects();
+
+        if (eyeIntroAnimator == null)
+            eyeIntroAnimator = GetAnimatorFromObject(tower1EyeOBJ);
+
+        if (mouseIntroAnimator == null)
+            mouseIntroAnimator = GetAnimatorFromObject(tower2MouseOBJ);
+
+        if (earIntroAnimator == null)
+            earIntroAnimator = GetAnimatorFromObject(tower3EarOBJ);
+
+        if (!introAutoConfiguredLogged)
+        {
+            introAutoConfiguredLogged = true;
+            Debug.Log($"[ThreeMonkeyBoss] Intro auto-map | eye={(eyeIntroAnimator != null)} mouse={(mouseIntroAnimator != null)} ear={(earIntroAnimator != null)}");
+        }
+    }
+
+    private void EnsurePartObjects()
+    {
+        if (tower1EyeOBJ == null)
+            tower1EyeOBJ = FindChildByKeywords("eye", "monkeyeye", "1monkey");
+
+        if (tower2MouseOBJ == null)
+            tower2MouseOBJ = FindChildByKeywords("mouse", "monkeymouse", "2monkey");
+
+        if (tower3EarOBJ == null)
+            tower3EarOBJ = FindChildByKeywords("ear", "ears", "monkeyear", "3monkey");
+    }
+
+    private GameObject FindChildByKeywords(params string[] keywords)
+    {
+        if (keywords == null || keywords.Length == 0)
+            return null;
+
+        Transform[] children = GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < children.Length; i++)
+        {
+            Transform tr = children[i];
+            if (tr == null || tr == transform)
+                continue;
+
+            string n = tr.name.ToLowerInvariant();
+            for (int k = 0; k < keywords.Length; k++)
+            {
+                string kw = keywords[k];
+                if (string.IsNullOrEmpty(kw))
+                    continue;
+
+                if (n.Contains(kw.ToLowerInvariant()))
+                    return tr.gameObject;
+            }
+        }
+
+        return null;
+    }
+
+    private Animator GetAnimatorFromObject(GameObject go)
+    {
+        if (go == null)
+            return null;
+
+        Animator animator = go.GetComponent<Animator>();
+        if (animator == null)
+            animator = go.GetComponentInChildren<Animator>(true);
+
+        return animator;
+    }
+
+    private float ResolvePartIntroDuration(AnimationClip configuredClip, Animator animator, string stateName)
+    {
+        AnimationClip clip = GetPartIntroClip(configuredClip, animator, stateName);
+        return clip != null ? Mathf.Max(0f, clip.length) : 0f;
+    }
+
+    private bool PlayPartIntro(string partName, Animator animator, AnimationClip configuredClip, string stateName)
+    {
+        if (animator == null)
+        {
+            if (verboseIntroLog)
+                Debug.LogWarning($"[ThreeMonkeyBoss][Intro] {partName}: animator not found");
+            return false;
+        }
+
+        // 클립이 명시되어 있으면 상태보다 우선해서 직접 재생한다.
+        if (configuredClip != null)
+        {
+            bool clipPlayed = PlayClipWithPlayable(animator, configuredClip);
+            if (verboseIntroLog)
+                Debug.Log($"[ThreeMonkeyBoss][Intro] {partName}: direct clip '{configuredClip.name}' => {clipPlayed}");
+            return clipPlayed;
+        }
+
+        if (animator.runtimeAnimatorController == null)
+        {
+            if (verboseIntroLog)
+                Debug.LogWarning($"[ThreeMonkeyBoss][Intro] {partName}: runtimeAnimatorController missing and no configured clip");
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(stateName) && TryPlayState(animator, stateName))
+        {
+            if (verboseIntroLog)
+                Debug.Log($"[ThreeMonkeyBoss][Intro] {partName}: state '{stateName}'");
+            return true;
+        }
+
+        if (TryPlayIntroNamedState(animator))
+        {
+            if (verboseIntroLog)
+                Debug.Log($"[ThreeMonkeyBoss][Intro] {partName}: fallback intro-named state");
+            return true;
+        }
+
+        AnimationClip clip = GetPartIntroClip(null, animator, stateName);
+        bool played = PlayClipWithPlayable(animator, clip);
+        if (verboseIntroLog)
+            Debug.Log($"[ThreeMonkeyBoss][Intro] {partName}: controller clip fallback '{(clip != null ? clip.name : "null")}' => {played}");
+
+        return played;
+    }
+
+    private bool TryPlayState(Animator animator, string stateName)
+    {
+        if (animator == null || animator.runtimeAnimatorController == null)
+            return false;
+
+        int stateHash = Animator.StringToHash(stateName);
+        if (!animator.HasState(0, stateHash))
+            return false;
+
+        animator.Play(stateHash, 0, 0f);
+        animator.Update(0f);
+        return true;
+    }
+
+    private bool TryPlayIntroNamedState(Animator animator)
+    {
+        if (animator == null || animator.runtimeAnimatorController == null)
+            return false;
+
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        if (clips == null || clips.Length == 0)
+            return false;
+
+        for (int i = 0; i < clips.Length; i++)
+        {
+            AnimationClip clip = clips[i];
+            if (clip == null)
+                continue;
+
+            if (clip.name.IndexOf("intro", System.StringComparison.OrdinalIgnoreCase) < 0)
+                continue;
+
+            if (TryPlayState(animator, clip.name))
+                return true;
+        }
+
+        return false;
+    }
+
+    private AnimationClip GetPartIntroClip(AnimationClip configuredClip, Animator animator, string stateName)
+    {
+        if (configuredClip != null)
+            return configuredClip;
+
+        if (animator == null || animator.runtimeAnimatorController == null)
+            return null;
+
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        if (clips == null || clips.Length == 0)
+            return null;
+
+        if (!string.IsNullOrEmpty(stateName))
+        {
+            for (int i = 0; i < clips.Length; i++)
+            {
+                AnimationClip clip = clips[i];
+                if (clip != null && clip.name.Equals(stateName, System.StringComparison.OrdinalIgnoreCase))
+                    return clip;
+            }
+        }
+
+        for (int i = 0; i < clips.Length; i++)
+        {
+            AnimationClip clip = clips[i];
+            if (clip != null && clip.name.IndexOf("intro", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                return clip;
+        }
+
+        return clips[0];
+    }
+
+    private bool PlayClipWithPlayable(Animator animator, AnimationClip clip)
+    {
+        if (animator == null || clip == null)
+            return false;
+
+        PlayableGraph graph = PlayableGraph.Create($"ThreeMonkeyIntro_{animator.gameObject.name}");
+        graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+
+        AnimationPlayableOutput output = AnimationPlayableOutput.Create(graph, "IntroOutput", animator);
+        AnimationClipPlayable clipPlayable = AnimationClipPlayable.Create(graph, clip);
+        clipPlayable.SetApplyFootIK(false);
+        clipPlayable.SetApplyPlayableIK(false);
+        clipPlayable.SetTime(0d);
+        clipPlayable.SetSpeed(1d);
+        output.SetSourcePlayable(clipPlayable);
+
+        graph.Play();
+        introPlayableGraphs.Add(graph);
+        return true;
+    }
+
+    private IEnumerator StopIntroPlayableGraphsAfterDelay(float delay)
+    {
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        StopIntroPlayableGraphs();
+    }
+
+    private void StopIntroPlayableGraphs()
+    {
+        for (int i = 0; i < introPlayableGraphs.Count; i++)
+        {
+            PlayableGraph graph = introPlayableGraphs[i];
+            if (graph.IsValid())
+                graph.Destroy();
+        }
+
+        introPlayableGraphs.Clear();
+    }
+
+    private void FreezeAnimator(Animator animator)
+    {
+        if (animator == null)
+            return;
+
+        if (!frozenAnimators.Contains(animator))
+            frozenAnimators.Add(animator);
+
+        animator.speed = 0f;
+        animator.Update(0f);
+    }
+
+    private void RestoreFrozenAnimators()
+    {
+        for (int i = 0; i < frozenAnimators.Count; i++)
+        {
+            Animator animator = frozenAnimators[i];
+            if (animator == null)
+                continue;
+
+            animator.speed = 1f;
+            animator.Update(0f);
+        }
+
+        frozenAnimators.Clear();
     }
     
     //TODO   ���̾� �ٲٱ� �� �ؾߵ�;
     public override void First()
     {
+        StopIntroPlayableGraphs();
         GetDirection();
     }
 
@@ -227,6 +637,7 @@ public class ThreeMonkeyBoss : BossBase
         maxHp = enemyso.hp;
         curHp = enemyso.hp;
         speed = enemyso.speed;
+        ResolveBTParams(enemyso);
     }
 
 
@@ -245,6 +656,7 @@ public class ThreeMonkeyBoss : BossBase
         {
             part.effectType = MonkeyEffectType.Eye;
             part.bossCount = 1;
+            part.StageOwner = StageOwner;
             part.Init(GetDetachDirection());
 
             // 분리 개체가 정상 생성된 경우에만 카운트 증가
@@ -284,6 +696,7 @@ public class ThreeMonkeyBoss : BossBase
         {
             part.effectType = MonkeyEffectType.Ear;
             part.bossCount = 1;
+            part.StageOwner = StageOwner;
             part.Init(GetDetachDirection());
 
             // 분리 개체가 정상 생성된 경우에만 카운트 증가
@@ -335,8 +748,11 @@ public class ThreeMonkeyBoss : BossBase
     private void AddSplitBossCount(int value)
     {
         if (value <= 0) return;
-        if (GameManager.Instance == null) return;
-        GameManager.Instance.bossCount += value;
+
+        if (StageOwner != null)
+            StageOwner.RegisterBossSpawnCount(value);
+        else if (GameManager.Instance != null)
+            GameManager.Instance.BossCountAdd(value);
     }
 
     // mouthDetachedPrefab 슬롯은 현재 3단 분리 확장(입 분리 추가) 시 사용 예정.
@@ -347,16 +763,18 @@ public class ThreeMonkeyBoss : BossBase
 
         var runTime = 0.0f;
         Transform moveTarget = target.transform;
+        Vector3 startPos = moveTarget.position;
+        Vector3 endPos = new Vector3(endposition.x, endposition.y, startPos.z);
         while (runTime < duration)
         {
             runTime += Time.deltaTime;
-
-            moveTarget.position = Vector3.Lerp(moveTarget.position, endposition, runTime / duration);
+            float t = duration > 0f ? Mathf.Clamp01(runTime / duration) : 1f;
+            moveTarget.position = Vector3.Lerp(startPos, endPos, t);
 
             yield return null;
         }
 
-        moveTarget.position = endposition;
+        moveTarget.position = endPos;
     }
 
     private IEnumerator PlayStackIntroAnimation(float duration)
@@ -392,6 +810,13 @@ public class ThreeMonkeyBoss : BossBase
         if (bottom != null) bottom.localRotation = b0;
         if (middle != null) middle.localRotation = m0;
         if (top != null) top.localRotation = t0;
+    }
+
+    protected override void OnDisable()
+    {
+        RestoreFrozenAnimators();
+        StopIntroPlayableGraphs();
+        base.OnDisable();
     }
 
 }
