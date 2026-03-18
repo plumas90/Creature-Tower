@@ -29,7 +29,7 @@ public class MakeAugmentListManager : MonoBehaviour//���� ����Ʈ
     {
         playerObj = player;
     }
-    
+
     public void startset(GameObject gameobj) 
     {
         playerObj = gameobj;
@@ -38,7 +38,7 @@ public class MakeAugmentListManager : MonoBehaviour//���� ����Ʈ
 
     private void Awake()
     {
-        Debug.Log("MakeAugmentManager - Awake");
+        //Debug.Log("MakeAugmentManager - Awake");
         Instance = this;        
 
         //DontDestroyOnLoad(this);

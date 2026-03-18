@@ -47,10 +47,16 @@ public class ThreeMonkeyBoss : BossBase
     [SerializeField] private Animator mouseIntroAnimator;
     [SerializeField] private Animator earIntroAnimator;
     [SerializeField] private bool verboseIntroLog = true;
+    [Header("BT Debug")]
+    [SerializeField] private bool verboseBTLog = true;
+    [Min(0.1f)] [SerializeField] private float btHeartbeatInterval = 0.5f;
 
     private bool introAutoConfiguredLogged;
     private readonly List<PlayableGraph> introPlayableGraphs = new List<PlayableGraph>();
     private readonly List<Animator> frozenAnimators = new List<Animator>();
+    private readonly Dictionary<string, bool> btConditionTrace = new Dictionary<string, bool>();
+    private readonly Dictionary<string, BossBTState> btStateTrace = new Dictionary<string, BossBTState>();
+    private float nextBtHeartbeatTime;
 
     private bool eyeDetached;
     private bool earDetached;
@@ -60,14 +66,12 @@ public class ThreeMonkeyBoss : BossBase
     private MonkeyEffectType currentBottomEffect = MonkeyEffectType.Eye;
     private Vector2 lastHitBulletDirection = Vector2.right;
 
-    Transform targetPlayerTransform;
     Vector2 direction = Vector2.zero;
 
-    private float btChaseRange = 100f;
-    private float btStopDistance = 0.6f;
-    private float btRepathInterval = 0.15f;
     private float btMoveSpeedMultiplier = 1f;
-    private float btChaseChance = 1f;
+
+    [Header("Ballistic Movement")]
+    [SerializeField] private Vector2 startDirection = new Vector2(1f, -1f); // 5 o'clock
 
     public override void StatSet() 
     {
@@ -86,9 +90,6 @@ public class ThreeMonkeyBoss : BossBase
         EnsureVisualState();
         ResolveBTParams(MainSO);
 
-        if (Player != null)
-            targetPlayerTransform = Player.transform;
-
         if (!TryPlayAnimatorIntro() && IntroTime > 0f)
             StartCoroutine(PlayStackIntroAnimation(IntroTime));
 
@@ -100,6 +101,8 @@ public class ThreeMonkeyBoss : BossBase
 
     public override void OnBossActivatedBeforeIntro()
     {
+        base.OnBossActivatedBeforeIntro();
+
         EnsurePartIntroAnimators();
         FreezeAnimator(eyeIntroAnimator);
         FreezeAnimator(mouseIntroAnimator);
@@ -155,6 +158,7 @@ public class ThreeMonkeyBoss : BossBase
     // Update is called once per frame
     public void Update()
     {
+        TraceBtHeartbeat();
         TickBehaviorTree();
     }
 
@@ -162,74 +166,84 @@ public class ThreeMonkeyBoss : BossBase
     {
         return new BossSelectorNode(
             new BossSequenceNode(
-                new BossConditionNode(() => live && !wait),
-                new BossConditionNode(() => EnsureTarget()),
-                new BossConditionNode(() => IsTargetInRange()),
-                new BossRandomChanceNode(() => btChaseChance, new BossActionNode(() => BossBTState.Success)),
-                new BossSelectorNode(
-                    new BossCooldownNode(() => btRepathInterval, new BossActionNode(() =>
-                    {
-                        GetDirection();
-                        return BossBTState.Success;
-                    })),
-                    new BossActionNode(() => BossBTState.Success)
-                ),
+                new BossConditionNode(() => TraceCondition("Gate(live && !wait)", live && !wait)),
                 new BossActionNode(() =>
                 {
-                    MoveTowardTarget();
-                    return BossBTState.Running;
+                    MoveBallistic();
+                    return TraceState("MoveBallistic", BossBTState.Running);
                 })
             ),
-            new BossActionNode(() => BossBTState.Running)
+            new BossActionNode(() => TraceState("IdleFallback", BossBTState.Running))
         );
     }
 
-    private bool EnsureTarget()
+    private bool TraceCondition(string key, bool value)
     {
-        if (targetPlayerTransform == null && Player != null)
-            targetPlayerTransform = Player.transform;
+        if (!verboseBTLog)
+            return value;
 
-        return targetPlayerTransform != null;
+        if (!btConditionTrace.TryGetValue(key, out bool prev) || prev != value)
+        {
+            btConditionTrace[key] = value;
+            Debug.Log($"[ThreeMonkeyBoss][BT] {key} => {value}");
+        }
+
+        return value;
     }
 
-    private bool IsTargetInRange()
+    private BossBTState TraceState(string key, BossBTState state)
     {
-        if (targetPlayerTransform == null)
-            return false;
+        if (!verboseBTLog)
+            return state;
 
-        float sqrDist = ((Vector2)targetPlayerTransform.position - (Vector2)transform.position).sqrMagnitude;
-        return sqrDist <= btChaseRange * btChaseRange;
+        if (!btStateTrace.TryGetValue(key, out BossBTState prev) || prev != state)
+        {
+            btStateTrace[key] = state;
+            Debug.Log($"[ThreeMonkeyBoss][BT] {key} => {state}");
+        }
+
+        return state;
     }
 
-    private void MoveTowardTarget()
+    private void TraceBtHeartbeat()
     {
-        if (targetPlayerTransform == null)
+        if (!verboseBTLog)
             return;
 
-        Vector2 toTarget = (Vector2)targetPlayerTransform.position - (Vector2)transform.position;
-        if (toTarget.sqrMagnitude <= btStopDistance * btStopDistance)
+        if (Time.time < nextBtHeartbeatTime)
             return;
+
+        nextBtHeartbeatTime = Time.time + btHeartbeatInterval;
+
+        Debug.Log($"[ThreeMonkeyBoss][BT] heartbeat | live={live} wait={wait} inv={invincibility} brain={brainRunning} speed={speed:F2} mul={btMoveSpeedMultiplier:F2} dir={direction}");
+    }
+
+    private void MoveBallistic()
+    {
+        if (direction.sqrMagnitude < 0.0001f)
+            direction = GetStartDirection();
 
         transform.Translate(direction * speed * btMoveSpeedMultiplier * Time.deltaTime);
+    }
+
+    private Vector2 GetStartDirection()
+    {
+        if (startDirection.sqrMagnitude < 0.0001f)
+            return new Vector2(1f, -1f).normalized;
+
+        return startDirection.normalized;
     }
 
     private void ResolveBTParams(EnemySO so)
     {
         if (so == null)
         {
-            btChaseRange = 100f;
-            btStopDistance = 0.6f;
-            btRepathInterval = 0.15f;
             btMoveSpeedMultiplier = 1f;
-            btChaseChance = 1f;
             return;
         }
 
-        btChaseRange = Mathf.Max(0.01f, so.btChaseRange);
-        btStopDistance = Mathf.Max(0f, so.btStopDistance);
-        btRepathInterval = Mathf.Max(0f, so.btRepathInterval);
-        btMoveSpeedMultiplier = Mathf.Max(0.01f, so.btMoveSpeedMultiplier);
-        btChaseChance = Mathf.Clamp01(so.btChaseChance);
+        // 기존 SO(필드 추가 이전 에셋)에는 0이 저장돼 있을 수 있어, 레거시-safe 기본값으로 보정한다.
+        btMoveSpeedMultiplier = so.btMoveSpeedMultiplier > 0f ? so.btMoveSpeedMultiplier : 1f;
     }
 
     private float GetConfiguredIntroDuration()
@@ -521,19 +535,10 @@ public class ThreeMonkeyBoss : BossBase
     public override void First()
     {
         StopIntroPlayableGraphs();
-        GetDirection();
-    }
+        direction = GetStartDirection();
 
-    public void GetDirection() 
-    {
-        if (targetPlayerTransform == null && Player != null)
-            targetPlayerTransform = Player.transform;
-        if (targetPlayerTransform == null)
-            return;
-
-        Vector2 me = transform.position;
-        Vector2 u = targetPlayerTransform.position;
-        direction = (u - me).normalized;
+        if (verboseBTLog)
+            Debug.Log($"[ThreeMonkeyBoss][BT] start ballistic direction => {direction}");
     }
 
     public override void OnCollisionEnter2D(Collision2D collision)
@@ -763,18 +768,18 @@ public class ThreeMonkeyBoss : BossBase
 
         var runTime = 0.0f;
         Transform moveTarget = target.transform;
-        Vector3 startPos = moveTarget.position;
+        Vector3 startPos = moveTarget.localPosition;
         Vector3 endPos = new Vector3(endposition.x, endposition.y, startPos.z);
         while (runTime < duration)
         {
             runTime += Time.deltaTime;
             float t = duration > 0f ? Mathf.Clamp01(runTime / duration) : 1f;
-            moveTarget.position = Vector3.Lerp(startPos, endPos, t);
+            moveTarget.localPosition = Vector3.Lerp(startPos, endPos, t);
 
             yield return null;
         }
 
-        moveTarget.position = endPos;
+        moveTarget.localPosition = endPos;
     }
 
     private IEnumerator PlayStackIntroAnimation(float duration)

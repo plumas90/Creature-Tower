@@ -32,6 +32,7 @@ public class Door : MonoBehaviour
     private bool isLocked = false;  // true = 근접 감지 비활성, 강제 닫힘 유지
     private bool isSliding = false;
     private Transform playerTransform;
+    private Rigidbody2D doorBody;
 
     private void Awake()
     {
@@ -42,6 +43,45 @@ public class Door : MonoBehaviour
 
         leftClosed  = leftDoor.transform.localPosition;
         rightClosed = rightDoor.transform.localPosition;
+
+        EnsureDoorRigidbody2D();
+        EnsureBlockingCollidersLayer();
+    }
+
+    private void EnsureDoorRigidbody2D()
+    {
+        doorBody = GetComponent<Rigidbody2D>();
+        if (doorBody == null)
+            doorBody = gameObject.AddComponent<Rigidbody2D>();
+
+        // 문은 밀리지 않고 위치를 유지해야 하므로 키네마틱 + 전축 고정으로 운용한다.
+        doorBody.bodyType = RigidbodyType2D.Kinematic;
+        doorBody.simulated = true;
+        doorBody.gravityScale = 0f;
+        doorBody.useFullKinematicContacts = true;
+        doorBody.linearVelocity = Vector2.zero;
+        doorBody.angularVelocity = 0f;
+        doorBody.constraints = RigidbodyConstraints2D.FreezeAll;
+    }
+
+    private void EnsureBlockingCollidersLayer()
+    {
+        int wallLayer = LayerMask.NameToLayer("Wall");
+        if (wallLayer < 0)
+            return;
+
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            Collider2D col = colliders[i];
+            if (col == null)
+                continue;
+
+            if (col.isTrigger)
+                continue;
+
+            col.gameObject.layer = wallLayer;
+        }
     }
 
     private void Update()

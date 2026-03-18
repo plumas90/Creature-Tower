@@ -176,7 +176,7 @@ public class PlayerInputController : TopDownCharacterController
         //    CallSeizeEvent();
         //    return;
         //}
-        Debug.Log("OnRoll" + value.ToString());
+        //Debug.Log("OnRoll" + value.ToString());
         CallRollEvent();
     }
 

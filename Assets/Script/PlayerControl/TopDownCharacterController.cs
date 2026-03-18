@@ -213,7 +213,7 @@ public class TopDownCharacterController : MonoBehaviour
         }
         else
         {
-            Debug.Log("Flash is on cooldown");
+            //Debug.Log("Flash is on cooldown");
         }
     }
 

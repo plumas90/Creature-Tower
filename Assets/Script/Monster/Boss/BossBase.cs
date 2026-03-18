@@ -39,6 +39,9 @@ public class BossBase : MonoBehaviour
     private int brainStartCount;
 
     private Rigidbody2D _rb2d;
+    private Coroutine invincibilityRoutine;
+    private Coroutine waitRoutine;
+    private Coroutine firstRoutine;
 
     // Start is called before the first frame update
     public virtual void StatSet() 
@@ -61,6 +64,7 @@ public class BossBase : MonoBehaviour
         brainRunning = false;
         firstCallCount = 0;
         brainStartCount = 0;
+        StopTimingCoroutines();
 
         if (GameManager.Instance != null)
             Player = GameManager.Instance.playerOBJ;
@@ -74,8 +78,6 @@ public class BossBase : MonoBehaviour
         FirstPls(battleStartDelay);
 
         behaviorTreeRoot = CreateBehaviorTree();
-
-        UIBossHP.NotifyBossEngaged(this);
     }
 
     // 보스 오브젝트가 활성화된 직후(이름 표시 전)에 호출되는 훅.
@@ -110,8 +112,16 @@ public class BossBase : MonoBehaviour
 
     protected void TickBehaviorTree()
     {
-        if (!live || wait || !brainRunning)
+        if (!live || wait)
             return;
+
+        // 타이밍 훅 누락으로 brainRunning이 false로 남는 경우를 방어한다.
+        if (!brainRunning)
+        {
+            if (enableBTChecklistLog)
+                Debug.LogWarning($"[BossBTChecklist] brain auto-start fallback: {name}");
+            StartBrain();
+        }
 
         if (behaviorTreeRoot != null)
         {
@@ -126,12 +136,17 @@ public class BossBase : MonoBehaviour
 
     protected void ConfigureBossPhysics()
     {
-        _rb2d = GetComponent<Rigidbody2D>();
-        if (_rb2d == null || !forceKinematicBody2D)
+        if (!forceKinematicBody2D)
             return;
+
+        _rb2d = GetComponent<Rigidbody2D>();
+        if (_rb2d == null)
+            _rb2d = gameObject.AddComponent<Rigidbody2D>();
 
         // 보스가 플레이어 충돌에 밀려나지 않도록 2D 물리를 키네마틱 기반으로 고정한다.
         _rb2d.bodyType = RigidbodyType2D.Kinematic;
+        _rb2d.simulated = true;
+        _rb2d.gravityScale = 0f;
         _rb2d.useFullKinematicContacts = true;
         _rb2d.linearVelocity = Vector2.zero;
         _rb2d.angularVelocity = 0f;
@@ -163,8 +178,19 @@ public class BossBase : MonoBehaviour
 
     public void FirstPls(float second) 
     {
-        CancelInvoke(nameof(InvokeFirstOnce));
-        Invoke(nameof(InvokeFirstOnce), second);
+        if (firstRoutine != null)
+            StopCoroutine(firstRoutine);
+
+        firstRoutine = StartCoroutine(CoInvokeFirstOnceAfter(second));
+    }
+
+    private IEnumerator CoInvokeFirstOnceAfter(float second)
+    {
+        if (second > 0f)
+            yield return new WaitForSeconds(second);
+
+        firstRoutine = null;
+        InvokeFirstOnce();
     }
 
     private void InvokeFirstOnce()
@@ -180,6 +206,12 @@ public class BossBase : MonoBehaviour
         }
 
         firstCallCount++;
+        // 인트로(및 후딜) 종료 시점에 보스 HP UI를 노출한다.
+        UIBossHP.NotifyBossEngaged(this);
+
+        if (enableBTChecklistLog)
+            Debug.Log($"[BossBTChecklist] First gate opened: {name} | wait={wait} inv={invincibility} live={live}");
+
         StartBrain();
         First();
 
@@ -277,13 +309,28 @@ public class BossBase : MonoBehaviour
     public void StartInvincibilityNSecond(float second)
     {
         invincibility = true;
-        CancelInvoke(nameof(EndInvincibility));
-        Invoke(nameof(EndInvincibility), second);
+
+        if (invincibilityRoutine != null)
+            StopCoroutine(invincibilityRoutine);
+
+        invincibilityRoutine = StartCoroutine(CoEndInvincibilityAfter(second));
+    }
+
+    private IEnumerator CoEndInvincibilityAfter(float second)
+    {
+        if (second > 0f)
+            yield return new WaitForSeconds(second);
+
+        invincibilityRoutine = null;
+        EndInvincibility();
     }
 
     public void EndInvincibility()
     {
         invincibility = false;
+
+        if (enableBTChecklistLog)
+            Debug.Log($"[BossBTChecklist] EndInvincibility: {name}");
     }
 
     // 레거시 호환 (이전 Invoke 문자열/외부 호출 대응)
@@ -295,13 +342,36 @@ public class BossBase : MonoBehaviour
     public void WaitPls(float second)
     {
         wait = true;
-        CancelInvoke(nameof(WaitStop));
-        Invoke(nameof(WaitStop), second);
+
+        if (waitRoutine != null)
+            StopCoroutine(waitRoutine);
+
+        waitRoutine = StartCoroutine(CoWaitStopAfter(second));
+    }
+
+    private IEnumerator CoWaitStopAfter(float second)
+    {
+        if (second > 0f)
+            yield return new WaitForSeconds(second);
+
+        waitRoutine = null;
+        WaitStop();
     }
 
     public void WaitStop()
     {
         wait = false;
+
+        if (enableBTChecklistLog)
+            Debug.Log($"[BossBTChecklist] WaitStop: {name}");
+
+        // 어떤 이유로 First 예약이 누락되더라도 전투 시작이 막히지 않도록 보정한다.
+        if (firstCallCount == 0 && live && !isDead)
+        {
+            if (enableBTChecklistLog)
+                Debug.LogWarning($"[BossBTChecklist] First auto-invoke fallback: {name}");
+            InvokeFirstOnce();
+        }
     }
 
     // 레거시 호환
@@ -312,9 +382,30 @@ public class BossBase : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-        CancelInvoke();
+        StopTimingCoroutines();
         StopBrain();
         behaviorTreeRoot = null;
+    }
+
+    private void StopTimingCoroutines()
+    {
+        if (invincibilityRoutine != null)
+        {
+            StopCoroutine(invincibilityRoutine);
+            invincibilityRoutine = null;
+        }
+
+        if (waitRoutine != null)
+        {
+            StopCoroutine(waitRoutine);
+            waitRoutine = null;
+        }
+
+        if (firstRoutine != null)
+        {
+            StopCoroutine(firstRoutine);
+            firstRoutine = null;
+        }
     }
 
     [ContextMenu("BT/Print Checklist Report")]

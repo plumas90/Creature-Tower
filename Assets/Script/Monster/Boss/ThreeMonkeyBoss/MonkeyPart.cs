@@ -18,7 +18,7 @@ public class MonkeyPart : BossBase
         maxHp = MainSO.hp;
         curHp = MainSO.hp;
         speed = MainSO.speed;
-        btMoveSpeedMultiplier = MainSO != null ? Mathf.Max(0.01f, MainSO.btMoveSpeedMultiplier) : 1f;
+        btMoveSpeedMultiplier = (MainSO != null && MainSO.btMoveSpeedMultiplier > 0f) ? MainSO.btMoveSpeedMultiplier : 1f;
         live = true;
 
         if (GameManager.Instance != null)
@@ -27,6 +27,10 @@ public class MonkeyPart : BossBase
         direction = vecter.sqrMagnitude > 0.0001f ? vecter.normalized : Vector2.right;
         invincibility = false;
         wait = false;
+
+        // StatSet 경로를 타지 않는 분리 보스는 Init 시점에 BT를 직접 준비/시작해야 이동한다.
+        behaviorTreeRoot = CreateBehaviorTree();
+        StartBrain();
     }
 
     public override void BossDie()

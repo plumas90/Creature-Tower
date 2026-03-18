@@ -33,16 +33,16 @@ public class PlayerStatControl : MonoBehaviour
     PlayerAnimatorController anime;
 
     [Header("����")]
-    [HideInInspector] public Stats ATK;                 // ���ݷ�
-    [HideInInspector] public Stats HP;                  // ü��
-    [HideInInspector] public Stats Speed;               // �̵� �ӵ�
+    public Stats ATK;                 // ���ݷ�
+    public Stats HP;                  // ü��
+    public Stats Speed;               // �̵� �ӵ�
     [HideInInspector] public Stats AtkSpeed;            // ���� �ӵ�
     [HideInInspector] public Stats ReloadCoolTime;      // ����   �� Ÿ��
     [HideInInspector] public Stats SkillCoolTime;       // ��ų   �� Ÿ��
     [HideInInspector] public Stats RollCoolTime;        // ������ �� Ÿ��
     [HideInInspector] public Stats BulletSpread;        // ź����
     [HideInInspector] public Stats BulletLifeTime;      // �Ѿ� ��Ÿ�
-    [HideInInspector] public Stats LaunchVolume;        // �ѹ��� �߻��� �߻緮
+    public Stats LaunchVolume;        // �ѹ��� �߻��� �߻緮
     [HideInInspector] public Stats Critical;            // ũ��Ƽ�� = ũ��Ƽ�� ���尡 ������� ������ ������ ���̵��� �� ū ������ ��
     [HideInInspector] public Stats AmmoMax;             // ��ź��
     [HideInInspector] public float defense; //���� �߿��Ѱ� ������ ���� �̶�°��� �⺻�� 1�� ������ 10 ������ ������ x ���� ���� = ���� ������ ���� ����

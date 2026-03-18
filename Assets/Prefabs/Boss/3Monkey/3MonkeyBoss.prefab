@@ -53,7 +53,7 @@ MonoBehaviour:
   atk: 10
   maxHp: 1000
   curHp: 1000
-  speed: 0
+  speed: 5
   bossCount: 1
   live: 1
   Player: {fileID: 0}
