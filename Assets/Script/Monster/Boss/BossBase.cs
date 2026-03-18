@@ -82,6 +82,9 @@ public class BossBase : MonoBehaviour
     // 파생 보스에서 기본 애니메이션 잠금 등 사전 준비에 사용한다.
     public virtual void OnBossActivatedBeforeIntro()
     {
+        // 이름 표시/인트로 전 구간은 무적 + 행동 정지 상태를 기본값으로 강제한다.
+        invincibility = true;
+        wait = true;
     }
 
     // StatSet 시작 시점에 호출되는 훅.
@@ -225,8 +228,16 @@ public class BossBase : MonoBehaviour
     {
         Bullet bullet = collision.GetComponent<Bullet>();
         if (bullet == null) return;
-        if (isDead || !live || invincibility) return;
         if (bullet.targets == null || !bullet.targets.ContainsValue((int)BulletTarget.Enemy)) return;
+
+        // 인트로/비활성/사망 구간엔 데미지를 무시하되,
+        // 비관통 탄은 즉시 소모해서 인트로 종료 직후 누적 히트가 터지지 않게 한다.
+        if (isDead || !live || invincibility)
+        {
+            if (!bullet.Penetrate)
+                bullet.Destroy();
+            return;
+        }
 
         float finalDamage = CalculateFinalDamage(bullet.ATK);
         if (finalDamage > 0f)

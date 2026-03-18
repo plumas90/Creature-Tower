@@ -10,10 +10,10 @@ public class PlayerInputController : TopDownCharacterController
 
     private Camera _camera;
     public PlayerInput playerInput;
-    //public int atkPercent; °ø°ÝÈ®·üÀÎµ¥ ¾ø¾Öµµ µÉµí
+    //public int atkPercent; ï¿½ï¿½ï¿½ï¿½È®ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½ï¿½Öµï¿½ ï¿½Éµï¿½
     public bool IsMove = false;
     PlayerStatControl playerStatControl;
-    //PlayerResultController playerResultController; ½ºÅ×ÀÌÁö Å¬¸®¾î½Ã º¸»ó ¼±ÅÃ
+    //PlayerResultController playerResultController; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     [HideInInspector]public bool siegeMode;
     [HideInInspector] public bool Flash;
     [HideInInspector] public bool cantMove;
@@ -21,12 +21,12 @@ public class PlayerInputController : TopDownCharacterController
 
     private void Awake()
     {
-        // Ãß°¡ÇÔ
+        // ï¿½ß°ï¿½ï¿½ï¿½
         coolTimeController = GetComponent<CoolTimeController>();
 
         playerStatControl = GetComponent<PlayerStatControl>();
         //playerResultController = GetComponent<PlayerResultController>();
-        //playerStatControl.OnDieEvent += InputOff; Á×À»½Ã Á¶ÀÛ ¿Â¿ÀÇÁ
+        //playerStatControl.OnDieEvent += InputOff; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Â¿ï¿½ï¿½ï¿½
         //playerStatControl.OnRegenEvent += InputOn;
         //atkPercent = 100;
         siegeMode = false;
@@ -35,40 +35,36 @@ public class PlayerInputController : TopDownCharacterController
         cantSpacebar = false;
 
         playerInput = GetComponent<PlayerInput>();
-        playerInput.actions.FindAction("Move2").Disable(); // ¹Ý´ë·Î Á¶ÀÛ ºñÈ°¼ºÈ­
+        playerInput.actions.FindAction("Move2").Disable(); // ï¿½Ý´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         playerInput.actions.FindAction("Move").Enable();
-        //Debug.Log("½ÃÀÛ¼¼ ¿Ï·á");
-        //playerInput.actions.FindAction("SiegeMode").Disable(); ½ÃÁî¸ðµå ºñÈ°¼ºÈ­ 
+        //playerInput.actions.FindAction("SiegeMode").Disable(); ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­ 
         _camera = Camera.main;
 
 
-        /*if (!GetComponent<PhotonView>().IsMine) Æ÷Åæºä°¡ ³»°ÍÀÌ ¾Æ´Ï¶ó¸é Á¦°Å Ã³¸® Æ÷Åæ ¸ÖÆ¼½Ã ´ÙÁßÀÌµ¿ Ã³¸®ÀÎµ¥ ½Ì±ÛÀüÈ¯ÈÄ ÇÊ¿äx
+        /*if (!GetComponent<PhotonView>().IsMine) ï¿½ï¿½ï¿½ï¿½ä°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ Ã³ï¿½ï¿½ï¿½Îµï¿½ ï¿½Ì±ï¿½ï¿½ï¿½È¯ï¿½ï¿½ ï¿½Ê¿ï¿½x
         {
             Destroy(GetComponent<PlayerInputController>());
         }*/
     }
-    public void ResetSetting()// ÀÌµ¿ °æ¿ìÀÇ¼ö Ã³¸®
+    public void ResetSetting()// ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½Ç¼ï¿½ Ã³ï¿½ï¿½
     {
-            if (cantMove)//¿òÁ÷ÀÓ °ü·ÃÃ³¸® 
+            if (cantMove)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ 
             {
                 playerInput.actions.FindAction("Move2").Disable();
                 playerInput.actions.FindAction("Move").Disable();
-            Debug.Log("ºñÁ¤»ó");
         }
             else if (playerStatControl.isNoramlMove)
             {
                 playerInput.actions.FindAction("Move2").Disable();
                 playerInput.actions.FindAction("Move").Enable();
-            Debug.Log("Á¤»ó");
             }
             else
             {
                 playerInput.actions.FindAction("Move2").Enable();
                 playerInput.actions.FindAction("Move").Disable();
-            Debug.Log("ºñÁ¤»ó");
         }
 
-            if (playerStatControl.isCanSkill) // ½ºÅ³ Ã³¸®
+            if (playerStatControl.isCanSkill) // ï¿½ï¿½Å³ Ã³ï¿½ï¿½
             {
                 playerInput.actions.FindAction("Skill").Enable();
             }
@@ -77,7 +73,7 @@ public class PlayerInputController : TopDownCharacterController
                 playerInput.actions.FindAction("Skill").Disable();
             }
 
-            if (playerStatControl.isCanAtk) // °ø°Ý Ã³¸®
+            if (playerStatControl.isCanAtk) // ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
             {
                 playerInput.actions.FindAction("Attack").Enable();
             }
@@ -86,7 +82,7 @@ public class PlayerInputController : TopDownCharacterController
                 playerInput.actions.FindAction("Attack").Disable();
             }
 
-            if (cantSpacebar) // ±¸¸£±â Ã³¸® 
+            if (cantSpacebar) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ 
             {
                 playerInput.actions.FindAction("SiegeMode").Disable();
                 playerInput.actions.FindAction("Roll").Enable();
@@ -105,13 +101,13 @@ public class PlayerInputController : TopDownCharacterController
                 playerInput.actions.FindAction("Flash").Enable();
             }
     }
-    public void OnMove(InputValue value) // ¿òÁ÷ÀÓ 
+    public void OnMove(InputValue value) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
     {
         //Debug.Log("OnMove" + value.ToString());
         Vector2 moveInput = value.Get<Vector2>().normalized;
         CallMoveEvent(moveInput);
     }
-    public void OnIsMove() // ¿òÁ÷ÀÌ´Â Áß Ã³¸®
+    public void OnIsMove() // ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ Ã³ï¿½ï¿½
     {
         if (playerInput.actions["IsMove"].ReadValue<float>() == 1)
         {
@@ -122,13 +118,13 @@ public class PlayerInputController : TopDownCharacterController
             playerStatHandler.MoveEndCall();
         }
     }
-    public void OnMove2(InputValue value) // ¹Ý´ë ¿òÁ÷ÀÓ Ã³¸® 
+    public void OnMove2(InputValue value) // ï¿½Ý´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ 
     {
         Vector2 moveInput = value.Get<Vector2>().normalized;
         CallMoveEvent(moveInput);
     }
 
-    public void OnLook(InputValue value) // ¹«±â ¿¡ÀÓ Ã³¸®
+    public void OnLook(InputValue value) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
     {
         // Debug.Log("OnLook" + value.ToString());
         Vector2 newAim = value.Get<Vector2>();
@@ -146,17 +142,17 @@ public class PlayerInputController : TopDownCharacterController
             //Debug.Log("OnAttack" + value.ToString());
             if (EventSystem.current != null)
             {
-                //playerInput.actions["Attack"].ReadValue<float>()¸¶¿ì½º ´­¸®´Â°Å È®ÀÎÇÏ´Â º¯¼ö
+                //playerInput.actions["Attack"].ReadValue<float>()ï¿½ï¿½ï¿½ì½º ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½
                 if (!IsAtking && !EventSystem.current.IsPointerOverGameObject() && playerInput.actions["Attack"].ReadValue<float>() == 1)
                 {
                 CallAttackEvent(true);
-                    //Ãß°¡ÇÔ
+                    //ï¿½ß°ï¿½ï¿½ï¿½
                     CallAttackKeepEvent(true);
                 }
                 else
                 {
                     CallAttackEvent(false);
-                    //Ãß°¡ÇÔ
+                    //ï¿½ß°ï¿½ï¿½ï¿½
                     CallAttackKeepEvent(false);
                 }
             }

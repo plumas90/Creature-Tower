@@ -59,8 +59,7 @@ public class TopDownCharacterController : MonoBehaviour
             }
             else
             {
-                //Debug.Log("���� �� �� �����ϴ�");
-            }
+                }
         }
         else
         {
@@ -153,7 +152,7 @@ public class TopDownCharacterController : MonoBehaviour
         }
         else
         {
-            //Debug.Log("������ ��Ÿ�� �Դϴ�");
+            Debug.Log("Roll is on cooldown");
         }
     }
     public void BeginSkillRoll()
@@ -193,7 +192,6 @@ public class TopDownCharacterController : MonoBehaviour
     }
     public void CallEndRollEvent()
     {
-        //Debug.Log("������ �� �̺�Ʈ");
         playerStatHandler.CanRoll = true;
         playerStatHandler.Invincibility = false;
         OnEndRollEvent?.Invoke();

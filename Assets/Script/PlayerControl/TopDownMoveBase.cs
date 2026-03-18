@@ -41,8 +41,6 @@ public class TopDownMoveBase : MonoBehaviour
 
     private void Move(Vector2 direction)
     {
-        //Debug.Log("�����Ʈ�����׽�Ʈ");
-        //Debug.Log(direction);
         _movemewtDirection = direction;
     }
 

@@ -11,7 +11,7 @@ public class Debuff : MonoBehaviour
     public GameObject debuffWaterPrefab;
     public GameObject debuffIcePrefab;
     public GameObject debuffHealPrefab;
-    //ºÀÀÎ
+    //ï¿½ï¿½ï¿½ï¿½
     /*
     private void Awake()
     {
@@ -189,7 +189,6 @@ public class Debuff : MonoBehaviour
 
     private IEnumerator GoodAtk(int viewID)
     {
-        Debug.Log("LowSpeed ÄÚ·çÆ¾ µ¹¾Æ°¡´ÂÁß ....");
         int endtime = 3;
         PhotonView photonView = PhotonView.Find(viewID);
         PlayerStatHandler targetPlayer = photonView.gameObject.GetComponent<PlayerStatHandler>();

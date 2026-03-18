@@ -237,7 +237,6 @@ public class CoolTimeController : MonoBehaviour
             stackedTime = 0;
             bulletNum = 0;
             controller.playerStatHandler.CanReload = false;
-            Debug.Log("�ð� ���� ����");
         }
         else
         {

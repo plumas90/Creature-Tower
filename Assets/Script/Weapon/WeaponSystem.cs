@@ -204,12 +204,10 @@ public class WeaponSystem : MonoBehaviour
         {
             Atk = Atk * 1.5f;
         }
-        //Debug.Log("Ÿ��");
         //foreach (var target in _targets)
         //{
         //    Debug.Log(target);
         //}
-        //Debug.Log("�������� �ִ°�?");
         //Debug.Log(_isDamage);
         float size = 1f; // ������ ó���� �⺻ ��
 
@@ -280,12 +278,10 @@ public class WeaponSystem : MonoBehaviour
             {
                 Atk = Atk * 1.5f;
             }
-            //Debug.Log("Ÿ��");
             foreach (var target in _targets)
             {
                 //Debug.Log(target);
             }
-            //Debug.Log("�������� �ִ°�?");
             //Debug.Log(_isDamage);
             float size = 1f;
 

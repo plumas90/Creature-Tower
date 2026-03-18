@@ -28,9 +28,8 @@ public class MakeAugmentListManager : MonoBehaviour//���� ����Ʈ
     public MakeAugmentListManager(GameObject player) 
     {
         playerObj = player;
-        
-        Debug.Log("��������Ʈ����");
     }
+    
     public void startset(GameObject gameobj) 
     {
         playerObj = gameobj;

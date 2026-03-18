@@ -69,7 +69,6 @@ public class A2303 : MonoBehaviour
             if (controller.playerStatHandler.ActiveSkillCastCount <= 0)
                 return;
 
-            Debug.Log("��ų ����");
             controller.playerStatHandler.ActiveSkillCastCount = Mathf.Max(0, controller.playerStatHandler.ActiveSkillCastCount - 1);
             controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
             if (controller.playerStatHandler.CurSkillStack > 0)

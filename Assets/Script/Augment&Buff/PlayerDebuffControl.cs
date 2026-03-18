@@ -101,7 +101,6 @@ public class PlayerDebuffControl : MonoBehaviour
     }
     private void TwoMoonOff()
     {
-        //Debug.Log("²ô±â µé¾î¿È");
         TwoMoonBuffOff();
         _TwoMoonParticle.gameObject.SetActive(false);
         checkMoonTime = 0f;

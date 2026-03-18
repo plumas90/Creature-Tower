@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Skill : MonoBehaviour
 {
-    //���߾� �Լ��� �������̵� �� �� ���̽��� ȣ�� �ؾ���
-
     protected TopDownCharacterController controller;
     protected PlayerStatControl playerStats;
     public bool isLink;
@@ -20,7 +18,6 @@ public class Skill : MonoBehaviour
         playerStats = GetComponent<PlayerStatControl>();
         icons = Resources.LoadAll<Sprite>("Images/Skill_icon-Sheet");
 
-        // ���� ��� ��θ� �̿��� ���� �κ��� ȣȯ��(���� ����)
         if (icons == null || icons.Length == 0)
             icons = Resources.LoadAll<Sprite>("sprite/Skill_icon-Sheet");
     }
@@ -29,7 +26,6 @@ public class Skill : MonoBehaviour
     {
         if (isLink) 
         {
-            Debug.Log("�����ϰ� ���ŉ�ٰ� ������");
             if (controller != null)
             {
                 controller.OnSkillEvent -= SkillStart;
@@ -48,13 +44,10 @@ public class Skill : MonoBehaviour
             return;
 
         playerStats.CurSkillStack -= 1;
-        Debug.Log($"��ų ��� ����, ���� ��ų ���� �� : {controller.playerStatHandler.CurSkillStack}");
         // 스택 기반: 남은 스택이 있으면 즉시 다음 스킬 사용을 허용한다.
         controller.playerStatHandler.CanSkill = (playerStats.CurSkillStack > 0);
         controller.playerStatHandler.ActiveSkillCastCount += 1;
         controller.playerStatHandler.useSkill = (controller.playerStatHandler.ActiveSkillCastCount > 0);
-
-        Debug.Log("��ų �ߵ�");
     }
 
     public virtual void SkillEnd()

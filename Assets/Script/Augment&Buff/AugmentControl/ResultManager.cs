@@ -80,7 +80,6 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         //GameManager.Instance.OnBossStageStartEvent += ReadyCheck; ��Ƽ���� ������ �� üũ�ؾ� �Ѿ�ºκ� �̱��̶� ��������
         //GameManager.Instance.OnStageStartEvent += ReadyCheck;
         ProtoList = MakeAugmentListManager.Instance.Prototype;
-        Debug.Log("������ ������Ÿ�� �ּ�ó��");
         statChance = false;
     }
     public void ReadyCheck() 

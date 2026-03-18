@@ -17,13 +17,32 @@ public class TestAugmentUI : MonoBehaviour
     public Transform contentParent;
     public GameObject rowPrefab;
 
+    [Header("Test Panel Position")]
+    [SerializeField] private Vector2 topRightOffset = new Vector2(20f, 20f);
+
     private readonly List<GameObject> rows = new List<GameObject>();
     private static readonly string[] ClassDisplayNames = { "TV", "찰리", "김길환" };
 
     private void Awake()
     {
         Instance = this;
+        ApplyPanelTopRightLayout();
         if (panel != null) panel.SetActive(false);
+    }
+
+    private void ApplyPanelTopRightLayout()
+    {
+        if (panel == null)
+            return;
+
+        RectTransform rt = panel.GetComponent<RectTransform>();
+        if (rt == null)
+            return;
+
+        rt.anchorMin = new Vector2(1f, 1f);
+        rt.anchorMax = new Vector2(1f, 1f);
+        rt.pivot = new Vector2(1f, 1f);
+        rt.anchoredPosition = new Vector2(-Mathf.Abs(topRightOffset.x), -Mathf.Abs(topRightOffset.y));
     }
 
     public void TogglePanel()
