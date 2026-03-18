@@ -136,22 +136,28 @@ public class BossBase : MonoBehaviour
 
     protected void ConfigureBossPhysics()
     {
-        if (!forceKinematicBody2D)
-            return;
-
         _rb2d = GetComponent<Rigidbody2D>();
         if (_rb2d == null)
             _rb2d = gameObject.AddComponent<Rigidbody2D>();
 
-        // 보스가 플레이어 충돌에 밀려나지 않도록 2D 물리를 키네마틱 기반으로 고정한다.
-        _rb2d.bodyType = RigidbodyType2D.Kinematic;
+        // 상하 이동이 없는 탑다운 전투 기준 공통 물리 옵션.
         _rb2d.simulated = true;
         _rb2d.gravityScale = 0f;
-        _rb2d.useFullKinematicContacts = true;
+        _rb2d.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        _rb2d.interpolation = RigidbodyInterpolation2D.Interpolate;
         _rb2d.linearVelocity = Vector2.zero;
         _rb2d.angularVelocity = 0f;
         _rb2d.constraints = _rb2d.constraints | RigidbodyConstraints2D.FreezeRotation;
+
+        // forceKinematicBody2D=true인 보스만 런타임에 키네마틱으로 강제한다.
+        if (forceKinematicBody2D)
+            _rb2d.bodyType = RigidbodyType2D.Kinematic;
+
+        // 키네마틱일 때는 full contacts를 켜서 충돌 계산 누락을 줄인다.
+        _rb2d.useFullKinematicContacts = (_rb2d.bodyType == RigidbodyType2D.Kinematic);
     }
+
+    protected Rigidbody2D Body2D => _rb2d;
 
     public virtual void Damege(float damege) 
     {

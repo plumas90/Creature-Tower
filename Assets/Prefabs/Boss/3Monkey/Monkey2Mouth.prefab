@@ -59,7 +59,7 @@ MonoBehaviour:
   IntroTime: 0
   wait: 1
   invincibility: 0
-  forceKinematicBody2D: 1
+  forceKinematicBody2D: 0
   enableBTChecklistLog: 0
   effectType: 0
   collisionEffectDuration: 1
@@ -71,9 +71,9 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2649612889583031476}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
@@ -88,7 +88,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &8497549811722446870
 CapsuleCollider2D:

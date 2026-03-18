@@ -1,4 +1,4 @@
-using System.Collections;
+    using System.Collections;
 using UnityEngine;
 
 // BotDoor / TopDoor 오브젝트에 붙이는 컴포넌트
@@ -26,6 +26,13 @@ public class Door : MonoBehaviour
     public float openDistance  = 1.25f;  // 이 거리 이내면 자동 열림
     public float closeDistance = 1.75f;  // 이 거리 초과 시 자동 닫힘 (히스테리시스)
 
+    [Header("Closed Gap Blocker")]
+    [SerializeField] private bool useClosedGapBlocker = true;
+    [SerializeField] private Vector2 closedGapBlockerSize = new Vector2(4f, 1f);
+    [SerializeField] private Vector2 closedGapBlockerOffset = Vector2.zero;
+    [SerializeField] private BoxCollider2D closedGapBlocker;
+    private const string ClosedGapBlockerObjectName = "ClosedGapBlocker";
+
     private Vector3 leftClosed;
     private Vector3 rightClosed;
     private bool isOpen   = false;
@@ -45,7 +52,9 @@ public class Door : MonoBehaviour
         rightClosed = rightDoor.transform.localPosition;
 
         EnsureDoorRigidbody2D();
+        EnsureClosedGapBlocker();
         EnsureBlockingCollidersLayer();
+        RefreshClosedGapBlockerState();
     }
 
     private void EnsureDoorRigidbody2D()
@@ -84,6 +93,46 @@ public class Door : MonoBehaviour
         }
     }
 
+    private void EnsureClosedGapBlocker()
+    {
+        if (!useClosedGapBlocker)
+            return;
+
+        if (closedGapBlocker == null)
+        {
+            Transform existing = transform.Find(ClosedGapBlockerObjectName);
+            if (existing != null)
+                closedGapBlocker = existing.GetComponent<BoxCollider2D>();
+        }
+
+        if (closedGapBlocker == null)
+        {
+            GameObject blockerObj = new GameObject(ClosedGapBlockerObjectName);
+            blockerObj.transform.SetParent(transform, false);
+            closedGapBlocker = blockerObj.AddComponent<BoxCollider2D>();
+        }
+
+        closedGapBlocker.isTrigger = false;
+        closedGapBlocker.size = closedGapBlockerSize;
+        closedGapBlocker.offset = closedGapBlockerOffset;
+
+        int wallLayer = LayerMask.NameToLayer("Wall");
+        if (wallLayer >= 0)
+            closedGapBlocker.gameObject.layer = wallLayer;
+    }
+
+    private void RefreshClosedGapBlockerState()
+    {
+        if (closedGapBlocker == null)
+            return;
+
+        closedGapBlocker.size = closedGapBlockerSize;
+        closedGapBlocker.offset = closedGapBlockerOffset;
+
+        // 문이 닫혀있을 때만 중앙 틈새를 막는다.
+        closedGapBlocker.enabled = useClosedGapBlocker && !isOpen;
+    }
+
     private void Update()
     {
         if (isLocked) return;
@@ -108,6 +157,10 @@ public class Door : MonoBehaviour
     public void Lock()
     {
         isLocked = true;
+
+        if (closedGapBlocker != null)
+            closedGapBlocker.enabled = useClosedGapBlocker;
+
         if (isOpen && !isSliding)
             StartCoroutine(SlideCoroutine(false));
     }
@@ -117,6 +170,7 @@ public class Door : MonoBehaviour
     {
         isLocked = false;
         playerTransform = null; // 재탐색 강제 (캐릭터 재소환 대응)
+        RefreshClosedGapBlockerState();
     }
 
     private IEnumerator SlideCoroutine(bool opening)
@@ -143,6 +197,7 @@ public class Door : MonoBehaviour
         rightDoor.transform.localPosition = rightTarget;
 
         isSliding = false;
+        RefreshClosedGapBlockerState();
     }
 }
 

@@ -61,7 +61,7 @@ MonoBehaviour:
   IntroTime: 0
   wait: 0
   invincibility: 0
-  forceKinematicBody2D: 1
+  forceKinematicBody2D: 0
   enableBTChecklistLog: 0
   secondMouseMonkeySO: {fileID: 11400000, guid: e8b198e3e84058f40b1e936bf1ac07d7, type: 2}
   LastEarMonkeySO: {fileID: 11400000, guid: 004d7c59e510b984e8a34eadc2fcd45c, type: 2}
@@ -86,6 +86,14 @@ MonoBehaviour:
   mouseIntroAnimator: {fileID: 0}
   earIntroAnimator: {fileID: 0}
   verboseIntroLog: 1
+  verboseBTLog: 1
+  btHeartbeatInterval: 0.5
+  startDirection: {x: 1, y: -1}
+  sweepSkin: 0.02
+  maxRaycastBouncesPerTick: 2
+  collisionStopDuration: 0.04
+  enableMoveDebug: 0
+  moveDebugInterval: 0.1
 --- !u!50 &6007049222260109198
 Rigidbody2D:
   serializedVersion: 5
@@ -96,7 +104,7 @@ Rigidbody2D:
   m_GameObject: {fileID: 4518299384971246651}
   m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
@@ -111,7 +119,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &3654511156110261670
 CapsuleCollider2D:

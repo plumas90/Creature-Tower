@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
 using UnityEngine;
-
 public class ThreeMonkeyBoss : BossBase
 {
     public BaseMonkey secondMouseMonkeySO;
@@ -26,6 +25,13 @@ public class ThreeMonkeyBoss : BossBase
     private GameObject _tower2Mouse;
 
     private BoxCollider2D _boxCollider2D;
+    private Collider2D _moveCollider2D;
+    private Rigidbody2D _moveBody2D;
+    private readonly List<RaycastHit2D> _sweepHits = new List<RaycastHit2D>(8);
+    private ContactFilter2D _moveContactFilter;
+    private bool _moveContactFilterReady;
+    private int _reflectLayerMask;
+    private bool _reflectLayerMaskCached;
 
 
     private Vector3 zero = new Vector3(0,0);
@@ -72,6 +78,16 @@ public class ThreeMonkeyBoss : BossBase
 
     [Header("Ballistic Movement")]
     [SerializeField] private Vector2 startDirection = new Vector2(1f, -1f); // 5 o'clock
+    [SerializeField] [Min(0f)] private float sweepSkin = 0.02f;
+    [SerializeField] [Range(0, 4)] private int maxRaycastBouncesPerTick = 2;
+    [SerializeField] [Min(0f)] private float collisionStopDuration = 0.04f;
+
+    [Header("Move Debug")]
+    [SerializeField] private bool enableMoveDebug = true;
+    [SerializeField] [Min(0.02f)] private float moveDebugInterval = 0.1f;
+
+    private float collisionStopUntilTime;
+    private float nextMoveDebugTime;
 
     public override void StatSet() 
     {
@@ -95,6 +111,8 @@ public class ThreeMonkeyBoss : BossBase
 
         if (introPlayableGraphs.Count > 0 && IntroTime > 0f)
             StartCoroutine(StopIntroPlayableGraphsAfterDelay(IntroTime + 0.1f));
+
+        Debug.Log($"[ThreeMonkeyBoss][MoveDebug] enabled={enableMoveDebug} interval={moveDebugInterval:F2}");
 
         Debug.Log($"[ThreeMonkeyBoss] StatSet done | pos={transform.position} | active={gameObject.activeSelf}");
     }
@@ -159,6 +177,10 @@ public class ThreeMonkeyBoss : BossBase
     public void Update()
     {
         TraceBtHeartbeat();
+    }
+
+    private void FixedUpdate()
+    {
         TickBehaviorTree();
     }
 
@@ -215,15 +237,176 @@ public class ThreeMonkeyBoss : BossBase
 
         nextBtHeartbeatTime = Time.time + btHeartbeatInterval;
 
-        Debug.Log($"[ThreeMonkeyBoss][BT] heartbeat | live={live} wait={wait} inv={invincibility} brain={brainRunning} speed={speed:F2} mul={btMoveSpeedMultiplier:F2} dir={direction}");
+//        Debug.Log($"[ThreeMonkeyBoss][BT] heartbeat | live={live} wait={wait} inv={invincibility} brain={brainRunning} speed={speed:F2} mul={btMoveSpeedMultiplier:F2} dir={direction}");
     }
 
     private void MoveBallistic()
     {
+        if (Time.time < collisionStopUntilTime)
+        {
+            LogMoveDebug($"stop-window active until={collisionStopUntilTime:F3}");
+            return;
+        }
+
         if (direction.sqrMagnitude < 0.0001f)
             direction = GetStartDirection();
 
-        transform.Translate(direction * speed * btMoveSpeedMultiplier * Time.deltaTime);
+        float remainingDistance = speed * btMoveSpeedMultiplier * Time.fixedDeltaTime;
+        if (remainingDistance <= 0f)
+            return;
+
+        EnsureMoveCollider();
+        if (_moveBody2D == null)
+        {
+            LogMoveDebug("Rigidbody2D missing; MoveBallistic skipped", true);
+            return;
+        }
+
+        Vector2 moveDir = direction.normalized;
+        Vector2 startPos = _moveBody2D.position;
+        Vector2 simPos = startPos;
+        bool collided = false;
+        string hitName = "none";
+        Vector2 hitNormal = Vector2.zero;
+        int bounceCount = 0;
+        int maxBounces = Mathf.Max(0, maxRaycastBouncesPerTick);
+
+        while (remainingDistance > 0f)
+        {
+            float castDistance = remainingDistance + sweepSkin;
+            _sweepHits.Clear();
+            int hitCount = _moveBody2D.Cast(simPos, _moveBody2D.rotation, moveDir, _moveContactFilter, _sweepHits, castDistance);
+            bool hasHit = TryGetNearestCastHit(hitCount, out RaycastHit2D nearestHit);
+
+            if (!hasHit)
+            {
+                simPos += moveDir * remainingDistance;
+                remainingDistance = 0f;
+                break;
+            }
+
+            float safeDistance = Mathf.Max(0f, nearestHit.distance - sweepSkin);
+            if (safeDistance > 0f)
+                simPos += moveDir * safeDistance;
+
+            collided = true;
+            hitName = nearestHit.collider != null ? nearestHit.collider.name : "null";
+            hitNormal = nearestHit.normal;
+
+            remainingDistance -= safeDistance;
+            if (remainingDistance <= 0f || bounceCount >= maxBounces)
+                break;
+
+            moveDir = Vector2.Reflect(moveDir, nearestHit.normal).normalized;
+            collisionStopUntilTime = Time.time + collisionStopDuration;
+            // 충돌 직후에는 잔여 이동을 즉시 중단해 연속 튕김/터널링을 줄인다.
+            remainingDistance = 0f;
+            bounceCount++;
+        }
+
+        direction = moveDir;
+        _moveBody2D.MovePosition(simPos);
+
+        LogMoveDebug($"from={startPos} to={simPos} dir={direction} collided={collided} hit={hitName} normal={hitNormal} bounces={bounceCount}");
+    }
+
+    private void LogMoveDebug(string message, bool force = false)
+    {
+        if (!enableMoveDebug)
+            return;
+
+        if (!force && Time.time < nextMoveDebugTime)
+            return;
+
+        nextMoveDebugTime = Time.time + moveDebugInterval;
+        Debug.Log($"[ThreeMonkeyBoss][MoveDebug] {message}");
+    }
+
+    private void EnsureMoveCollider()
+    {
+        if (_moveCollider2D != null)
+            return;
+
+        _moveCollider2D = GetComponent<Collider2D>();
+        _moveBody2D = Body2D != null ? Body2D : GetComponent<Rigidbody2D>();
+
+        if (_moveBody2D != null)
+        {
+            _moveContactFilter.useLayerMask = true;
+            _moveContactFilter.layerMask = GetReflectLayerMask();
+            _moveContactFilter.useTriggers = false;
+            _moveContactFilter.useDepth = false;
+            _moveContactFilterReady = true;
+        }
+    }
+
+    private bool TryGetNearestCastHit(int hitCount, out RaycastHit2D nearestHit)
+    {
+        nearestHit = default;
+        if (!_moveContactFilterReady || hitCount <= 0)
+            return false;
+
+        float nearestDistance = float.MaxValue;
+        bool hasHit = false;
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit2D hit = _sweepHits[i];
+            if (!IsValidCastHit(hit))
+                continue;
+
+            if (hit.distance < nearestDistance)
+            {
+                nearestDistance = hit.distance;
+                nearestHit = hit;
+                hasHit = true;
+            }
+        }
+
+        return hasHit;
+    }
+
+    private bool IsValidCastHit(RaycastHit2D hit)
+    {
+        Collider2D col = hit.collider;
+        if (col == null)
+            return false;
+
+        if (col.isTrigger)
+            return false;
+
+        if (col.transform.root == transform.root)
+            return false;
+
+        if (!IsReflectTargetLayer(col.gameObject.layer))
+            return false;
+
+        return hit.distance >= 0f;
+    }
+
+    private int GetReflectLayerMask()
+    {
+        if (_reflectLayerMaskCached)
+            return _reflectLayerMask;
+
+        _reflectLayerMaskCached = true;
+        _reflectLayerMask = 0;
+        AddLayerToMask("Wall");
+        AddLayerToMask("Player");
+        AddLayerToMask("Creatuer");
+        AddLayerToMask("Creature");
+        AddLayerToMask("Enemy");
+        AddLayerToMask("Boss");
+        return _reflectLayerMask;
+    }
+
+    private void AddLayerToMask(string layerName)
+    {
+        int layer = LayerMask.NameToLayer(layerName);
+        if (layer < 0)
+            return;
+
+        _reflectLayerMask |= 1 << layer;
     }
 
     private Vector2 GetStartDirection()
@@ -544,17 +727,38 @@ public class ThreeMonkeyBoss : BossBase
     public override void OnCollisionEnter2D(Collision2D collision)
     {
         base.OnCollisionEnter2D(collision);
-
         if (collision.gameObject.TryGetComponent(out PlayerStatControl playerStat))
             ApplyMonkeyEffect(playerStat, currentBottomEffect);
 
-        // 벽/플레이어/동일 계열 오브젝트 충돌 시 반사
-        if (IsReflectTargetLayer(collision.gameObject.layer))
-        {
-            Vector3 normal = collision.contacts[0].normal; // ��������
-            direction = Vector3.Reflect(direction, normal).normalized; // �ݻ�
-        }
+        TryReflectByCollision(collision);
+    }
 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        TryReflectByCollision(collision);
+    }
+
+    private void TryReflectByCollision(Collision2D collision)
+    {
+        if (collision == null)
+            return;
+
+        if (collision.contactCount <= 0)
+            return;
+
+        if (!IsReflectTargetLayer(collision.gameObject.layer))
+            return;
+
+        Vector2 dir = direction.sqrMagnitude > 0.0001f ? direction.normalized : GetStartDirection();
+        Vector2 normal = collision.contacts[0].normal;
+
+        // 이미 표면에서 멀어지는 방향이면 반사하지 않는다.
+        if (Vector2.Dot(dir, normal) >= 0f)
+            return;
+
+        direction = Vector2.Reflect(dir, normal).normalized;
+        collisionStopUntilTime = Time.time + collisionStopDuration;
+        LogMoveDebug($"fallback reflect by collision layer={collision.gameObject.layer} normal={normal} dir={direction}", true);
     }
 
     private bool IsReflectTargetLayer(int layer)

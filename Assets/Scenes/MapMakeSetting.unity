@@ -2567,6 +2567,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2505612479910071109, guid: 906bf0d7c23ec9345a2d3fdf4c05e333, type: 3}
+      propertyPath: closedGapBlockerSize.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505612479910071109, guid: 906bf0d7c23ec9345a2d3fdf4c05e333, type: 3}
+      propertyPath: closedGapBlockerSize.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2990569838178095576, guid: 906bf0d7c23ec9345a2d3fdf4c05e333, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2606,6 +2614,14 @@ PrefabInstance:
     - target: {fileID: 2990569838178095576, guid: 906bf0d7c23ec9345a2d3fdf4c05e333, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877209293519574829, guid: 906bf0d7c23ec9345a2d3fdf4c05e333, type: 3}
+      propertyPath: closedGapBlockerSize.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877209293519574829, guid: 906bf0d7c23ec9345a2d3fdf4c05e333, type: 3}
+      propertyPath: closedGapBlockerSize.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8461994134037252424, guid: 906bf0d7c23ec9345a2d3fdf4c05e333, type: 3}
       propertyPath: m_Name
