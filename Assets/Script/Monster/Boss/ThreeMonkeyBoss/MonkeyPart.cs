@@ -27,6 +27,8 @@ public class MonkeyPart : BossBase
 
     public void Init(Vector2 vecter)
     {
+        EnsureMinionLayer();
+
         bossCount = 1;
         atk = MainSO.atk;
         maxHp = MainSO.hp;
@@ -72,15 +74,17 @@ public class MonkeyPart : BossBase
             receiver.ApplyEffect(effectType, collisionEffectDuration);
         }
 
-        TryReflectByCollision(collision);
+        TryReflectByCollision(collision, true);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        TryReflectByCollision(collision);
+        base.OnCollisionStay2D(collision);
+        // Stay 구간에서 stop-window를 매 프레임 갱신하면 서로 붙어 멈춘 것처럼 보일 수 있다.
+        TryReflectByCollision(collision, false);
     }
 
-    private void TryReflectByCollision(Collision2D collision)
+    private void TryReflectByCollision(Collision2D collision, bool applyStopWindow)
     {
         if (collision == null)
             return;
@@ -98,7 +102,8 @@ public class MonkeyPart : BossBase
             return;
 
         direction = Vector2.Reflect(dir, normal).normalized;
-        collisionStopUntilTime = Time.time + collisionStopDuration;
+        if (applyStopWindow)
+            collisionStopUntilTime = Time.time + collisionStopDuration;
         LogMoveDebug($"fallback reflect by collision layer={collision.gameObject.layer} normal={normal} dir={direction}", true);
     }
 
@@ -184,9 +189,19 @@ public class MonkeyPart : BossBase
                 break;
 
             moveDir = Vector2.Reflect(moveDir, nearestHit.normal).normalized;
-            collisionStopUntilTime = Time.time + collisionStopDuration;
-            // 충돌 직후에는 잔여 이동을 즉시 중단해 연속 튕김/터널링을 줄인다.
-            remainingDistance = 0f;
+            bool softBodyHit = IsSoftBodyHitLayer(nearestHit.collider != null ? nearestHit.collider.gameObject.layer : -1);
+            if (softBodyHit)
+            {
+                float separation = Mathf.Max(0.005f, sweepSkin * 0.5f);
+                simPos += nearestHit.normal * separation;
+                remainingDistance = Mathf.Max(0f, remainingDistance - separation);
+            }
+            else
+            {
+                collisionStopUntilTime = Time.time + collisionStopDuration;
+                // 벽/장애물 충돌은 기존처럼 즉시 잔여 이동을 끊어 터널링을 줄인다.
+                remainingDistance = 0f;
+            }
             bounceCount++;
         }
 
@@ -269,6 +284,30 @@ public class MonkeyPart : BossBase
         return hit.distance >= 0f;
     }
 
+    private void EnsureMinionLayer()
+    {
+        int creatureLayer = LayerMask.NameToLayer("Creatuer");
+        if (creatureLayer < 0)
+            return;
+
+        SetLayerRecursively(gameObject, creatureLayer);
+    }
+
+    private static void SetLayerRecursively(GameObject target, int layer)
+    {
+        if (target == null)
+            return;
+
+        target.layer = layer;
+        Transform tr = target.transform;
+        for (int i = 0; i < tr.childCount; i++)
+        {
+            Transform child = tr.GetChild(i);
+            if (child != null)
+                SetLayerRecursively(child.gameObject, layer);
+        }
+    }
+
     private int GetReflectLayerMask()
     {
         if (reflectLayerMaskCached)
@@ -307,6 +346,17 @@ public class MonkeyPart : BossBase
             || layer == player
             || layer == enemy
             || layer == boss
+            || (creatureTypo >= 0 && layer == creatureTypo)
+            || (creature >= 0 && layer == creature);
+    }
+
+    private bool IsSoftBodyHitLayer(int layer)
+    {
+        int creatureTypo = LayerMask.NameToLayer("Creatuer");
+        int creature = LayerMask.NameToLayer("Creature");
+        int boss = LayerMask.NameToLayer("Boss");
+
+        return layer == boss
             || (creatureTypo >= 0 && layer == creatureTypo)
             || (creature >= 0 && layer == creature);
     }

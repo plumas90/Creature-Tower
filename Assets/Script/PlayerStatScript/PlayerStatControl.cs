@@ -163,6 +163,15 @@ public class PlayerStatControl : MonoBehaviour
     public bool IsExternalFireBlocked => externalFireBlockCount > 0;
     public bool Invincibility;                          //���� ó�� �ǰݽ� ����
     public bool SkillRollInvincibility;
+    [Header("Contact Damage Gate")]
+    [SerializeField] private float contactHitInvincibilityDuration = 0.5f;
+    [SerializeField] private float contactHitTickInterval = 0.2f;
+    [SerializeField] [Min(0.02f)] private float hitInvincibleBlinkInterval = 0.08f;
+    [SerializeField] [Range(0.1f, 1f)] private float hitInvincibleBlinkAlpha = 0.35f;
+    private float contactDamageInvincibleUntil;
+    private readonly Dictionary<int, float> nextContactTickByAttacker = new Dictionary<int, float>();
+    private readonly List<SpriteRenderer> hitBlinkRenderers = new List<SpriteRenderer>();
+    private Coroutine hitInvincibleBlinkRoutine;
 
     public bool useSkill;
     [HideInInspector] public int ActiveSkillCastCount;
@@ -203,6 +212,7 @@ public class PlayerStatControl : MonoBehaviour
         BulletSprite = playerStats.BulletSprite;
         CurHP = HP.total;
         CurAmmo = AmmoMax.total;
+        defense = 1f;
 
         CanFire = true;
         CanReload = true;
@@ -240,6 +250,7 @@ public class PlayerStatControl : MonoBehaviour
 
         PlayerSpriteCase.spriteLibraryAsset = PlayerSprite;
         WeaponSpriteCase.spriteLibraryAsset = WeaponSprite;
+        CacheHitBlinkRenderers();
 
         //IsChargeAttack = false;
 
@@ -396,7 +407,8 @@ public class PlayerStatControl : MonoBehaviour
 
             }
 
-            DamegeTemp = DamegeTemp * defense;
+            float defenseMultiplier = defense > 0f ? defense : 1f;
+            DamegeTemp = DamegeTemp * defenseMultiplier;
 
             HitEvent?.Invoke();
             HitEvent2?.Invoke(DamegeTemp);//�̰� ���� �ʿ��Ѱ��� �ʿ� ���°�찡 �ִµ� �Ѱ��� �Ҽ��� �ִ��� �𸣰��� �ϴ� �̷�����
@@ -435,6 +447,151 @@ public class PlayerStatControl : MonoBehaviour
             //ȸ�ǽ� Ư�� ȿ�� ó�� �Ҹ��� �ð��� ȿ�� �߰� �ؾ��ҵ�
         }
 
+    }
+
+    public bool TryApplyContactDamage(float damage, int attackerId)
+    {
+        if (damage <= 0f)
+            return false;
+
+        if (isDie || Invincibility || SkillRollInvincibility)
+            return false;
+
+        float now = Time.time;
+        if (now < contactDamageInvincibleUntil)
+            return false;
+
+        if (attackerId != 0
+            && nextContactTickByAttacker.TryGetValue(attackerId, out float nextTickTime)
+            && now < nextTickTime)
+        {
+            return false;
+        }
+
+        Damage(damage);
+        contactDamageInvincibleUntil = now + contactHitInvincibilityDuration;
+        StartHitInvincibilityBlink(contactHitInvincibilityDuration);
+
+        if (attackerId != 0)
+            nextContactTickByAttacker[attackerId] = now + contactHitTickInterval;
+
+        return true;
+    }
+
+    private void CacheHitBlinkRenderers()
+    {
+        hitBlinkRenderers.Clear();
+
+        if (_PlayerSprite != null)
+            _PlayerSprite.GetComponentsInChildren(true, hitBlinkRenderers);
+
+        if (_WeaponSprite != null)
+        {
+            var weaponRenderers = _WeaponSprite.GetComponentsInChildren<SpriteRenderer>(true);
+            for (int i = 0; i < weaponRenderers.Length; i++)
+            {
+                SpriteRenderer renderer = weaponRenderers[i];
+                if (renderer != null && !hitBlinkRenderers.Contains(renderer))
+                    hitBlinkRenderers.Add(renderer);
+            }
+        }
+
+        if (hitBlinkRenderers.Count == 0)
+        {
+            var fallbackRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+            for (int i = 0; i < fallbackRenderers.Length; i++)
+            {
+                SpriteRenderer renderer = fallbackRenderers[i];
+                if (renderer != null && !hitBlinkRenderers.Contains(renderer))
+                    hitBlinkRenderers.Add(renderer);
+            }
+        }
+    }
+
+    private void StartHitInvincibilityBlink(float duration)
+    {
+        if (duration <= 0f)
+            return;
+
+        if (hitBlinkRenderers.Count == 0)
+            CacheHitBlinkRenderers();
+
+        if (hitBlinkRenderers.Count == 0)
+            return;
+
+        if (hitInvincibleBlinkRoutine != null)
+            StopCoroutine(hitInvincibleBlinkRoutine);
+
+        hitInvincibleBlinkRoutine = StartCoroutine(CoHitInvincibilityBlink(duration));
+    }
+
+    private IEnumerator CoHitInvincibilityBlink(float duration)
+    {
+        int count = hitBlinkRenderers.Count;
+        float[] baseAlphas = new float[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            SpriteRenderer renderer = hitBlinkRenderers[i];
+            baseAlphas[i] = renderer != null ? renderer.color.a : 1f;
+        }
+
+        float elapsed = 0f;
+        bool faded = false;
+        float interval = Mathf.Max(0.02f, hitInvincibleBlinkInterval);
+
+        while (elapsed < duration)
+        {
+            faded = !faded;
+            float alphaScale = faded ? hitInvincibleBlinkAlpha : 1f;
+
+            for (int i = 0; i < count; i++)
+            {
+                SpriteRenderer renderer = hitBlinkRenderers[i];
+                if (renderer == null)
+                    continue;
+
+                Color c = renderer.color;
+                c.a = Mathf.Clamp01(baseAlphas[i] * alphaScale);
+                renderer.color = c;
+            }
+
+            yield return new WaitForSeconds(interval);
+            elapsed += interval;
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            SpriteRenderer renderer = hitBlinkRenderers[i];
+            if (renderer == null)
+                continue;
+
+            Color c = renderer.color;
+            c.a = Mathf.Clamp01(baseAlphas[i]);
+            renderer.color = c;
+        }
+
+        hitInvincibleBlinkRoutine = null;
+    }
+
+    private void OnDisable()
+    {
+        if (hitInvincibleBlinkRoutine != null)
+        {
+            StopCoroutine(hitInvincibleBlinkRoutine);
+            hitInvincibleBlinkRoutine = null;
+        }
+
+        for (int i = 0; i < hitBlinkRenderers.Count; i++)
+        {
+            SpriteRenderer renderer = hitBlinkRenderers[i];
+            if (renderer == null)
+                continue;
+
+            Color c = renderer.color;
+            c.a = 1f;
+            renderer.color = c;
+        }
     }
 
     public void HPadd(float addhp) // �� 

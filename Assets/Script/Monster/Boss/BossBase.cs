@@ -255,11 +255,58 @@ public class BossBase : MonoBehaviour
 
     public virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        PlayerStatControl playerStat = collision.gameObject.GetComponent<PlayerStatControl>();
-        if (playerStat) 
+        if (TryGetPlayerStatFromCollision(collision, out PlayerStatControl playerStat))
         {
-            playerStat.Damage(atk);
+            playerStat.TryApplyContactDamage(atk, gameObject.GetInstanceID());
         }
+    }
+
+    public virtual void OnCollisionStay2D(Collision2D collision)
+    {
+        if (TryGetPlayerStatFromCollision(collision, out PlayerStatControl playerStat))
+        {
+            playerStat.TryApplyContactDamage(atk, gameObject.GetInstanceID());
+        }
+    }
+
+    private bool TryGetPlayerStatFromCollision(Collision2D collision, out PlayerStatControl playerStat)
+    {
+        playerStat = null;
+        if (collision == null)
+            return false;
+
+        GameObject go = collision.gameObject;
+        if (go != null && go.TryGetComponent(out playerStat))
+            return true;
+
+        if (collision.collider != null)
+        {
+            if (collision.collider.TryGetComponent(out playerStat))
+                return true;
+
+            playerStat = collision.collider.GetComponentInParent<PlayerStatControl>();
+            if (playerStat != null)
+                return true;
+        }
+
+        if (collision.rigidbody != null)
+        {
+            if (collision.rigidbody.TryGetComponent(out playerStat))
+                return true;
+
+            playerStat = collision.rigidbody.GetComponentInParent<PlayerStatControl>();
+            if (playerStat != null)
+                return true;
+        }
+
+        if (collision.transform != null)
+        {
+            playerStat = collision.transform.GetComponentInParent<PlayerStatControl>();
+            if (playerStat != null)
+                return true;
+        }
+
+        return false;
     }
 
     public virtual void OnTriggerEnter2D(Collider2D collision)

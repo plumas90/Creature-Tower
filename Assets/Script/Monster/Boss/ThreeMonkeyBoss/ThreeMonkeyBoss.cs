@@ -24,7 +24,7 @@ public class ThreeMonkeyBoss : BossBase
     private GameObject _tower1Eye;
     private GameObject _tower2Mouse;
 
-    private BoxCollider2D _boxCollider2D;
+    private Collider2D _mainCollider2D;
     private Collider2D _moveCollider2D;
     private Rigidbody2D _moveBody2D;
     private readonly List<RaycastHit2D> _sweepHits = new List<RaycastHit2D>(8);
@@ -34,8 +34,9 @@ public class ThreeMonkeyBoss : BossBase
     private bool _reflectLayerMaskCached;
 
 
-    private Vector3 zero = new Vector3(0,0);
-    private Vector3 midlle = new Vector3(0,1.5f);
+    private Vector3 eyeSlotLocalPos;
+    private Vector3 mouthSlotLocalPos;
+    private Vector3 earSlotLocalPos;
 
     [Header("Monkey Effect")]
     public float collisionEffectDuration = 1f;
@@ -81,6 +82,7 @@ public class ThreeMonkeyBoss : BossBase
     [SerializeField] [Min(0f)] private float sweepSkin = 0.02f;
     [SerializeField] [Range(0, 4)] private int maxRaycastBouncesPerTick = 2;
     [SerializeField] [Min(0f)] private float collisionStopDuration = 0.04f;
+    [SerializeField] [Min(0f)] private float detachSpawnOutwardOffset = 0.35f;
 
     [Header("Move Debug")]
     [SerializeField] private bool enableMoveDebug = true;
@@ -93,7 +95,7 @@ public class ThreeMonkeyBoss : BossBase
     {
         StopIntroPlayableGraphs();
         base.StatSet();
-        _boxCollider2D = this.GetComponent<BoxCollider2D>();
+        _mainCollider2D = GetComponent<Collider2D>();
 
         // 분리형 보스 카운트 규칙: 시작은 본체 1마리
         bossCount = 1;
@@ -155,10 +157,24 @@ public class ThreeMonkeyBoss : BossBase
         if (tower2MouseOBJ != null) tower2MouseOBJ.SetActive(true);
         if (tower3EarOBJ != null) tower3EarOBJ.SetActive(true);
 
+        CacheStackSlotPositions();
+
         // 레이어 규칙상 몬스터는 플레이어(10)보다 위쪽 정렬이 필요할 수 있어 명시적으로 보정
         ApplyRendererState(tower1EyeOBJ, 13);
         ApplyRendererState(tower2MouseOBJ, 14);
         ApplyRendererState(tower3EarOBJ, 15);
+    }
+
+    private void CacheStackSlotPositions()
+    {
+        if (tower1EyeOBJ != null)
+            eyeSlotLocalPos = tower1EyeOBJ.transform.localPosition;
+
+        if (tower2MouseOBJ != null)
+            mouthSlotLocalPos = tower2MouseOBJ.transform.localPosition;
+
+        if (tower3EarOBJ != null)
+            earSlotLocalPos = tower3EarOBJ.transform.localPosition;
     }
 
     private void ApplyRendererState(GameObject go, int sortingOrder)
@@ -298,9 +314,19 @@ public class ThreeMonkeyBoss : BossBase
                 break;
 
             moveDir = Vector2.Reflect(moveDir, nearestHit.normal).normalized;
-            collisionStopUntilTime = Time.time + collisionStopDuration;
-            // 충돌 직후에는 잔여 이동을 즉시 중단해 연속 튕김/터널링을 줄인다.
-            remainingDistance = 0f;
+            bool softBodyHit = IsSoftBodyHitLayer(nearestHit.collider != null ? nearestHit.collider.gameObject.layer : -1);
+            if (softBodyHit)
+            {
+                float separation = Mathf.Max(0.005f, sweepSkin * 0.5f);
+                simPos += nearestHit.normal * separation;
+                remainingDistance = Mathf.Max(0f, remainingDistance - separation);
+            }
+            else
+            {
+                collisionStopUntilTime = Time.time + collisionStopDuration;
+                // 벽/장애물 충돌은 기존처럼 즉시 잔여 이동을 끊어 터널링을 줄인다.
+                remainingDistance = 0f;
+            }
             bounceCount++;
         }
 
@@ -730,15 +756,17 @@ public class ThreeMonkeyBoss : BossBase
         if (collision.gameObject.TryGetComponent(out PlayerStatControl playerStat))
             ApplyMonkeyEffect(playerStat, currentBottomEffect);
 
-        TryReflectByCollision(collision);
+        TryReflectByCollision(collision, true);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        TryReflectByCollision(collision);
+        base.OnCollisionStay2D(collision);
+        // Stay 구간에서 stop-window를 매 프레임 갱신하면 접촉 상태가 과도하게 정지될 수 있다.
+        TryReflectByCollision(collision, false);
     }
 
-    private void TryReflectByCollision(Collision2D collision)
+    private void TryReflectByCollision(Collision2D collision, bool applyStopWindow)
     {
         if (collision == null)
             return;
@@ -757,7 +785,8 @@ public class ThreeMonkeyBoss : BossBase
             return;
 
         direction = Vector2.Reflect(dir, normal).normalized;
-        collisionStopUntilTime = Time.time + collisionStopDuration;
+        if (applyStopWindow)
+            collisionStopUntilTime = Time.time + collisionStopDuration;
         LogMoveDebug($"fallback reflect by collision layer={collision.gameObject.layer} normal={normal} dir={direction}", true);
     }
 
@@ -774,6 +803,17 @@ public class ThreeMonkeyBoss : BossBase
             || layer == player
             || layer == enemy
             || layer == boss
+            || (creatureTypo >= 0 && layer == creatureTypo)
+            || (creature >= 0 && layer == creature);
+    }
+
+    private bool IsSoftBodyHitLayer(int layer)
+    {
+        int creatureTypo = LayerMask.NameToLayer("Creatuer");
+        int creature = LayerMask.NameToLayer("Creature");
+        int boss = LayerMask.NameToLayer("Boss");
+
+        return layer == boss
             || (creatureTypo >= 0 && layer == creatureTypo)
             || (creature >= 0 && layer == creature);
     }
@@ -813,13 +853,8 @@ public class ThreeMonkeyBoss : BossBase
 
     public override void BossDie()
     {
-        if (!companionCleared)
-        {
-            companionCleared = true;
-            KillBro();
-        }
-
         base.BossDie();
+        gameObject.SetActive(false);
     }
 
     public void KillBro()
@@ -852,13 +887,13 @@ public class ThreeMonkeyBoss : BossBase
 
     public void tower1fire() 
     {
-        _boxCollider2D.enabled = false;
-
         GameObject eyePrefab = eyeDetachedPrefab != null ? eyeDetachedPrefab : prefab1TowerEye;
         if (eyePrefab == null) return;
 
+        SetMainColliderEnabled(false);
+
         _tower1Eye =Instantiate(eyePrefab);
-        _tower1Eye.transform.position = this.transform.position;
+        _tower1Eye.transform.position = ResolveDetachSpawnPosition(tower1EyeOBJ);
         _tower1Eye.SetActive(true);
         var part = _tower1Eye.GetComponent<MonkeyPart>();
         if (part != null)
@@ -880,9 +915,9 @@ public class ThreeMonkeyBoss : BossBase
         Invoke("OnCol", 1f);
 
         tower1EyeOBJ.SetActive(false);
-        // 아래층 분리 후 남은 층 정렬
-        StartCoroutine(Run(1, tower2MouseOBJ, zero));
-        StartCoroutine(Run(1, tower3EarOBJ, midlle));
+        // 아래층 분리 후 남은 층 정렬: 2층 -> 1층, 3층 -> 2층
+        StartCoroutine(Run(1f, tower2MouseOBJ, eyeSlotLocalPos));
+        StartCoroutine(Run(1f, tower3EarOBJ, mouthSlotLocalPos));
 
         // 분리 직후 짧은 무적 + BT 정지
         StartInvincibilityNSecond(1f);
@@ -891,14 +926,14 @@ public class ThreeMonkeyBoss : BossBase
 
     public void tower2fire()
     {
-        _boxCollider2D.enabled = false;
-
         GameObject earPrefab = earDetachedPrefab != null ? earDetachedPrefab
             : (prefab2TowerMouse != null ? prefab2TowerMouse : prefab1TowerEye);
         if (earPrefab == null) return;
 
+        SetMainColliderEnabled(false);
+
         _tower2Mouse = Instantiate(earPrefab);
-        _tower2Mouse.transform.position = this.transform.position;
+        _tower2Mouse.transform.position = ResolveDetachSpawnPosition(tower2MouseOBJ);
         _tower2Mouse.SetActive(true);
         var part = _tower2Mouse.GetComponent<MonkeyPart>();
         if (part != null)
@@ -921,15 +956,24 @@ public class ThreeMonkeyBoss : BossBase
 
         tower2MouseOBJ.SetActive(false);
 
-        // 아래층 분리 후 남은 층 정렬
-        StartCoroutine(Run(1,tower3EarOBJ,zero));
+        // 아래층 분리 후 남은 층 정렬: 3층 -> 1층
+        StartCoroutine(Run(1f, tower3EarOBJ, eyeSlotLocalPos));
 
         StartInvincibilityNSecond(1f);
         WaitPls(1f);
     }
     public void OnCol() 
     {
-        _boxCollider2D.enabled = true;
+        SetMainColliderEnabled(true);
+    }
+
+    private void SetMainColliderEnabled(bool enabled)
+    {
+        if (_mainCollider2D == null)
+            _mainCollider2D = GetComponent<Collider2D>();
+
+        if (_mainCollider2D != null)
+            _mainCollider2D.enabled = enabled;
     }
 
     private Vector2 GetDetachDirection()
@@ -941,6 +985,18 @@ public class ThreeMonkeyBoss : BossBase
             return direction.normalized;
 
         return Vector2.right;
+    }
+
+    private Vector3 ResolveDetachSpawnPosition(GameObject sourcePart)
+    {
+        Vector3 basePos = sourcePart != null ? sourcePart.transform.position : transform.position;
+        Vector2 dir = GetDetachDirection();
+        if (dir.sqrMagnitude < 0.0001f)
+            dir = Vector2.right;
+
+        Vector3 spawnPos = basePos + (Vector3)(dir.normalized * detachSpawnOutwardOffset);
+        spawnPos.z = transform.position.z;
+        return spawnPos;
     }
 
     private void ApplyMonkeyEffect(PlayerStatControl playerStat, MonkeyEffectType effect)

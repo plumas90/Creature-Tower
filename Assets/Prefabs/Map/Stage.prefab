@@ -872,6 +872,10 @@ MonoBehaviour:
   slideDuration: 0.4
   openDistance: 1.25
   closeDistance: 1.25
+  useClosedGapBlocker: 1
+  closedGapBlockerSize: {x: 4, y: 1}
+  closedGapBlockerOffset: {x: 0, y: 0}
+  closedGapBlocker: {fileID: 0}
 --- !u!1 &1219641140172133987
 GameObject:
   m_ObjectHideFlags: 0
@@ -1037,7 +1041,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -3620,6 +3624,10 @@ MonoBehaviour:
   slideDuration: 0.4
   openDistance: 1.25
   closeDistance: 1.25
+  useClosedGapBlocker: 1
+  closedGapBlockerSize: {x: 4, y: 1}
+  closedGapBlockerOffset: {x: 0, y: 0}
+  closedGapBlocker: {fileID: 0}
 --- !u!1 &5697268763164058673
 GameObject:
   m_ObjectHideFlags: 0
@@ -4130,7 +4138,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0

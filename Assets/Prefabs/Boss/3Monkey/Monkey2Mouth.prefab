@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4411723812347358394}
@@ -63,6 +63,11 @@ MonoBehaviour:
   enableBTChecklistLog: 0
   effectType: 0
   collisionEffectDuration: 1
+  sweepSkin: 0.02
+  maxRaycastBouncesPerTick: 2
+  collisionStopDuration: 0.04
+  enableMoveDebug: 1
+  moveDebugInterval: 0.15
 --- !u!50 &4276894454909869283
 Rigidbody2D:
   serializedVersion: 5
