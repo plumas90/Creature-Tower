@@ -102,6 +102,13 @@ public class TopDownCharacterController : MonoBehaviour
         OnEndAttackEvent?.Invoke();
     }
 
+    public void ForceStopAttackInput()
+    {
+        AtkKeyhold = false;
+        OnAttackKeepEvent?.Invoke(false);
+        OnEndAttackEvent?.Invoke();
+    }
+
     public void CallSkillEvent()
     {
         if (!playerStatHandler.CanSkill)

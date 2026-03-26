@@ -7,6 +7,7 @@ using UnityEngine;
 public class PlayerBossStatusEffectReceiver : MonoBehaviour
 {
     private PlayerStatControl playerStat;
+    private TopDownCharacterController controller;
 
     private float blindUntil;
     private int muteStack;
@@ -17,6 +18,7 @@ public class PlayerBossStatusEffectReceiver : MonoBehaviour
     private void Awake()
     {
         playerStat = GetComponent<PlayerStatControl>();
+        controller = GetComponent<TopDownCharacterController>();
     }
 
     public void ApplyEyeBlind(float seconds)
@@ -74,7 +76,12 @@ public class PlayerBossStatusEffectReceiver : MonoBehaviour
 
     private IEnumerator MouthNoFireRoutine(float seconds)
     {
+        bool firstBlock = noFireStack == 0;
         noFireStack++;
+
+        if (firstBlock && controller != null)
+            controller.ForceStopAttackInput();
+
         if (playerStat != null)
             playerStat.PushExternalFireBlock();
 

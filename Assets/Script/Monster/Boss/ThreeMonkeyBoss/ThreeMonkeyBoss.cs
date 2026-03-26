@@ -83,6 +83,8 @@ public class ThreeMonkeyBoss : BossBase
     [SerializeField] [Range(0, 4)] private int maxRaycastBouncesPerTick = 2;
     [SerializeField] [Min(0f)] private float collisionStopDuration = 0.04f;
     [SerializeField] [Min(0f)] private float detachSpawnOutwardOffset = 0.35f;
+    [SerializeField] [Min(0f)] private float detachSpawnResolvePadding = 0.02f;
+    [SerializeField] [Range(1, 8)] private int detachSpawnResolveIterations = 4;
 
     [Header("Move Debug")]
     [SerializeField] private bool enableMoveDebug = true;
@@ -90,6 +92,7 @@ public class ThreeMonkeyBoss : BossBase
 
     private float collisionStopUntilTime;
     private float nextMoveDebugTime;
+    private readonly Collider2D[] detachSpawnOverlapBuffer = new Collider2D[8];
 
     public override void StatSet() 
     {
@@ -753,10 +756,36 @@ public class ThreeMonkeyBoss : BossBase
     public override void OnCollisionEnter2D(Collision2D collision)
     {
         base.OnCollisionEnter2D(collision);
-        if (collision.gameObject.TryGetComponent(out PlayerStatControl playerStat))
+        PlayerStatControl playerStat = ResolvePlayerStat(collision);
+        if (playerStat != null)
             ApplyMonkeyEffect(playerStat, currentBottomEffect);
 
         TryReflectByCollision(collision, true);
+    }
+
+    private PlayerStatControl ResolvePlayerStat(Collision2D collision)
+    {
+        if (collision == null)
+            return null;
+
+        if (collision.gameObject != null && collision.gameObject.TryGetComponent(out PlayerStatControl direct))
+            return direct;
+
+        if (collision.collider != null)
+        {
+            PlayerStatControl fromCollider = collision.collider.GetComponentInParent<PlayerStatControl>();
+            if (fromCollider != null)
+                return fromCollider;
+        }
+
+        if (collision.rigidbody != null)
+        {
+            PlayerStatControl fromRigidbody = collision.rigidbody.GetComponentInParent<PlayerStatControl>();
+            if (fromRigidbody != null)
+                return fromRigidbody;
+        }
+
+        return null;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -894,6 +923,7 @@ public class ThreeMonkeyBoss : BossBase
 
         _tower1Eye =Instantiate(eyePrefab);
         _tower1Eye.transform.position = ResolveDetachSpawnPosition(tower1EyeOBJ);
+        ResolveDetachSpawnOverlap(_tower1Eye);
         _tower1Eye.SetActive(true);
         var part = _tower1Eye.GetComponent<MonkeyPart>();
         if (part != null)
@@ -934,11 +964,12 @@ public class ThreeMonkeyBoss : BossBase
 
         _tower2Mouse = Instantiate(earPrefab);
         _tower2Mouse.transform.position = ResolveDetachSpawnPosition(tower2MouseOBJ);
+        ResolveDetachSpawnOverlap(_tower2Mouse);
         _tower2Mouse.SetActive(true);
         var part = _tower2Mouse.GetComponent<MonkeyPart>();
         if (part != null)
         {
-            part.effectType = MonkeyEffectType.Ear;
+            part.effectType = MonkeyEffectType.Mouth;
             part.bossCount = 1;
             part.StageOwner = StageOwner;
             part.Init(GetDetachDirection());
@@ -997,6 +1028,55 @@ public class ThreeMonkeyBoss : BossBase
         Vector3 spawnPos = basePos + (Vector3)(dir.normalized * detachSpawnOutwardOffset);
         spawnPos.z = transform.position.z;
         return spawnPos;
+    }
+
+    private void ResolveDetachSpawnOverlap(GameObject spawned)
+    {
+        if (spawned == null)
+            return;
+
+        Collider2D col = spawned.GetComponent<Collider2D>();
+        if (col == null)
+            return;
+
+        int wallLayer = LayerMask.NameToLayer("Wall");
+        if (wallLayer < 0)
+            return;
+
+        ContactFilter2D filter = default;
+        filter.useLayerMask = true;
+        filter.layerMask = 1 << wallLayer;
+        filter.useTriggers = false;
+
+        int iterations = Mathf.Max(1, detachSpawnResolveIterations);
+        for (int it = 0; it < iterations; it++)
+        {
+            int count = col.Overlap(filter, detachSpawnOverlapBuffer);
+            if (count <= 0)
+                break;
+
+            Vector2 correction = Vector2.zero;
+            for (int i = 0; i < count; i++)
+            {
+                Collider2D other = detachSpawnOverlapBuffer[i];
+                if (other == null)
+                    continue;
+
+                ColliderDistance2D distance = col.Distance(other);
+                if (!distance.isOverlapped)
+                    continue;
+
+                correction += distance.normal * distance.distance;
+            }
+
+            if (correction.sqrMagnitude <= 0.000001f)
+                break;
+
+            Vector2 push = correction.normalized * detachSpawnResolvePadding;
+            Vector3 p = spawned.transform.position;
+            p += (Vector3)(correction + push);
+            spawned.transform.position = p;
+        }
     }
 
     private void ApplyMonkeyEffect(PlayerStatControl playerStat, MonkeyEffectType effect)

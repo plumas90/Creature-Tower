@@ -6,7 +6,7 @@ public class MonkeyPart : BossBase
 {
     [Header("Monkey Identity")]
     public MonkeyEffectType effectType = MonkeyEffectType.Eye;
-    public float collisionEffectDuration = 1f;
+    public float collisionEffectDuration = 3f;
 
     Vector2 direction = Vector2.zero;
     private float btMoveSpeedMultiplier = 1f;
@@ -65,7 +65,8 @@ public class MonkeyPart : BossBase
     {
         base.OnCollisionEnter2D(collision);
 
-        if (collision.gameObject.TryGetComponent(out PlayerStatControl playerStat))
+        PlayerStatControl playerStat = ResolvePlayerStat(collision);
+        if (playerStat != null)
         {
             var receiver = playerStat.GetComponent<PlayerBossStatusEffectReceiver>();
             if (receiver == null)
@@ -75,6 +76,31 @@ public class MonkeyPart : BossBase
         }
 
         TryReflectByCollision(collision, true);
+    }
+
+    private PlayerStatControl ResolvePlayerStat(Collision2D collision)
+    {
+        if (collision == null)
+            return null;
+
+        if (collision.gameObject != null && collision.gameObject.TryGetComponent(out PlayerStatControl direct))
+            return direct;
+
+        if (collision.collider != null)
+        {
+            PlayerStatControl fromCollider = collision.collider.GetComponentInParent<PlayerStatControl>();
+            if (fromCollider != null)
+                return fromCollider;
+        }
+
+        if (collision.rigidbody != null)
+        {
+            PlayerStatControl fromRigidbody = collision.rigidbody.GetComponentInParent<PlayerStatControl>();
+            if (fromRigidbody != null)
+                return fromRigidbody;
+        }
+
+        return null;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
