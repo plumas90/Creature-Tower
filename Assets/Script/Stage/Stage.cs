@@ -26,6 +26,7 @@ public class Stage : MonoBehaviour
     public NextStageStairs NextStageStairs;
     public Transform BossSpawnPoint;
     public SpriteRenderer bossSpawnSprite;
+    public SpriteRenderer PlayerMovePointSprite;
 
     [Header("Boss Entry Sequence")]
     [Min(0f)] public float bossNameShowDuration = 1.2f;
@@ -145,6 +146,9 @@ public class Stage : MonoBehaviour
 
         if (bossSpawnSprite != null)
             bossSpawnSprite.color = new Color(0, 0, 0, 0);
+
+        if (PlayerMovePointSprite != null)
+            PlayerMovePointSprite.color = new Color(0, 0, 0, 0);
 
         ResultSummon();
         firstIn = true;

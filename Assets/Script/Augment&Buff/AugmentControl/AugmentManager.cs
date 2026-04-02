@@ -36,7 +36,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
 
     private void Awake()//싱글톤
     {
-        Debug.Log("AugmentManager - Awake");
+        //Debug.Log("AugmentManager - Awake");
         if (null == Instance)
         {
             Instance = this;
