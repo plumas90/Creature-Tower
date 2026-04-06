@@ -36,12 +36,12 @@ public class EnemySO : ScriptableObject
 
     public float bossPatternTime;
 
-    [Header("Boss BT")]
-    public float btChaseRange = 100f;
-    public float btStopDistance = 0.6f;
-    public float btRepathInterval = 0.15f;
-    public float btMoveSpeedMultiplier = 1f;
-    [Range(0f, 1f)] public float btChaseChance = 1f;
+    //[Header("Boss BT")] 
+    [HideInInspector] public float btChaseRange = 100f;
+    [HideInInspector] public float btStopDistance = 0.6f;
+    [HideInInspector] public float btRepathInterval = 0.15f;
+    [HideInInspector] public float btMoveSpeedMultiplier = 1f;
+    [HideInInspector] [Range(0f, 1f)] public float btChaseChance = 1f;
 }
 /*
  * public enum EnemyType

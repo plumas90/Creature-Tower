@@ -17,6 +17,7 @@ public abstract class BossBTNode
 public sealed class BossSequenceNode : BossBTNode
 {
     private readonly List<BossBTNode> children;
+    private int currentChildIndex = 0;
 
     public BossSequenceNode(params BossBTNode[] nodes)
     {
@@ -25,19 +26,31 @@ public sealed class BossSequenceNode : BossBTNode
 
     public override BossBTState Tick()
     {
-        bool hasRunning = false;
-
-        for (int i = 0; i < children.Count; i++)
+        // 모든 자식을 순서대로 실행
+        while (currentChildIndex < children.Count)
         {
-            BossBTState state = children[i].Tick();
+            BossBTState state = children[currentChildIndex].Tick();
+            
+            // Failure면 즉시 실패
             if (state == BossBTState.Failure)
+            {
+                currentChildIndex = 0; // 리셋
                 return BossBTState.Failure;
-
+            }
+            
+            // Running이면 여기서 멈춤 (다음 자식은 실행 안 함!)
             if (state == BossBTState.Running)
-                hasRunning = true;
+            {
+                return BossBTState.Running;
+            }
+            
+            // Success면 다음 자식으로
+            currentChildIndex++;
         }
-
-        return hasRunning ? BossBTState.Running : BossBTState.Success;
+        
+        // 모든 자식이 Success → Sequence 성공
+        currentChildIndex = 0; // 리셋
+        return BossBTState.Success;
     }
 }
 

@@ -161,11 +161,15 @@ public class PlayerStatControl : MonoBehaviour
     [HideInInspector] public bool CanRoll;                                //������ ��������
     private int externalFireBlockCount;
     public bool IsExternalFireBlocked => externalFireBlockCount > 0;
-    public bool Invincibility;                          //���� ó�� �ǰݽ� ����
-    public bool SkillRollInvincibility;
+    public bool Invincibility;                          // 전역 무적 (디버그/이벤트용)
+    
+    [Header("Roll Invincibility (구르기 무적)")]
+    public bool NormalRollInvincibility;                // 일반 구르기 무적
+    public bool SkillRollInvincibility;                 // 스킬 구르기 무적 (TV 우클릭 등)
+    
     [Header("Contact Damage Gate")]
-    [SerializeField] private float contactHitInvincibilityDuration = 0.5f;
-    [SerializeField] private float contactHitTickInterval = 0.2f;
+    [SerializeField] private float contactHitInvincibilityDuration = 1.0f; // 첫 피격 무적 시간
+    [SerializeField] private float contactHitTickInterval = 1.0f; // 0.2초 → 1.0초로 증가 (지속 접촉 데미지 간격)
     [SerializeField] [Min(0.02f)] private float hitInvincibleBlinkInterval = 0.08f;
     [SerializeField] [Range(0.1f, 1f)] private float hitInvincibleBlinkAlpha = 0.35f;
     private float contactDamageInvincibleUntil;
@@ -222,6 +226,7 @@ public class PlayerStatControl : MonoBehaviour
         ActiveSkillCastCount = 0;
         UseRoll = true;
         Invincibility = false;
+        NormalRollInvincibility = false;
         SkillRollInvincibility = false;
 
         CanSpeedBuff = true;
@@ -454,7 +459,8 @@ public class PlayerStatControl : MonoBehaviour
         if (damage <= 0f)
             return false;
 
-        if (isDie || Invincibility || SkillRollInvincibility)
+        // 무적 체크: 전역 무적 또는 구르기 무적
+        if (isDie || Invincibility || NormalRollInvincibility || SkillRollInvincibility)
             return false;
 
         float now = Time.time;
@@ -523,6 +529,30 @@ public class PlayerStatControl : MonoBehaviour
             StopCoroutine(hitInvincibleBlinkRoutine);
 
         hitInvincibleBlinkRoutine = StartCoroutine(CoHitInvincibilityBlink(duration));
+    }
+
+    /// <summary>
+    /// 깜빡임 효과를 즉시 중단하고 색상을 복원합니다 (구르기 등에서 호출)
+    /// </summary>
+    public void StopHitInvincibilityBlink()
+    {
+        if (hitInvincibleBlinkRoutine != null)
+        {
+            StopCoroutine(hitInvincibleBlinkRoutine);
+            hitInvincibleBlinkRoutine = null;
+        }
+
+        // 모든 렌더러의 알파를 1로 복원
+        for (int i = 0; i < hitBlinkRenderers.Count; i++)
+        {
+            SpriteRenderer renderer = hitBlinkRenderers[i];
+            if (renderer == null)
+                continue;
+
+            Color c = renderer.color;
+            c.a = 1f;
+            renderer.color = c;
+        }
     }
 
     private IEnumerator CoHitInvincibilityBlink(float duration)

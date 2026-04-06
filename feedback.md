@@ -1,67 +1,171 @@
-# ThreeMonkeyBoss 벽 관통 이슈 피드백
+# Creature-Tower 인수인계 문서 (ThreeMonkeyBoss 중심)
 
-## 요약
-이 문서는 보스가 이전에는 왜 벽을 뚫고 지나갔는지, 그리고 현재는 왜 정상적으로 반사되는지를 정리한 기록입니다.
+## 0. 문서 목적
+이 문서는 채팅 이관용 기술 인수인계 문서다.
+다른 에이전트가 바로 이어서 작업할 수 있도록, "무엇을 왜 바꿨는지", "현재 어떤 상태인지", "어디를 확인하면 되는지"를 모듈 단위로 정리한다.
 
-## 이전에 벽을 뚫었던 이유
+## 1. 전체 변경 요약
 
-### 1) 이동 방식 전환 과정에서 충돌 응답이 불안정했던 구간이 있었음
-- 이동 로직이 `transform` 기반 이동과 Rigidbody 기반 이동 사이를 여러 번 오가며 변경되었습니다.
-- `transform` 중심 이동 구간에서는 벽에 연속 접촉하는 상황에서 물리 충돌 해석이 상대적으로 약해질 수 있었습니다.
-- 결과: 빠른 방향 전환이나 반복 이동 상황에서 보스가 벽 콜라이더 안으로 파고들거나 관통하는 현상이 발생했습니다.
+### 1-1. 보스/분리체 물리 이동
+- `ThreeMonkeyBoss`, `MonkeyPart` 이동을 Cast + MovePosition 기반으로 통일.
+- 반사 누락 대응을 위해 `OnCollisionEnter2D`/`OnCollisionStay2D` fallback 반사 추가.
+- 거리 0 접촉도 유효 히트로 허용(`hit.distance >= 0f`).
 
-### 2) 런타임 Rigidbody 설정이 프리팹 의도를 덮어쓸 수 있었음
-- `BossBase.ConfigureBossPhysics()`에서 `forceKinematicBody2D` 값에 따라 `Rigidbody2D`를 Kinematic으로 강제할 수 있었습니다.
-- 프리팹에서 Dynamic 등으로 맞춰도 런타임에서 재설정되면 실제 충돌 동작이 달라질 수 있었습니다.
-- 결과: 테스트 케이스에 따라 접촉/반사 타이밍이 일관되지 않게 보였습니다.
+### 1-2. 쫄끼리 접촉 시 멈춤 완화
+- 접촉 유지 프레임에서 stop-window를 반복 갱신하지 않도록 완화.
+- Cast 루프에서 soft-body 계열(`Boss`, `Creatuer`, `Creature`) 충돌 시
+  - 미세 분리 벡터를 적용하고
+  - 잔여 이동을 일부 유지하도록 변경.
 
-### 3) Cast 히트 필터가 경계 접촉을 너무 엄격하게 제외했음
-- 벽 경계에서 자주 나오는 거의 0 거리 접촉이 필터링에서 배제되는 경우가 있었습니다.
-- 실제로는 막혔다고 판단해야 하는 접촉이 유효 히트로 채택되지 못했습니다.
-- 결과: 유효 히트 없음 -> 반사 벡터 갱신 없음 -> 벽에 붙거나 관통처럼 보이는 상태로 이어졌습니다.
+### 1-3. 분리 소환 안정화
+- 분리 소환 위치를 본체 중앙 고정에서 "분리 부위 기준 + 방향 오프셋"으로 변경.
+- 분리 직후 벽 겹침이 있으면 overlap resolve로 밀어내기 보정.
+- 분리 시 하위층 재배치 연출(1초 정지/이동) 정리.
 
-### 4) 지속 접촉 상태에서 반사가 항상 보장되지 않았음
-- 반사 판단이 주로 스윕 Cast 결과에 의존하고 있었습니다.
-- `OnCollisionStay2D`처럼 이미 벽과 붙어 있는 구간에서는 Cast만으로 반사 타이밍을 놓칠 수 있었습니다.
-- 결과: 벽에 밀착된 상태에서 즉시 튕기지 않고 눌려 있는 현상이 발생할 수 있었습니다.
+### 1-4. 플레이어 피격/입원숭이 디버프
+- 접촉 피격 게이트: 즉시 1회 + 피격 무적(0.5초) + 공격자별 틱 간격(0.2초).
+- 피격 무적 가시화를 위해 깜박임(알파 토글) 추가.
+- 입원숭이 디버프(사격불가) 적용 시 이미 누른 공격 입력도 강제 해제하도록 보강.
 
-## 지금은 벽을 뚫지 않는 이유
+## 2. 모듈별 상세
 
-### 1) 물리 스텝 기준 이동 + 스윕 검사 정렬
-- 현재 본체/분리체 이동은 `FixedUpdate` + `Rigidbody2D.MovePosition` + Cast 선검사 구조입니다.
-- 2D 물리 업데이트 주기와 이동이 정렬되어 충돌 처리의 결정성이 개선되었습니다.
+### 모듈 A: 보스 공통 베이스
+대상 파일
+- `Assets/Script/Monster/Boss/BossBase.cs`
 
-### 2) 경계 접촉을 유효 히트로 인정하도록 완화
-- `IsValidCastHit` 조건을 거리 `>= 0f` 허용으로 조정했습니다.
-- 콜라이더 경계에서 발생하는 접촉도 차단 후보로 포함됩니다.
-- 효과: 실제 벽 접촉이 더 안정적으로 "막힘"으로 인식됩니다.
+핵심 변경
+- `TryGetPlayerStatFromCollision(...)`로 플레이어 탐색 경로 확장.
+  - `collision.gameObject`
+  - `collision.collider.GetComponentInParent`
+  - `collision.rigidbody.GetComponentInParent`
 
-### 3) 충돌 기반 fallback 반사 추가
-- `TryReflectByCollision(...)` 로직을 아래 이벤트에 모두 추가했습니다.
-  - `OnCollisionEnter2D`
-  - `OnCollisionStay2D`
-- Cast가 충분하지 않은 프레임에서도 충돌 법선으로 반사 방향을 갱신합니다.
-- 효과: 벽에 닿은 상태에서 멈추거나 미는 대신 반사 복구가 즉시 일어납니다.
+의도
+- 플레이어 콜라이더가 자식에 있을 때 접촉 데미지/효과 누락 방지.
 
-### 4) 런타임 바디타입 강제 동작을 명확화
-- `forceKinematicBody2D` 처리 흐름을 정리해 의도된 경우에만 바디타입을 강제하도록 했습니다.
-- `useFullKinematicContacts`도 실제 body type과 맞게 적용되도록 정돈했습니다.
-- 효과: 프리팹 설정과 런타임 물리 동작의 불일치가 줄어들었습니다.
+주의
+- `forceKinematicBody2D`가 true면 런타임에 Kinematic 강제.
+- 프리팹에서 Dynamic으로 맞춰도 베이스 설정이 덮을 수 있으니 확인 필요.
 
-## 디버그 근거
-- `MoveDebug` 로그를 추가해 아래 데이터를 추적했습니다.
-  - 이동 시작/목표 위치(from/to)
-  - Cast 히트 여부와 법선(normal)
-  - 반사(바운스) 벡터
-- 이를 통해 "반사가 빠지는 구간"을 확인했고, 패치 후 fallback 반사가 실제로 발동하는 것을 검증했습니다.
+### 모듈 B: ThreeMonkeyBoss 본체
+대상 파일
+- `Assets/Script/Monster/Boss/ThreeMonkeyBoss/ThreeMonkeyBoss.cs`
 
-## 현재 상태
-- `ThreeMonkeyBoss`, `MonkeyPart` 모두 다음 로직을 포함합니다.
-  - Cast 기반 이동
-  - 완화된 유효 히트 판단(`>= 0f`)
-  - Enter/Stay 충돌 fallback 반사
-- 수정한 C# 파일 컴파일 점검 시 즉시 오류는 없었습니다.
+핵심 변경
+- Cast + MovePosition 이동 유지.
+- fallback 반사에서 Enter/Stay 처리 분리.
+  - Enter: stop-window 적용
+  - Stay: stop-window 미적용
+- soft-body 충돌 시 미세 분리 + 잔여 이동 유지.
+- 분리 소환 안정화:
+  - `ResolveDetachSpawnPosition(...)`
+  - `ResolveDetachSpawnOverlap(...)`
+- 본체 사망 시 분리체를 강제 제거하지 않도록 변경(분리체 독립 유지).
+- 2차 분리체 효과 타입 지정 버그 수정:
+  - `MonkeyEffectType.Ear` -> `MonkeyEffectType.Mouth`
 
-## 남은 리스크 / 추가 검증
-- 타일 코너, 다중 콜라이더 경계(seam)처럼 법선이 복잡한 구간은 추가 미세 조정이 필요할 수 있습니다.
-- 드물게 반사가 누락되면 해당 시점 전후 `MoveDebug` 20~30줄을 수집해 법선 우선순위/보정값을 튜닝하면 됩니다.
+인스펙터 튜닝 포인트
+- `detachSpawnOutwardOffset`
+- `detachSpawnResolvePadding`
+- `detachSpawnResolveIterations`
+
+### 모듈 C: MonkeyPart 분리체
+대상 파일
+- `Assets/Script/Monster/Boss/ThreeMonkeyBoss/MonkeyPart.cs`
+
+핵심 변경
+- Init 시 `EnsureMinionLayer()`로 분리체/자식 레이어를 `Creatuer`로 강제.
+- 플레이어 효과 적용 시 부모 경로 탐색 포함(`ResolvePlayerStat`).
+- 반사/이동 동작은 본체와 동일 정책으로 정렬.
+- 현재 `collisionEffectDuration` 기본값은 `3f`.
+
+주의
+- 분리체 프리팹의 레이어가 맞아도 런타임 변형/자식 구조로 흔들릴 수 있어, Init 강제를 유지하는 것이 안전.
+
+### 모듈 D: 플레이어 상태/피격
+대상 파일
+- `Assets/Script/PlayerStatScript/PlayerStatControl.cs`
+
+핵심 변경
+- `defense` 기본값을 `1f`로 보정(0으로 인한 무데미지 방지).
+- `TryApplyContactDamage(...)` 추가:
+  - 피격 무적 시간 체크
+  - 공격자별 next tick 시간 체크
+- 피격 무적 시 깜박임 코루틴 추가.
+
+중요 필드
+- `contactHitInvincibilityDuration = 0.5f`
+- `contactHitTickInterval = 0.2f`
+- `hitInvincibleBlinkInterval = 0.08f`
+- `hitInvincibleBlinkAlpha = 0.35f`
+
+### 모듈 E: 입원숭이 사격불가 디버프
+대상 파일
+- `Assets/Script/PlayerControl/PlayerBossStatusEffectReceiver.cs`
+- `Assets/Script/PlayerControl/TopDownCharacterController.cs`
+
+핵심 원리
+- Mouth 효과 시 `PushExternalFireBlock()`으로 외부 발사 차단 카운트 증가.
+- 발사 조건에서 `!IsExternalFireBlocked`를 체크.
+- 이미 마우스 홀드 중이던 케이스 대응:
+  - `ForceStopAttackInput()` 추가
+  - Mouth 디버프 시작 시 1회 강제 호출해 현재 발사 루프 즉시 종료.
+
+## 3. 현재 알려진 이슈/리스크
+
+### 3-1. 코너/다중 콜라이더 경계 반사 품질
+- 드물게 법선이 불안정하면 과반사/약반사 체감 가능.
+
+### 3-2. 분리 소환 직후 밀어내기 보정 한계
+- 매우 복잡한 지형(좁은 코너 + 다중 겹침)에서는 resolve 반복 횟수 상향이 필요할 수 있음.
+
+### 3-3. 효과 중첩 체감
+- Mouth 효과는 스택 구조라 연속 접촉 시 체감 시간이 늘어날 수 있음.
+
+## 4. 빠른 점검 체크리스트
+
+### 체크 A: 입원숭이 사격불가
+1. 공격 버튼 홀드 상태에서 Mouth 분리체와 충돌.
+2. 즉시 발사 중단되는지 확인.
+3. `collisionEffectDuration` 동안 재발사가 막히는지 확인.
+
+### 체크 B: 쫄끼리 충돌 멈춤
+1. 분리체 2개를 충돌시키고 장시간 관찰.
+2. 완전 정지(stuck) 빈도 감소 여부 확인.
+
+### 체크 C: 벽 끼임 소환
+1. 본체를 벽에 밀착시킨 상태에서 분리 트리거.
+2. 분리체가 벽 안에 고정되지 않고 이탈 가능한지 확인.
+
+### 체크 D: 본체 사망 후 분리체 독립성
+1. 본체만 먼저 처치.
+2. 분리체가 동반 사망하지 않는지 확인.
+
+## 5. 다음 에이전트 작업 가이드
+
+### 우선순위 1
+- 플레이 재현에서 여전히 간헐 정지가 보이면,
+  - soft-body 분리량
+  - stop-window
+  - max bounce
+  를 우선 튜닝.
+
+### 우선순위 2
+- Mouth 디버프 체감(너무 김/짧음) 조정:
+  - `collisionEffectDuration` 프리팹/스크립트 값 조정.
+
+### 우선순위 3
+- 디버그 로그 최소화 정리:
+  - `enableMoveDebug` 운영 빌드 비활성.
+
+## 6. 참고 파일 목록
+- `Assets/Script/Monster/Boss/BossBase.cs`
+- `Assets/Script/Monster/Boss/ThreeMonkeyBoss/ThreeMonkeyBoss.cs`
+- `Assets/Script/Monster/Boss/ThreeMonkeyBoss/MonkeyPart.cs`
+- `Assets/Script/PlayerStatScript/PlayerStatControl.cs`
+- `Assets/Script/PlayerControl/PlayerBossStatusEffectReceiver.cs`
+- `Assets/Script/PlayerControl/TopDownCharacterController.cs`
+- `Assets/Script/PlayerControl/CoolTimeController.cs`
+
+## 7. 한 줄 결론
+현재 상태는 "관통/반사/분리/사격불가" 핵심 버그를 대부분 봉합한 단계이며,
+남은 작업은 물리 경계 상황의 감각 튜닝(파라미터 조정) 위주다.

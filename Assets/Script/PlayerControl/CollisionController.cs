@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
-public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î º¯°æ ¹ö±× °¡´É¼º ÀÖÀ½
-    // ÀÌºÎºÐ Ã³¸®°¡ ¿©·¯°¡Áö¿¡ ¿µÇâÀ» ¸¹ÀÌ ¹ÞÀ½ ÃßÈÄ¿¡ ´ë´ëÀûÀÎ ¼öÁ¤À» ÇÏ´ÂÂÊÀ¸·Î °¡°í ¼öÁ¤À» °ÅÀÇ ¾ÈÇÔ ±×·¡µµ ÀÐ¾îº¸¼À
+public class CollisionController : MonoBehaviour // ï¿½ï¿½ï¿½ï¿½ï¿½Ïºï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ ï¿½×³ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+    // ï¿½ÌºÎºï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½Ð¾îº¸ï¿½ï¿½
 {
     private PlayerStatControl playerStat;
     //private PhotonView PV;
@@ -13,7 +13,7 @@ public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î 
 
     // ADDED
     private float healedTotal;
-    public float HealedTotal        // °É·ÁÀÖ´Â ÄÄÆ÷³ÍÆ®¿¡ µû¶ó ÀÌº¥Æ® ½ÃÀÛ 
+    public float HealedTotal        // ï¿½É·ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ 
     {
         get { return healedTotal; }
         set
@@ -25,13 +25,13 @@ public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î 
         }
     }
 
-    //public event Action<float, int> OnHealedEvent; // ÀÎÆ®°ªÀ» Æ÷Åæºä¾ÆÀÌµð·Î ¹ÞÀ½ ¼öÁ¤ÇÊ¿ä - ½Ì±ÛµÇ¸é Èú ÀÌº¥Æ®°¡ °¡´ÉÇÑ°¡? »èÁ¦ °í·Á
+    //public event Action<float, int> OnHealedEvent; // ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿ï¿½ - ï¿½Ì±ÛµÇ¸ï¿½ ï¿½ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ°ï¿½? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    public bool CanPayBack; // ÇÇ°Ý½Ã ÀÏÁ¤ µ¥¹ÌÁö ¸¸Å­ È¸º¹ Àç´É ÆäÀÌ¹é
-    public bool CanSupport; // ¹öÇÁ °¡´É ¿©ºÎ Ã¼Å© ½Ì±Û·Î µÇ¸é¼­ ¾ø¾îÁúµíÇÔ
+    public bool CanPayBack; // ï¿½Ç°Ý½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å­ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¹ï¿½
+    public bool CanSupport; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å© ï¿½Ì±Û·ï¿½ ï¿½Ç¸é¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    public CapsuleCollider2D footCollider; // ½ÇÁ¦ ¶¥ ¹â´Â ºÎºÐÃ¼Å© 
-    //public Rigidbody2D rigidbody; // ¿Ö ÀÖ´ÂÁö ¸ð¸£°ÚÀ½ ¾ø¾Öµµ µÉ°Å °°Àºµ¥ º¸·ù
+    public CapsuleCollider2D footCollider; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Îºï¿½Ã¼Å© 
+    //public Rigidbody2D rigidbody; // ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ð¸£°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Öµï¿½ ï¿½É°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private void Awake()
     {
         playerStat = GetComponent<PlayerStatControl>();
@@ -41,10 +41,10 @@ public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î 
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        /*if (collision.gameObject.GetComponent<Bullet>()) //ºÎÈ° Ã¼Å© 
+        /*if (collision.gameObject.GetComponent<Bullet>()) //ï¿½ï¿½È° Ã¼Å© 
         {
             if (playerStat.isDie && collision.gameObject.GetComponent<Bullet>().canresurrection && this.gameObject.layer == 12)
-            // ºÎÈ° ½ÃÅ°´Â ¹öÇÁÅ¸ÀÔ ¸ÖÆ¼¶ó¼­ ½Ì±Û »èÁ¦ °¡´É¼º ³ôÀ½ Á×Àº»óÅÂ,ÃÑ¾ËÀÌ ºÎÈ°ÀÌ¶ó¸é , ·¹ÀÌ¾î¿¡¼­ ÇÑ¹ø´õ Á×À½Ã¼Å©(Á¤»óÃ³¸®‰çÀ¸¸é ºÒÇÊ¿ä)- Æ÷Åæ ¸ð¼Ç Ã¼Å©¶§¸ÅÇÊ¿äÇß¾úÀ½
+            // ï¿½ï¿½È° ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½Ì¶ï¿½ï¿½ , ï¿½ï¿½ï¿½Ì¾î¿¡ï¿½ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼Å©(ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ê¿ï¿½)- ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¼Å©ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿ï¿½ï¿½ß¾ï¿½ï¿½ï¿½
             {
                 Bullet _bullet = collision.gameObject.GetComponent<Bullet>();
                 PhotonView photonView = PhotonView.Find(_bullet.BulletOwner);
@@ -71,9 +71,9 @@ public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î 
             
         }*/
 
-        /*if (collision.gameObject.layer == LayerMask.NameToLayer("AttackArea")) // °ø°Ý Áö¿ªÇü Ã³¸® 
+        /*if (collision.gameObject.layer == LayerMask.NameToLayer("AttackArea")) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ 
         {
-            //³Ë¹é
+            //ï¿½Ë¹ï¿½
 
             float Boss_Dragon_atk = collision.gameObject.GetComponentInParent<BossAI_Dragon>().bossSO.atk;
             //playerStat.GiveDamege(Boss_Dragon_atk);
@@ -81,13 +81,14 @@ public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î 
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Bullet")
             && !playerStat.Invincibility
+            && !playerStat.NormalRollInvincibility
             && !playerStat.SkillRollInvincibility
             //&& !playerStat.isDie
             //&& !playerStat.isRegen
             && collision.gameObject.GetComponent<Bullet>().targets.ContainsValue((int)BulletTarget.Player))
-            //±âÁ¸ ºÒ·¿ Å¸ÀÔÀÌ ÆÀÅ³ ±â´ÉÀ» °í·ÁÇØ¼­ ÄÁÅ×ÀÎ ¹ë·ù·Î ÇÇ°Ý ´ë»óÀ» ÆÇÁ¤Çß´Âµ¥ °íÄ¡´Â°Å °í·Á - Àû ÃÑ¾Ëµµ °°Àº°Å ¾²´Ï±î ±âÁ¸°Å´ë·Î ÇØµµ µÉ°Å °°Àºµ¥
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß´Âµï¿½ ï¿½ï¿½Ä¡ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ ï¿½Ñ¾Ëµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å´ï¿½ï¿½ ï¿½Øµï¿½ ï¿½É°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
-            //if (PV.IsMine) Æ÷Åæºä Ã³¸® »èÁ¦
+            //if (PV.IsMine) ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             //{
 
                 Bullet _bullet = collision.gameObject.GetComponent<Bullet>();
@@ -95,9 +96,9 @@ public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î 
                 float damage = _bullet.ATK;
                 int targetID = _bullet.BulletOwner;
 
-                if (_bullet.IsDamage) // µ¥¹ÌÁö Å¸ÀÔ ÀÌ¶ó¸é - ¸ÖÆ¼ xµÇ¸é¼­ ¹öÇÁÅ¸ÀÔÀÌ ¾ø¾îÁø´Ù°í ºÁ¾ßÇÔ
+                if (_bullet.IsDamage) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Ì¶ï¿½ï¿½ - ï¿½ï¿½Æ¼ xï¿½Ç¸é¼­ ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 {
-                    // ¹Ý»ç Ã³¸®
+                    // ï¿½Ý»ï¿½ Ã³ï¿½ï¿½
                     //if (playerStat.CanReflect)
                     //{
                     //    playerStat.CallReflectEvent(damage, targetID);
@@ -105,12 +106,12 @@ public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î 
                     //}
                     playerStat.Damage(damage);
                 }
-                /* ¹öÇÁÅ¸ÀÔ
+                /* ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½
                 else
                 {
                     playerStat._DebuffControl.Init(PlayerDebuffControl.buffName.Heal, 1f);
-                    Debug.Log("Ã¼·Â È¸º¹ ");
-                    // ADD : Èú·® ´©Àû
+                    Debug.Log("Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ ");
+                    // ADD : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                     damage = (damage + playerStat.CurHP > playerStat.HP.total) ? playerStat.HP.total - playerStat.CurHP : damage;
                     photonView.RPC("AddHealAmount", RpcTarget.All, damage, _bullet.BulletOwner);
                     PhotonView.Find(_bullet.BulletOwner).RPC("InvokeHealedEvent", RpcTarget.All, damage, _bullet.BulletOwner);
@@ -124,19 +125,19 @@ public class CollisionController : MonoBehaviour // ¸ð³ëºñÇÏºñ¾îÆÝ¿¡¼­ ±×³ÉÀ¸·Î 
                 }
                 */
             //}
-            Destroy(collision.gameObject);// Æ÷Åæ ÃÑ¾Ë punrpc·Î ¿©±â¼­ »èÁ¦ÀÎµ¥ ÀÌ°Åµµ Á¦°Å ÇØ¾ßÇÒ°Å °°Àºµ¥?
+            Destroy(collision.gameObject);// ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ punrpcï¿½ï¿½ ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ï¿½Îµï¿½ ï¿½Ì°Åµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Ò°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
         }
     }
 
 
-    /*[PunRPC] // ¸ÖÆ¼ ´ë»ó Èú
+    /*[PunRPC] // ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ ï¿½ï¿½
     private void AddHealAmount(float healedAmount, int viewID)
     {
         HealedTotal += healedAmount;
         LastHealedViewID = viewID;
     }
 
-    //[PunRPC] // Èú ¹ß»ý½Ã ÀÌº¥Æ® Ã³¸® = ¸ÖÆ¼
+    //[PunRPC] // ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® Ã³ï¿½ï¿½ = ï¿½ï¿½Æ¼
     private void InvokeHealedEvent(float healedAmount, int viewID)
     {
         OnHealedEvent?.Invoke(healedAmount, viewID);

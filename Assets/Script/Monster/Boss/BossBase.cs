@@ -30,6 +30,7 @@ public class BossBase : MonoBehaviour
 
     protected bool isDead;
     protected BossBTNode behaviorTreeRoot;
+    public BossBTBlackboard blackboard;  // BTTask가 접근할 수 있도록 public
     protected bool brainRunning;
 
     [Header("BT Debug")]
@@ -64,10 +65,30 @@ public class BossBase : MonoBehaviour
         brainRunning = false;
         firstCallCount = 0;
         brainStartCount = 0;
+        blackboard = new BossBTBlackboard();
         StopTimingCoroutines();
 
+        // 플레이어 참조 획득: GameManager 우선, 없으면 TestGameManager 확인
         if (GameManager.Instance != null)
+        {
             Player = GameManager.Instance.playerOBJ;
+        }
+        else
+        {
+            // 테스트 씬: TestGameManager에서 플레이어 찾기
+            TestGameManager testManager = FindObjectOfType<TestGameManager>();
+            if (testManager != null)
+            {
+                // TestGameManager가 설정한 플레이어는 GameManager.Instance.playerOBJ에 있을 수도 있고
+                // 아니면 직접 씬에서 찾아야 할 수도 있음
+                GameObject testPlayer = GameObject.FindGameObjectWithTag("Player");
+                if (testPlayer != null)
+                {
+                    Player = testPlayer;
+                    Debug.Log($"[BossBase] Test scene: Found player via tag: {testPlayer.name}");
+                }
+            }
+        }
 
         OnBeforeIntroStart();
 

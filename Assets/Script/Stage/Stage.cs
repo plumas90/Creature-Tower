@@ -185,14 +185,21 @@ public class Stage : MonoBehaviour
 
     private IEnumerator BossRoomEnterSequence(GameObject player)
     {
+        Debug.Log($"[Stage] BossRoomEnterSequence 시작. Player: {(player != null ? player.name : "NULL")}");
+        Debug.Log($"[Stage] GameManager.Instance.playerOBJ: {(GameManager.Instance != null && GameManager.Instance.playerOBJ != null ? GameManager.Instance.playerOBJ.name : "NULL")}");
+        
         BossBase summonedBoss = SummonBossObjectOnly();
         MovePlayerInside(player);
 
         if (summonedBoss == null)
+        {
+            Debug.LogError("[Stage] SummonBossObjectOnly returned null!");
             yield break;
+        }
 
         yield return ShowBossNameRoutine(summonedBoss.GetDisplayName(), bossNameShowDuration);
 
+        Debug.Log($"[Stage] BeginBossBattle 호출 전. GameManager.Instance.playerOBJ: {(GameManager.Instance != null && GameManager.Instance.playerOBJ != null ? GameManager.Instance.playerOBJ.name : "NULL")}");
         BeginBossBattle(summonedBoss);
     }
 

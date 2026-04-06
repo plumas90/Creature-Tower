@@ -116,6 +116,13 @@ public class TopDownCharacterController : MonoBehaviour
             return;
         }
 
+        // 일반 구르기 중에는 스킬 사용 불가
+        if (playerStatHandler.NormalRollInvincibility)
+        {
+            Debug.Log("Cannot use skill during normal roll");
+            return;
+        }
+
         // 스킬 구르기 세션이 이미 진행 중이면 중복 시전을 막는다.
         if (isCompulsoryRollRunning)
         {
@@ -154,7 +161,9 @@ public class TopDownCharacterController : MonoBehaviour
             playerStatHandler.CurRollStack -= 1;
             //Debug.Log($"������ ���� ���� : {playerStatHandler.CurRollStack} ����");
             playerStatHandler.CanRoll = false;
-            playerStatHandler.Invincibility = true;
+            
+            // 일반 구르기 무적 설정 (전역 Invincibility 대신 NormalRollInvincibility 사용)
+            playerStatHandler.NormalRollInvincibility = true;
             Invoke("CallEndRollEvent", 0.8f);
         }
         else
@@ -200,7 +209,10 @@ public class TopDownCharacterController : MonoBehaviour
     public void CallEndRollEvent()
     {
         playerStatHandler.CanRoll = true;
-        playerStatHandler.Invincibility = false;
+        
+        // 일반 구르기 무적 해제
+        playerStatHandler.NormalRollInvincibility = false;
+        
         OnEndRollEvent?.Invoke();
     }
     public void CallSiegeModeEvent() // ��� ���� ��� üũ

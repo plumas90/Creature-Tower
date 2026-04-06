@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00c807b9cfea0bd42a4ee28f890f6428, type: 3}
+  m_Name: WormSO
+  m_EditorClassIdentifier: 
+  enemyName: The Worm
+  atk: 15
+  hp: 250
+  speed: 0
+  bossCount: 0
+  IntroAnimationTime: 0
+  bossPatternTime: 0
+  btChaseRange: 100
+  btStopDistance: 0.6
+  btRepathInterval: 0.15
+  btMoveSpeedMultiplier: 1
+  btChaseChance: 1
+  introFallDuration: 2.5
+  postIntroDelay: 1
+  chargeDuration: 1
+  chargeRotationSpeed: 720
+  chargeColor: {r: 1, g: 0, b: 0, a: 1}
+  aimDuration: 0.1
+  launchForce: 10
+  stopVelocityThreshold: 0.5
+  idleTimeAfterLaunch: 3
+  playerKnockbackForce: 20

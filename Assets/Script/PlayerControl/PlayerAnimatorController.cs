@@ -107,13 +107,19 @@ public class PlayerAnimatorController : MonoBehaviour
     private void RollAnimator()
     {
         _animation.SetTrigger("IsRoll");
+        
+        // 구르기 시작 시 깜빡임 효과 중단 (일반/스킬 구르기 모두)
+        if (playerStatControl != null)
+            playerStatControl.StopHitInvincibilityBlink();
+        
         weaponRenderer.color = new Color(1f, 1f, 1f, 0f); // 구르기 중 무기 숨기기
         Invoke("EndRollAnimator", 0.7f);
     }
 
     private void EndRollAnimator()
     {
-        weaponRenderer.color = Color.white; // 구르기 종료 후 무기 복원
+        // 구르기 종료 후 무기 복원
+        weaponRenderer.color = Color.white;
     }
     private void ColorTeen()
     {

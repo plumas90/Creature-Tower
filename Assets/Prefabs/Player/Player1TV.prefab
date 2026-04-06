@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &353229738426850078
 GameObject:
@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 3185063502797470371}
   m_Layer: 8
   m_Name: Player1TV
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -239,7 +239,12 @@ MonoBehaviour:
   CanRoll: 0
   Invincibility: 0
   SkillRollInvincibility: 0
+  contactHitInvincibilityDuration: 0.5
+  contactHitTickInterval: 0.2
+  hitInvincibleBlinkInterval: 0.08
+  hitInvincibleBlinkAlpha: 0.35
   useSkill: 0
+  ActiveSkillCastCount: 0
   UseRoll: 0
   IsInShield: 0
   InShieldHP: 0
@@ -6033,4 +6038,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1711639255351571575, guid: 9113bb74c3f38804996318bd6b8ade32, type: 3}
   m_PrefabInstance: {fileID: 7251122497854194441}
   m_PrefabAsset: {fileID: 0}
-
