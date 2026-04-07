@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WormSO
   m_EditorClassIdentifier: 
   enemyName: The Worm
-  atk: 15
+  atk: 5
   hp: 250
   speed: 0
   bossCount: 0
@@ -26,11 +26,12 @@ MonoBehaviour:
   btChaseChance: 1
   introFallDuration: 2.5
   postIntroDelay: 1
-  chargeDuration: 1
-  chargeRotationSpeed: 720
+  chargeDuration: 1.5
+  chargeRotationSpeed: 360
   chargeColor: {r: 1, g: 0, b: 0, a: 1}
-  aimDuration: 0.1
-  launchForce: 10
+  aimDuration: 0.3
+  launchForce: 30
   stopVelocityThreshold: 0.5
-  idleTimeAfterLaunch: 3
-  playerKnockbackForce: 20
+  maxLaunchDuration: 2
+  idleTimeAfterLaunch: 2.5
+  playerKnockbackForce: 50

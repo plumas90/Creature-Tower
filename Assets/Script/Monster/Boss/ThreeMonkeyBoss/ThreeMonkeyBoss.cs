@@ -72,8 +72,9 @@ public class ThreeMonkeyBoss : BossBase
     [Header("Ballistic Movement")]
     [SerializeField] private Vector2 startDirection = new Vector2(1f, -1f); // 5 o'clock
     [SerializeField] [Min(0f)] private float detachSpawnOutwardOffset = 0.35f;
-    [SerializeField] [Min(0f)] private float detachSpawnResolvePadding = 0.02f;
-    [SerializeField] [Range(1, 8)] private int detachSpawnResolveIterations = 4;
+    [SerializeField] [Min(0f)] private float detachSpawnSafeRadius = 0.8f; // 안전 반경
+    [SerializeField] [Range(4, 32)] private int detachSpawnSafeSearchAttempts = 16; // 안전 위치 찾기 시도 횟수
+    [SerializeField] [Min(0f)] private float detachSpawnMaxSearchDistance = 3.0f; // 최대 탐색 거리
 
     private readonly Collider2D[] detachSpawnOverlapBuffer = new Collider2D[8];
 
@@ -817,40 +818,87 @@ public class ThreeMonkeyBoss : BossBase
         if (wallLayer < 0)
             return;
 
+        LayerMask wallMask = 1 << wallLayer;
+        Vector2 originalPos = spawned.transform.position;
+
+        // 먼저 현재 위치가 안전한지 체크
+        if (!IsOverlappingWall(col, wallMask))
+        {
+            Debug.Log($"[ThreeMonkeyBoss] {spawned.name} spawned safely at {originalPos}");
+            return;
+        }
+
+        Debug.LogWarning($"[ThreeMonkeyBoss] {spawned.name} overlapping wall! Searching for safe position...");
+
+        // 스테이지 중심 계산
+        Vector2 stageCenter = transform.position;
+        if (StageOwner != null && StageOwner.transform != null)
+            stageCenter = StageOwner.transform.position;
+
+        // 방법 1: 스테이지 중심 방향으로 직선 이동 시도
+        Vector2 toCenter = (stageCenter - originalPos).normalized;
+        for (float dist = 0.5f; dist <= detachSpawnMaxSearchDistance; dist += 0.3f)
+        {
+            Vector2 testPos = originalPos + toCenter * dist;
+            spawned.transform.position = testPos;
+            
+            if (!IsOverlappingWall(col, wallMask))
+            {
+                Debug.Log($"[ThreeMonkeyBoss] Found safe position at distance {dist:F2} towards center: {testPos}");
+                return;
+            }
+        }
+
+        // 방법 2: 여러 방향으로 탐색 (원형 패턴)
+        int attempts = Mathf.Max(4, detachSpawnSafeSearchAttempts);
+        float angleStep = 360f / attempts;
+        
+        for (int i = 0; i < attempts; i++)
+        {
+            float angle = angleStep * i;
+            Vector2 direction = Quaternion.Euler(0, 0, angle) * Vector2.right;
+            
+            for (float dist = 0.5f; dist <= detachSpawnMaxSearchDistance; dist += 0.3f)
+            {
+                Vector2 testPos = originalPos + direction * dist;
+                spawned.transform.position = testPos;
+                
+                if (!IsOverlappingWall(col, wallMask))
+                {
+                    Debug.Log($"[ThreeMonkeyBoss] Found safe position at angle {angle:F0}°, distance {dist:F2}: {testPos}");
+                    return;
+                }
+            }
+        }
+
+        // 방법 3: 최후의 수단 - 스테이지 중심으로 강제 이동
+        spawned.transform.position = stageCenter;
+        if (!IsOverlappingWall(col, wallMask))
+        {
+            Debug.LogWarning($"[ThreeMonkeyBoss] Forced spawn at stage center: {stageCenter}");
+            return;
+        }
+
+        // 그래도 안되면... 원래 위치로 복귀하고 경고
+        spawned.transform.position = originalPos;
+        Debug.LogError($"[ThreeMonkeyBoss] FAILED to find safe spawn position for {spawned.name}! Still overlapping wall.");
+    }
+
+    /// <summary>
+    /// 콜라이더가 벽과 겹치는지 체크
+    /// </summary>
+    private bool IsOverlappingWall(Collider2D col, LayerMask wallMask)
+    {
+        if (col == null)
+            return false;
+
         ContactFilter2D filter = default;
         filter.useLayerMask = true;
-        filter.layerMask = 1 << wallLayer;
+        filter.layerMask = wallMask;
         filter.useTriggers = false;
 
-        int iterations = Mathf.Max(1, detachSpawnResolveIterations);
-        for (int it = 0; it < iterations; it++)
-        {
-            int count = col.Overlap(filter, detachSpawnOverlapBuffer);
-            if (count <= 0)
-                break;
-
-            Vector2 correction = Vector2.zero;
-            for (int i = 0; i < count; i++)
-            {
-                Collider2D other = detachSpawnOverlapBuffer[i];
-                if (other == null)
-                    continue;
-
-                ColliderDistance2D distance = col.Distance(other);
-                if (!distance.isOverlapped)
-                    continue;
-
-                correction += distance.normal * distance.distance;
-            }
-
-            if (correction.sqrMagnitude <= 0.000001f)
-                break;
-
-            Vector2 push = correction.normalized * detachSpawnResolvePadding;
-            Vector3 p = spawned.transform.position;
-            p += (Vector3)(correction + push);
-            spawned.transform.position = p;
-        }
+        int count = col.Overlap(filter, detachSpawnOverlapBuffer);
+        return count > 0;
     }
 
     private void ApplyMonkeyEffect(PlayerStatControl playerStat, MonkeyEffectType effect)

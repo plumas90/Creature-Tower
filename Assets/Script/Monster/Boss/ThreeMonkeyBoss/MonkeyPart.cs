@@ -8,8 +8,15 @@ public class MonkeyPart : BossBase
     public MonkeyEffectType effectType = MonkeyEffectType.Eye;
     public float collisionEffectDuration = 3f;
 
+    [Header("Stuck Detection")]
+    [SerializeField] private float stuckCheckInterval = 0.2f; // 끼임 체크 간격
+    [SerializeField] private float stuckThreshold = 0.2f; // 이동 판정 최소 거리
+    [SerializeField] private float unstuckMoveStep = 0.5f; // 탈출 시도 이동 거리
+    [SerializeField] private int maxUnstuckAttempts = 10; // 최대 탈출 시도 횟수
+
     private BallisticMovementComponent ballisticMovement;
     private float btMoveSpeedMultiplier = 1f;
+    private Coroutine stuckDetectionCoroutine;
 
     public void Init(Vector2 vecter)
     {
@@ -46,10 +53,20 @@ public class MonkeyPart : BossBase
         // StatSet 경로를 타지 않는 분리 보스는 Init 시점에 BT를 직접 준비/시작해야 이동한다.
         behaviorTreeRoot = CreateBehaviorTree();
         StartBrain();
+
+        // 끼임 감지 시작
+        StartStuckDetection();
     }
 
     public override void BossDie()
     {
+        // 끼임 감지 중단
+        if (stuckDetectionCoroutine != null)
+        {
+            StopCoroutine(stuckDetectionCoroutine);
+            stuckDetectionCoroutine = null;
+        }
+
         base.BossDie();
         gameObject.SetActive(false);
     }
@@ -182,6 +199,85 @@ public class MonkeyPart : BossBase
                 ballisticMovement.SetStopWindow(0.04f);
             }
         }
+    }
+
+    /// <summary>
+    /// 끼임 감지 시작 - 소환 직후 자동으로 호출됨
+    /// </summary>
+    private void StartStuckDetection()
+    {
+        if (stuckDetectionCoroutine != null)
+            StopCoroutine(stuckDetectionCoroutine);
+
+        stuckDetectionCoroutine = StartCoroutine(CoStuckDetection());
+    }
+
+    /// <summary>
+    /// 끼임 감지 코루틴: 0.2초마다 위치 체크하여 안 움직이면 탈출 시도
+    /// </summary>
+    private IEnumerator CoStuckDetection()
+    {
+        yield return new WaitForSeconds(0.1f); // 초기 대기 (소환 애니메이션 고려)
+
+        Vector2 lastPosition = transform.position;
+        int attemptCount = 0;
+
+        while (attemptCount < maxUnstuckAttempts)
+        {
+            // 체크 간격 대기
+            yield return new WaitForSeconds(stuckCheckInterval);
+
+            if (!live || isDead)
+            {
+                Debug.Log($"[MonkeyPart] Stuck detection stopped (dead)");
+                yield break;
+            }
+
+            Vector2 currentPosition = transform.position;
+            float deltaX = Mathf.Abs(currentPosition.x - lastPosition.x);
+            float deltaY = Mathf.Abs(currentPosition.y - lastPosition.y);
+
+            // X 또는 Y 중 하나라도 stuckThreshold 이상 움직였으면 정상 동작 중
+            if (deltaX >= stuckThreshold || deltaY >= stuckThreshold)
+            {
+                Debug.Log($"[MonkeyPart] Moving normally. Delta: ({deltaX:F3}, {deltaY:F3})");
+                lastPosition = currentPosition;
+                attemptCount = 0; // 탈출 시도 카운트 리셋
+                continue;
+            }
+
+            // 끼임 감지!
+            attemptCount++;
+            Debug.LogWarning($"[MonkeyPart] Stuck detected! Attempt {attemptCount}/{maxUnstuckAttempts}. Delta: ({deltaX:F3}, {deltaY:F3})");
+
+            // 스테이지 중심으로 이동 시도
+            Vector2 stageCenter = GetStageCenter();
+            Vector2 toCenter = (stageCenter - currentPosition).normalized;
+            Vector2 newPosition = currentPosition + toCenter * unstuckMoveStep;
+
+            transform.position = newPosition;
+            lastPosition = newPosition;
+
+            Debug.Log($"[MonkeyPart] Moved towards center: {currentPosition} → {newPosition}");
+        }
+
+        // 최대 시도 횟수 도달
+        Debug.LogError($"[MonkeyPart] Failed to unstuck after {maxUnstuckAttempts} attempts. Forcing to stage center.");
+        transform.position = GetStageCenter();
+    }
+
+    /// <summary>
+    /// 스테이지 중심 위치 가져오기
+    /// </summary>
+    private Vector2 GetStageCenter()
+    {
+        if (StageOwner != null && StageOwner.transform != null)
+            return StageOwner.transform.position;
+
+        if (GameManager.Instance != null && GameManager.Instance.transform != null)
+            return GameManager.Instance.transform.position;
+
+        return Vector2.zero; // 최후의 수단
     }
 
     private void EnsureMinionLayer()
