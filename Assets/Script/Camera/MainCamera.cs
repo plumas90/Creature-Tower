@@ -23,37 +23,29 @@ public class MainCamera : MonoBehaviour
 
     private void SetInitialTarget()
     {
-        // TestGameManager가 있으면 플레이어 선택 후 Target을 직접 지정하므로 여기선 아무것도 안 함
-        if (Target != null) return;
+        // GameManager가 이미 playerOBJ를 가지고 있으면 자동 할당
+        if (Target == null && GameManager.Instance != null && GameManager.Instance.playerOBJ != null)
+        {
+            Target = GameManager.Instance.playerOBJ;
+            Debug.Log("[MainCamera] Auto-assigned target from GameManager.playerOBJ on Start");
+        }
     }
 
 
     public void Update()
     {
-
         if (Target == null)
         {
-            //PhotonNetwork.AutomaticallySyncScene = false;
-            //PhotonNetwork.LoadLevel("LobbyScene");
+            // Target이 없으면 카메라 이동 안함
+            return;
         }
-        else
-        {
-            TargetPos = new Vector3(
-                Target.transform.position.x + offsetX,
-                Target.transform.position.y + offsetY,
-                Target.transform.position.z + offsetZ
-                );
+
+        TargetPos = new Vector3(
+            Target.transform.position.x + offsetX,
+            Target.transform.position.y + offsetY,
+            Target.transform.position.z + offsetZ
+        );
         transform.position = Vector3.Lerp(transform.position, TargetPos, Time.deltaTime * CameraSpeed);
-        }
-
-
-        /*if (Target.GetComponent<PlayerStatControl>().isDie)
-        {
-            ChangeTarget();
-            //UpdateDiedView();
-            TargetPos = OtherTargetPos;
-        }*/
-
     }
 
 

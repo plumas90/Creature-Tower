@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eca0334f58f53c74c927c222c7938663, type: 3}
   m_Name: HauntedCrystalBallSO
   m_EditorClassIdentifier: 
-  enemyName: 
-  atk: 0
+  enemyName: Haunted Crystal Ball
+  atk: 5
   hp: 50
   speed: 0
   bossCount: 0
@@ -24,22 +24,20 @@ MonoBehaviour:
   btRepathInterval: 0.15
   btMoveSpeedMultiplier: 0
   btChaseChance: 1
-  hp: 50
-  speed: 0
-  btMoveSpeedMultiplier: 0
   incomingDamageOverride: 1
-  pattern1Damage: 10
+  pattern1Damage: 5
   pattern1GhostSpeed: 5
-  pattern2Damage: 12
+  pattern2Damage: 5
   pattern2GhostSpeed: 5
   pattern3Damage: 15
-  pattern3SpawnDistance: 2
+  pattern3SpawnDistanceMin: 1.5
+  pattern3SpawnDistanceMax: 3
   pattern3WaitTime: 0.5
   pattern3RotationSpeed: 180
-  pattern4Damage: 20
+  pattern4Damage: 5
   pattern4TileCount: 2
   pattern4WarningTime: 1
   pattern4ActiveTime: 0.5
-  ghostPrefab: {fileID: 0}
-  ghostCirclePrefab: {fileID: 0}
-  tilePrefab: {fileID: 0}
+  ghostPrefab: {fileID: 9156394777497399164, guid: 8e082b60d49cc7f4eacf96551fdebe1f, type: 3}
+  ghostCirclePrefab: {fileID: 5720366735655195783, guid: 4ecc886b752920d4fa831a33267d83fb, type: 3}
+  tilePrefab: {fileID: 6969234556376560335, guid: 4e9c357d9fba09148bc5269be6b465cc, type: 3}

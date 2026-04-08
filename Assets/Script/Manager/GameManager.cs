@@ -214,6 +214,14 @@ public class GameManager : MonoBehaviour
         playerOBJ = player;
         Life = 0;
 
+        // 카메라 Target 설정 (플레이어가 설정되면 즉시 카메라에 알림)
+        MainCamera mainCamera = FindFirstObjectByType<MainCamera>();
+        if (mainCamera != null && mainCamera.Target == null)
+        {
+            mainCamera.Target = player;
+            Debug.Log("[GameManager] Camera target set to player");
+        }
+
         // 총알 풀은 스테이지 초기화보다 먼저 생성 (이후 코드 예외와 무관하게 보장)
         WeaponSystem weaponSystem = player.GetComponent<WeaponSystem>();
         if (weaponSystem != null)
