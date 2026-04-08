@@ -612,13 +612,58 @@ public class ThreeMonkeyBoss : BossBase
 
     private void TryReflectByCollision(Collision2D collision, bool applyStopWindow)
     {
-        if (collision == null || collision.contactCount <= 0)
+        if (collision == null || collision.collider == null)
             return;
 
-        // 컴포넌트를 통해 반사 처리
-        if (ballisticMovement != null)
+        int layer = collision.collider.gameObject.layer;
+        
+        ContactPoint2D[] contacts = new ContactPoint2D[collision.contactCount];
+        collision.GetContacts(contacts);
+
+        if (contacts.Length == 0)
+            return;
+
+        Vector2 avgNormal = Vector2.zero;
+        foreach (var contact in contacts)
+            avgNormal += contact.normal;
+
+        if (avgNormal.sqrMagnitude < 0.0001f)
+            avgNormal = Vector2.right;
+
+        avgNormal.Normalize();
+
+        // BallisticMovementComponent에서 방향 가져오기
+        if (ballisticMovement == null)
+            return;
+
+        Vector2 currentDir = ballisticMovement.CurrentDirection;
+        float reflectedDot = Vector2.Dot(currentDir, avgNormal);
+
+        // 이미 벗어나는 중이면 반사하지 않음
+        if (reflectedDot > 0f)
+            return;
+
+        // 반사 적용
+        Vector2 newDir = Vector2.Reflect(currentDir, avgNormal).normalized;
+        ballisticMovement.CurrentDirection = newDir;
+        
+        // Blackboard에도 업데이트
+        if (blackboard != null)
+            blackboard.Set("MoveDirection", newDir);
+
+        // stop-window 적용 (Enter시에만)
+        if (applyStopWindow)
         {
-            ballisticMovement.HandleCollisionReflection(collision, applyStopWindow);
+            int bossLayer = LayerMask.NameToLayer("Boss");
+            int creatureLayer = LayerMask.NameToLayer("Creatuer");
+            int creature2Layer = LayerMask.NameToLayer("Creature");
+            
+            bool isSoftBody = (layer == bossLayer || layer == creatureLayer || layer == creature2Layer);
+            
+            if (!isSoftBody && ballisticMovement != null)
+            {
+                ballisticMovement.SetStopWindow(0.04f);
+            }
         }
     }
 
@@ -830,10 +875,15 @@ public class ThreeMonkeyBoss : BossBase
 
         Debug.LogWarning($"[ThreeMonkeyBoss] {spawned.name} overlapping wall! Searching for safe position...");
 
-        // 스테이지 중심 계산
+        // 스테이지 중심 계산 (nxnZone 우선)
         Vector2 stageCenter = transform.position;
-        if (StageOwner != null && StageOwner.transform != null)
-            stageCenter = StageOwner.transform.position;
+        if (StageOwner != null)
+        {
+            if (StageOwner.nxnZone != null)
+                stageCenter = StageOwner.nxnZone.bounds.center;
+            else if (StageOwner.transform != null)
+                stageCenter = StageOwner.transform.position;
+        }
 
         // 방법 1: 스테이지 중심 방향으로 직선 이동 시도
         Vector2 toCenter = (stageCenter - originalPos).normalized;

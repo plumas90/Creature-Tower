@@ -528,6 +528,18 @@ public class PlayerStatControl : MonoBehaviour
         if (hitInvincibleBlinkRoutine != null)
             StopCoroutine(hitInvincibleBlinkRoutine);
 
+        // ⭐ 코루틴 시작 전 알파를 1로 복원 (중복 피격 시 투명 누적 방지)
+        for (int i = 0; i < hitBlinkRenderers.Count; i++)
+        {
+            SpriteRenderer renderer = hitBlinkRenderers[i];
+            if (renderer == null)
+                continue;
+
+            Color c = renderer.color;
+            c.a = 1f;
+            renderer.color = c;
+        }
+
         hitInvincibleBlinkRoutine = StartCoroutine(CoHitInvincibilityBlink(duration));
     }
 

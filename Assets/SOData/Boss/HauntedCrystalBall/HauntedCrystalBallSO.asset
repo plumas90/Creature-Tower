@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca0334f58f53c74c927c222c7938663, type: 3}
+  m_Name: HauntedCrystalBallSO
+  m_EditorClassIdentifier: 
+  enemyName: 
+  atk: 0
+  hp: 50
+  speed: 0
+  bossCount: 0
+  IntroAnimationTime: 0
+  bossPatternTime: 0
+  btChaseRange: 100
+  btStopDistance: 0.6
+  btRepathInterval: 0.15
+  btMoveSpeedMultiplier: 0
+  btChaseChance: 1
+  hp: 50
+  speed: 0
+  btMoveSpeedMultiplier: 0
+  incomingDamageOverride: 1
+  pattern1Damage: 10
+  pattern1GhostSpeed: 5
+  pattern2Damage: 12
+  pattern2GhostSpeed: 5
+  pattern3Damage: 15
+  pattern3SpawnDistance: 2
+  pattern3WaitTime: 0.5
+  pattern3RotationSpeed: 180
+  pattern4Damage: 20
+  pattern4TileCount: 2
+  pattern4WarningTime: 1
+  pattern4ActiveTime: 0.5
+  ghostPrefab: {fileID: 0}
+  ghostCirclePrefab: {fileID: 0}
+  tilePrefab: {fileID: 0}

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BossBase : MonoBehaviour
 {
+    [HideInInspector]
     public EnemySO MainSO;
     //[HideInInspector] 
     public float atk;             // ���ݷ�

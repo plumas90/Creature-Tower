@@ -1236,6 +1236,8 @@ MonoBehaviour:
   BossSpawnPoint: {fileID: 5878708432157587474}
   bossSpawnSprite: {fileID: 6619465997206865963}
   PlayerMovePointSprite: {fileID: 8789779331447116063}
+  PlayerSpawnPointSprite: {fileID: 3930418963078441672}
+  nxnZone: {fileID: 4128445994571125965}
   bossNameShowDuration: 1.2
 --- !u!1 &2342228030646336285
 GameObject:
@@ -2018,7 +2020,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 6
-      m_TileSpriteIndex: 6
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2108,7 +2110,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 7
-      m_TileSpriteIndex: 7
+      m_TileSpriteIndex: 17
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2447,36 +2449,36 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 10
     m_Data: {fileID: -424805623, guid: ba4eb04c701308a4ba412892c7fcebec, type: 3}
-  - m_RefCount: 1
-    m_Data: {fileID: -1364762515, guid: ba4eb04c701308a4ba412892c7fcebec, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: 327532523, guid: ba4eb04c701308a4ba412892c7fcebec, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: -4799748, guid: ba4eb04c701308a4ba412892c7fcebec, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -682980849, guid: ba4eb04c701308a4ba412892c7fcebec, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: -1364762515, guid: ba4eb04c701308a4ba412892c7fcebec, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 40
     m_Data:

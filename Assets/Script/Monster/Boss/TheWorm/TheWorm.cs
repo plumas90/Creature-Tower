@@ -40,6 +40,10 @@ public class TheWorm : BossBase
     {
         base.Awake();
 
+        // wormSO를 MainSO에 자동 할당
+        if (wormSO != null)
+            MainSO = wormSO;
+
         // 컴포넌트 초기화
         launchComponent = GetComponent<WormLaunchComponent>();
         if (launchComponent == null)
@@ -62,6 +66,10 @@ public class TheWorm : BossBase
 
     public override void StatSet()
     {
+        // wormSO를 MainSO에 자동 할당
+        if (wormSO != null)
+            MainSO = wormSO;
+
         // WormSO에서 값 로드
         if (wormSO != null)
         {
@@ -294,5 +302,8 @@ public class TheWorm : BossBase
 
         if (verboseBTLog)
             Debug.Log("[TheWorm] 사망!");
+        
+        // 오브젝트 비활성화
+        gameObject.SetActive(false);
     }
 }

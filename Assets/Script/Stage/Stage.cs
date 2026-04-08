@@ -27,6 +27,10 @@ public class Stage : MonoBehaviour
     public Transform BossSpawnPoint;
     public SpriteRenderer bossSpawnSprite;
     public SpriteRenderer PlayerMovePointSprite;
+    public SpriteRenderer PlayerSpawnPointSprite;
+
+    [Header("Battle Zone")]
+    public BoxCollider2D nxnZone;
 
     [Header("Boss Entry Sequence")]
     [Min(0f)] public float bossNameShowDuration = 1.2f;
@@ -149,6 +153,9 @@ public class Stage : MonoBehaviour
 
         if (PlayerMovePointSprite != null)
             PlayerMovePointSprite.color = new Color(0, 0, 0, 0);
+
+        if (PlayerSpawnPointSprite != null)
+            PlayerSpawnPointSprite.color = new Color(0, 0, 0, 0);
 
         ResultSummon();
         firstIn = true;
@@ -350,6 +357,59 @@ public class Stage : MonoBehaviour
     public void CloseTopDoor() 
     {
         topDoor.Lock();
+    }
+
+    /// <summary>
+    /// nxnZone 내에서 랜덤한 위치를 반환합니다.
+    /// </summary>
+    public Vector2 GetRandomPositionInZone()
+    {
+        if (nxnZone == null)
+        {
+            Debug.LogWarning($"[Stage] '{name}' nxnZone is not assigned. Returning stage center.");
+            return transform.position;
+        }
+
+        Bounds bounds = nxnZone.bounds;
+        float randomX = Random.Range(bounds.min.x, bounds.max.x);
+        float randomY = Random.Range(bounds.min.y, bounds.max.y);
+        return new Vector2(randomX, randomY);
+    }
+
+    /// <summary>
+    /// 주어진 위치가 nxnZone 내부에 있는지 확인합니다.
+    /// </summary>
+    public bool IsPositionInZone(Vector2 position)
+    {
+        if (nxnZone == null)
+            return false;
+
+        return nxnZone.bounds.Contains(position);
+    }
+
+    /// <summary>
+    /// nxnZone의 중심 위치를 반환합니다.
+    /// </summary>
+    public Vector2 GetZoneCenter()
+    {
+        if (nxnZone == null)
+            return transform.position;
+
+        return nxnZone.bounds.center;
+    }
+
+    /// <summary>
+    /// nxnZone의 Bounds를 반환합니다.
+    /// </summary>
+    public Bounds GetZoneBounds()
+    {
+        if (nxnZone == null)
+        {
+            // 기본 크기의 Bounds 반환 (10x10)
+            return new Bounds(transform.position, new Vector3(10f, 10f, 0f));
+        }
+
+        return nxnZone.bounds;
     }
 
 }

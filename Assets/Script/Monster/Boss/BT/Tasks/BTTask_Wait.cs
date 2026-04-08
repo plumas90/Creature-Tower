@@ -58,7 +58,7 @@ public class BTTask_Wait : BTTask
         // 대기 시간 체크
         float elapsed = Time.time - startTime;
         if (elapsed >= actualDuration)
-        {
+         {
             Debug.Log($"[BTTask_Wait] OnTick - SUCCESS at {Time.time:F2}! Elapsed: {elapsed:F2}s");
             return BossBTState.Success;
         }

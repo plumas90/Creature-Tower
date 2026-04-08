@@ -5888,6 +5888,8 @@ MonoBehaviour:
   BossSpawnPoint: {fileID: 6598256368067781366}
   bossSpawnSprite: {fileID: 2900236102627317995}
   PlayerMovePointSprite: {fileID: 1110568210352936330}
+  PlayerSpawnPointSprite: {fileID: 7505959056695243317}
+  nxnZone: {fileID: 8682044649399148316}
   bossNameShowDuration: 1.2
 --- !u!1 &4938055588127055550
 GameObject:
