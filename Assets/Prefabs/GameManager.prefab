@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5240577133798052167
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7320189981930732247}
+  - component: {fileID: 3734453321728820694}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7320189981930732247
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5240577133798052167}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 734.6962, y: 472.0334, z: -2.8919396}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3734453321728820694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5240577133798052167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e74a8fc837fef74ea845ac6f4e5b96f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerUiManager: {fileID: 0}
+  playerOBJ: {fileID: 0}
+  isDie: 0
+  Life: 0
+  bossCount: 0
+  stageLevel1:
+  - {fileID: 4321829367275256000, guid: ae47ea19820bcb34d997b2ae0d40b411, type: 3}
+  stageLevel2:
+  - {fileID: 8519895368766016671, guid: d7fee1e7372a62e419830eafc8334440, type: 3}
+  stageLevel3: []
+  stageLevel4: []
+  stageLevel5: []
+  stageLevel6: []
+  stageLevel7: []
+  stageLevel8: []
+  stageLevel9: []
+  stageLevel10: []
+  stageLevel11: []
+  stageLevel12: []
+  stageLevel13: []
+  stageLevel14: []
+  stageLevel15: []
+  StageInfoUI: {fileID: 0}
+  thankDemoUI: {fileID: 0}
+  StageTree: []
+  CurrentStage: {fileID: 0}

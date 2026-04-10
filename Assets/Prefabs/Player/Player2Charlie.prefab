@@ -236,7 +236,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1782171390615115553
 Transform:
   m_ObjectHideFlags: 0
@@ -301,6 +301,7 @@ MonoBehaviour:
   CanSkill: 0
   CanRoll: 0
   Invincibility: 0
+  NormalRollInvincibility: 0
   SkillRollInvincibility: 0
   contactHitInvincibilityDuration: 0.5
   contactHitTickInterval: 0.2
