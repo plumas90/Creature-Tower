@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class BallisticMovementComponent : MonoBehaviour
 {
+    [Header("Contact Damage Settings")]
+    [Tooltip("Cast 충돌 시 PlayerStatControl에 접촉 데미지를 시도할지 여부")]
+    [SerializeField] private bool applyCastContactDamage = true;
+
     [Header("Movement Settings")]
     [Tooltip("Cast 시 사용할 skin 두께")]
     [SerializeField] [Min(0f)] private float sweepSkin = 0.02f;
@@ -29,6 +34,7 @@ public class BallisticMovementComponent : MonoBehaviour
     // 내부 상태
     private Rigidbody2D moveBody2D;
     private Collider2D moveCollider2D;
+    private BossBase ownerBoss;
     private readonly List<RaycastHit2D> sweepHits = new List<RaycastHit2D>(8);
     private ContactFilter2D moveContactFilter;
     private bool moveContactFilterReady;
@@ -46,6 +52,7 @@ public class BallisticMovementComponent : MonoBehaviour
     /// 이동 속도 배율 (외부에서 조정 가능)
     /// </summary>
     public float SpeedMultiplier { get; set; } = 1f;
+    public Action<PlayerStatControl> OnCastPlayerHit { get; set; }
 
     private void Awake()
     {
@@ -56,6 +63,7 @@ public class BallisticMovementComponent : MonoBehaviour
     {
         moveBody2D = GetComponent<Rigidbody2D>();
         moveCollider2D = GetComponent<Collider2D>();
+        ownerBoss = GetComponent<BossBase>();
 
         if (moveBody2D != null)
         {
@@ -131,6 +139,9 @@ public class BallisticMovementComponent : MonoBehaviour
             collided = true;
             hitName = nearestHit.collider != null ? nearestHit.collider.name : "null";
             hitNormal = nearestHit.normal;
+
+            if (nearestHit.collider != null)
+                TryApplyCastContactDamage(nearestHit.collider);
 
             remainingDistance -= safeDistance;
             if (remainingDistance <= 0f || bounceCount >= maxBounces)
@@ -211,6 +222,27 @@ public class BallisticMovementComponent : MonoBehaviour
         }
 
         return (softBodyLayerMask & (1 << layer)) != 0;
+    }
+
+    private void TryApplyCastContactDamage(Collider2D hitCollider)
+    {
+        if (!applyCastContactDamage || hitCollider == null)
+            return;
+
+        if (ownerBoss == null)
+            ownerBoss = GetComponent<BossBase>();
+
+        if (ownerBoss == null || ownerBoss.atk <= 0f)
+            return;
+
+        PlayerStatControl playerStat = hitCollider.GetComponentInParent<PlayerStatControl>();
+        if (playerStat == null)
+            return;
+
+        OnCastPlayerHit?.Invoke(playerStat);
+
+        bool applied = playerStat.TryApplyContactDamage(ownerBoss.atk, gameObject.GetInstanceID());
+        LogMoveDebug($"Cast contact damage tried: target={playerStat.name} atk={ownerBoss.atk} applied={applied}", true);
     }
 
     /// <summary>

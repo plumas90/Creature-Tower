@@ -88,6 +88,7 @@ public class ThreeMonkeyBoss : BossBase
         ballisticMovement = GetComponent<BallisticMovementComponent>();
         if (ballisticMovement == null)
             ballisticMovement = gameObject.AddComponent<BallisticMovementComponent>();
+        ballisticMovement.OnCastPlayerHit = HandleCastPlayerHit;
 
         // 초기 방향 설정
         Vector2 initialDir = startDirection.sqrMagnitude > 0.0001f ? startDirection.normalized : new Vector2(1f, -1f).normalized;
@@ -114,7 +115,7 @@ public class ThreeMonkeyBoss : BossBase
         if (introPlayableGraphs.Count > 0 && IntroTime > 0f)
             StartCoroutine(StopIntroPlayableGraphsAfterDelay(IntroTime + 0.1f));
 
-        Debug.Log($"[ThreeMonkeyBoss] StatSet done | pos={transform.position} | active={gameObject.activeSelf}");
+       // Debug.Log($"[ThreeMonkeyBoss] StatSet done | pos={transform.position} | active={gameObject.activeSelf}");
     }
 
     public override void OnBossActivatedBeforeIntro()
@@ -126,8 +127,8 @@ public class ThreeMonkeyBoss : BossBase
         FreezeAnimator(mouseIntroAnimator);
         FreezeAnimator(earIntroAnimator);
 
-        if (verboseIntroLog)
-            Debug.Log($"[ThreeMonkeyBoss][Intro] pre-intro freeze | eye={eyeIntroAnimator != null} mouse={mouseIntroAnimator != null} ear={earIntroAnimator != null}");
+        //if (verboseIntroLog)
+        //    Debug.Log($"[ThreeMonkeyBoss][Intro] pre-intro freeze | eye={eyeIntroAnimator != null} mouse={mouseIntroAnimator != null} ear={earIntroAnimator != null}");
     }
 
     protected override void OnBeforeIntroStart()
@@ -217,7 +218,7 @@ public class ThreeMonkeyBoss : BossBase
         if (!btConditionTrace.TryGetValue(key, out bool prev) || prev != value)
         {
             btConditionTrace[key] = value;
-            Debug.Log($"[ThreeMonkeyBoss][BT] {key} => {value}");
+            //Debug.Log($"[ThreeMonkeyBoss][BT] {key} => {value}");
         }
 
         return value;
@@ -300,7 +301,7 @@ public class ThreeMonkeyBoss : BossBase
         if (!introAutoConfiguredLogged)
         {
             introAutoConfiguredLogged = true;
-            Debug.Log($"[ThreeMonkeyBoss] Intro auto-map | eye={(eyeIntroAnimator != null)} mouse={(mouseIntroAnimator != null)} ear={(earIntroAnimator != null)}");
+            //Debug.Log($"[ThreeMonkeyBoss] Intro auto-map | eye={(eyeIntroAnimator != null)} mouse={(mouseIntroAnimator != null)} ear={(earIntroAnimator != null)}");
         }
     }
 
@@ -570,10 +571,19 @@ public class ThreeMonkeyBoss : BossBase
 
     public override void OnCollisionEnter2D(Collision2D collision)
     {
-        base.OnCollisionEnter2D(collision);
-        PlayerStatControl playerStat = ResolvePlayerStat(collision);
+        Debug.Log($"부딪힘 {collision.gameObject.name}");
+        collision.gameObject.TryGetComponent<PlayerStatControl>(out PlayerStatControl playerStat);
         if (playerStat != null)
+        {
+            Debug.Log($"[ThreeMonkeyBoss] Player collision detected: {playerStat.name}");
+            bool applied = playerStat.TryApplyContactDamage(atk, gameObject.GetInstanceID());
+            Debug.Log($"[ThreeMonkeyBoss] Contact damage applied={applied}, atk={atk}");
             ApplyMonkeyEffect(playerStat, currentBottomEffect);
+        }
+        else
+        {
+            base.OnCollisionEnter2D(collision);
+        }
 
         TryReflectByCollision(collision, true);
     }
@@ -607,11 +617,12 @@ public class ThreeMonkeyBoss : BossBase
     {
         base.OnCollisionStay2D(collision);
         // Stay 구간에서 stop-window를 매 프레임 갱신하면 접촉 상태가 과도하게 정지될 수 있다.
-        TryReflectByCollision(collision, false);
+        //TryReflectByCollision(collision, false);
     }
 
     private void TryReflectByCollision(Collision2D collision, bool applyStopWindow)
     {
+        Debug.Log("반사시도");
         if (collision == null || collision.collider == null)
             return;
 
@@ -960,6 +971,11 @@ public class ThreeMonkeyBoss : BossBase
             receiver = playerStat.gameObject.AddComponent<PlayerBossStatusEffectReceiver>();
 
         receiver.ApplyEffect(effect, collisionEffectDuration);
+    }
+
+    private void HandleCastPlayerHit(PlayerStatControl playerStat)
+    {
+        ApplyMonkeyEffect(playerStat, currentBottomEffect);
     }
 
     private void AddSplitBossCount(int value)

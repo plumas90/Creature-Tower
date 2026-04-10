@@ -37,6 +37,7 @@ public class MonkeyPart : BossBase
         ballisticMovement = GetComponent<BallisticMovementComponent>();
         if (ballisticMovement == null)
             ballisticMovement = gameObject.AddComponent<BallisticMovementComponent>();
+        ballisticMovement.OnCastPlayerHit = HandleCastPlayerHit;
 
         Vector2 initialDir = vecter.sqrMagnitude > 0.0001f ? vecter.normalized : Vector2.right;
         ballisticMovement.CurrentDirection = initialDir;
@@ -77,16 +78,22 @@ public class MonkeyPart : BossBase
     }
     public override void OnCollisionEnter2D(Collision2D collision)
     {
-        base.OnCollisionEnter2D(collision);
-
         PlayerStatControl playerStat = ResolvePlayerStat(collision);
         if (playerStat != null)
         {
+            Debug.Log($"[MonkeyPart] Player collision detected: {playerStat.name}");
+            bool applied = playerStat.TryApplyContactDamage(atk, gameObject.GetInstanceID());
+            Debug.Log($"[MonkeyPart] Contact damage applied={applied}, atk={atk}");
+
             var receiver = playerStat.GetComponent<PlayerBossStatusEffectReceiver>();
             if (receiver == null)
                 receiver = playerStat.gameObject.AddComponent<PlayerBossStatusEffectReceiver>();
 
             receiver.ApplyEffect(effectType, collisionEffectDuration);
+        }
+        else
+        {
+            base.OnCollisionEnter2D(collision);
         }
 
         TryReflectByCollision(collision, true);
@@ -115,6 +122,18 @@ public class MonkeyPart : BossBase
         }
 
         return null;
+    }
+
+    private void HandleCastPlayerHit(PlayerStatControl playerStat)
+    {
+        if (playerStat == null)
+            return;
+
+        var receiver = playerStat.GetComponent<PlayerBossStatusEffectReceiver>();
+        if (receiver == null)
+            receiver = playerStat.gameObject.AddComponent<PlayerBossStatusEffectReceiver>();
+
+        receiver.ApplyEffect(effectType, collisionEffectDuration);
     }
 
     public override void OnCollisionStay2D(Collision2D collision)

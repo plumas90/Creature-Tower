@@ -149,7 +149,6 @@ public class GameManager : MonoBehaviour
         StageTree.Clear();
         // 각 층 리스트에서 랜덤으로 1개만 뽑아 stageList에 등록한다.
         AddRandomStageFromLevel(stageLevel1);
-        #region 2 to 15
         AddRandomStageFromLevel(stageLevel2);
         AddRandomStageFromLevel(stageLevel3);
         AddRandomStageFromLevel(stageLevel4);
@@ -164,7 +163,6 @@ public class GameManager : MonoBehaviour
         AddRandomStageFromLevel(stageLevel13);
         AddRandomStageFromLevel(stageLevel14);
         AddRandomStageFromLevel(stageLevel15);
-        #endregion
 
     }
 
