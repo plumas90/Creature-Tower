@@ -147,85 +147,39 @@ public class GameManager : MonoBehaviour
         EndingTowerStage = 0;
         stageList.Clear();
         StageTree.Clear();
-        // 각 층 리스트가 비어있지 않으면 stageList에 등록한다.
-        if (stageLevel1.Count >=1) 
-        {
-            stageList.Add(stageLevel1);
-            EndingTowerStage++;
-        }
+        // 각 층 리스트에서 랜덤으로 1개만 뽑아 stageList에 등록한다.
+        AddRandomStageFromLevel(stageLevel1);
         #region 2 to 15
-        if (stageLevel2.Count >= 1)
-        {
-            stageList.Add(stageLevel2);
-            EndingTowerStage++;
-        }
-        if (stageLevel3.Count >= 1)
-        {
-            stageList.Add(stageLevel3);
-            EndingTowerStage++;
-        }
-        if (stageLevel4.Count >= 1)
-        {
-            stageList.Add(stageLevel4);
-            EndingTowerStage++;
-        }
-        if (stageLevel5.Count >= 1)
-        {
-            stageList.Add(stageLevel5);
-            EndingTowerStage++;
-        }
-        if (stageLevel6.Count >= 1)
-        {
-            stageList.Add(stageLevel6);
-            EndingTowerStage++;
-        }
-        if (stageLevel7.Count >= 1)
-        {
-            stageList.Add(stageLevel7);
-            EndingTowerStage++;
-        }
-        if (stageLevel8.Count >= 1)
-        {
-            stageList.Add(stageLevel8);
-            EndingTowerStage++;
-        }
-        if (stageLevel9.Count >= 1)
-        {
-            stageList.Add(stageLevel9);
-            EndingTowerStage++;
-        }
-        if (stageLevel10.Count >= 1)
-        {
-            stageList.Add(stageLevel10);
-            EndingTowerStage++;
-        }
-        if (stageLevel11.Count >= 1)
-        {
-            stageList.Add(stageLevel11);
-            EndingTowerStage++;
-        }
-        if (stageLevel12.Count >= 1)
-        {
-            stageList.Add(stageLevel12);
-            EndingTowerStage++;
-        }
-        if (stageLevel13.Count >= 1)
-        {
-            stageList.Add(stageLevel13);
-            EndingTowerStage++;
-        }
-        if (stageLevel14.Count >= 1)
-        {
-            stageList.Add(stageLevel14);
-            EndingTowerStage++;
-        }
-        if (stageLevel15.Count >= 1)
-        {
-            stageList.Add(stageLevel15);
-            EndingTowerStage++;
-        }
+        AddRandomStageFromLevel(stageLevel2);
+        AddRandomStageFromLevel(stageLevel3);
+        AddRandomStageFromLevel(stageLevel4);
+        AddRandomStageFromLevel(stageLevel5);
+        AddRandomStageFromLevel(stageLevel6);
+        AddRandomStageFromLevel(stageLevel7);
+        AddRandomStageFromLevel(stageLevel8);
+        AddRandomStageFromLevel(stageLevel9);
+        AddRandomStageFromLevel(stageLevel10);
+        AddRandomStageFromLevel(stageLevel11);
+        AddRandomStageFromLevel(stageLevel12);
+        AddRandomStageFromLevel(stageLevel13);
+        AddRandomStageFromLevel(stageLevel14);
+        AddRandomStageFromLevel(stageLevel15);
         #endregion
 
+    }
+
+    private void AddRandomStageFromLevel(List<GameObject> levelCandidates)
+    {
+        if (levelCandidates == null || levelCandidates.Count == 0)
+            return;
+
+        int randomIndex = UnityEngine.Random.Range(0, levelCandidates.Count);
+        GameObject selectedStage = levelCandidates[randomIndex];
+        if (selectedStage == null)
+            return;
+
+        stageList.Add(new List<GameObject> { selectedStage });
+        EndingTowerStage++;
     }
     public void SetStageTree() 
     {
@@ -239,7 +193,7 @@ public class GameManager : MonoBehaviour
             GameObject Room = Instantiate(curStageList[j], Vector3.zero, Quaternion.identity);
             Stage stage = Room.GetComponent<Stage>();
             stage.roomNumber = i;
-            Room.transform.position = new Vector3(0, 0 + (i * 50), 0);
+            Room.transform.position = new Vector3(0 + (i * 100), 0, 0);
             if (i == 0) 
             {
                 CurrentStage = stage;
