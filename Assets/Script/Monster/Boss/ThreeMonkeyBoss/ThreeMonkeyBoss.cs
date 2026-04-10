@@ -572,7 +572,7 @@ public class ThreeMonkeyBoss : BossBase
     public override void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log($"부딪힘 {collision.gameObject.name}");
-        collision.gameObject.TryGetComponent<PlayerStatControl>(out PlayerStatControl playerStat);
+        PlayerStatControl playerStat = ResolvePlayerStat(collision);
         if (playerStat != null)
         {
             Debug.Log($"[ThreeMonkeyBoss] Player collision detected: {playerStat.name}");
@@ -691,7 +691,7 @@ public class ThreeMonkeyBoss : BossBase
         {
             eyeDetached = true;
             tower1fire();
-            currentBottomEffect = MonkeyEffectType.Ear;
+            currentBottomEffect = MonkeyEffectType.Mouth;
             StatReSetting(secondMouseMonkeySO);
             return;
         }
@@ -700,7 +700,7 @@ public class ThreeMonkeyBoss : BossBase
         {
             earDetached = true;
             tower2fire();
-            currentBottomEffect = MonkeyEffectType.Mouth;
+            currentBottomEffect = MonkeyEffectType.Ear;
             StatReSetting(LastEarMonkeySO);
             return;
         }
