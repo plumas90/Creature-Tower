@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -102,10 +103,41 @@ public class GameManager : MonoBehaviour
     [HideInInspector]public Stage CurrentStage ;
     private void Awake()
     {
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
+            Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // MainScene 진입 시 씬 종속 참조를 재연결
+        if (scene.name != "MainScene")
+            return;
+
+        if (playerUiManager == null)
+            playerUiManager = FindFirstObjectByType<PlayerUiManager>(FindObjectsInactive.Include);
+
+        if (StageInfoUI == null)
+        {
+            var uiManager = playerUiManager != null ? playerUiManager.gameObject : null;
+            if (uiManager != null)
+                StageInfoUI = uiManager;
+        }
+
+        if (thankDemoUI == null)
+            thankDemoUI = GameObject.Find("ThankDemoUI");
     }
 
     public void MakeStageTree() 
@@ -250,7 +282,10 @@ public class GameManager : MonoBehaviour
         MakeStageTree();
         SetStageTree();
         StageLevelSet();
-        playerUiManager.SetupData();
+        if (playerUiManager != null)
+            playerUiManager.SetupData();
+        else
+            Debug.LogWarning("[GameManager] playerUiManager is null. SetupData skipped.");
     }
     public void BossCountSet(int i) 
     {

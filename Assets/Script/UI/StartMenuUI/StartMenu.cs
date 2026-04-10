@@ -14,6 +14,9 @@ public class StartMenu : MonoBehaviour
 
     public void StartBtn() 
     {
+        if (GameManager.Instance == null)
+            Debug.LogWarning("[StartMenu] GameManager.Instance is null. Add GameManager to StartMenuScene.");
+
         // StartMenu UI 비활성화
         if (startMenuUI != null)
         {
