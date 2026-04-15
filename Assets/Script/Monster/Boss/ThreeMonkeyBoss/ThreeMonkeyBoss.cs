@@ -158,10 +158,10 @@ public class ThreeMonkeyBoss : BossBase
 
         CacheStackSlotPositions();
 
-        // 레이어 규칙상 몬스터는 플레이어(10)보다 위쪽 정렬이 필요할 수 있어 명시적으로 보정
-        ApplyRendererState(tower1EyeOBJ, 13);
-        ApplyRendererState(tower2MouseOBJ, 14);
-        ApplyRendererState(tower3EarOBJ, 15);
+        // Y 정렬 기준으로 보정하므로 고정 sortingOrder 강제는 하지 않는다.
+        ApplyRendererState(tower1EyeOBJ);
+        ApplyRendererState(tower2MouseOBJ);
+        ApplyRendererState(tower3EarOBJ);
     }
 
     private void CacheStackSlotPositions()
@@ -176,7 +176,7 @@ public class ThreeMonkeyBoss : BossBase
             earSlotLocalPos = tower3EarOBJ.transform.localPosition;
     }
 
-    private void ApplyRendererState(GameObject go, int sortingOrder)
+    private void ApplyRendererState(GameObject go)
     {
         if (go == null) return;
         var sr = go.GetComponent<SpriteRenderer>();
@@ -184,7 +184,6 @@ public class ThreeMonkeyBoss : BossBase
 
         sr.enabled = true;
         sr.color = Color.white;
-        sr.sortingOrder = sortingOrder;
     }
 
 

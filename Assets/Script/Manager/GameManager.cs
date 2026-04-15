@@ -261,6 +261,10 @@ public class GameManager : MonoBehaviour
         if (isTransitioningStage)
             return;
 
+        // 스테이지 전환 시점에 결과/선택 UI가 열려 있으면 미확정 상태를 취소하고 닫는다.
+        if (ResultManager.Instance != null)
+            ResultManager.Instance.CancelPendingSelection();
+
         Debug.Log("1체크");
         if (CurrentStage == null || StageTree == null || StageTree.Count == 0)
         {

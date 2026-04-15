@@ -197,6 +197,8 @@ public class PlayerStatControl : MonoBehaviour
 
     private void Awake()
     {
+        EnsurePlayerYSortController();
+
         //anime = GetComponent<PlayerAnimatorController>();
         ATK = new Stats(playerStats.atk);
         HP = new Stats(playerStats.hp);
@@ -281,6 +283,12 @@ public class PlayerStatControl : MonoBehaviour
             "ũ��Ƽ��",
             "��ź��",
         };
+    }
+
+    private void EnsurePlayerYSortController()
+    {
+        if (GetComponent<PlayerYSortController>() == null)
+            gameObject.AddComponent<PlayerYSortController>();
     }
 
     public void PushExternalFireBlock()

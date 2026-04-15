@@ -28,6 +28,7 @@ public class HauntedCrystalBall : BossBase
         }
 
         bossCount = 1;
+        atk = crystalSO.atk;
         maxHp = crystalSO.hp;
         curHp = crystalSO.hp;
         speed = crystalSO.speed; // 0

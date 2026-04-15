@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ChoiceSlot : MonoBehaviour//´­·¯¼­ °ñ¸£´Â Áõ°­ ½½·Ô ¿­·ÈÀ»¶§ ÇØ´çÁõ°­ °ªÀ» ºÒ·¯¿À°í °ñ¶úÀ»¶§ ÇØ´ç Áõ°­À» È£ÃâÇÔ
+public class ChoiceSlot : MonoBehaviour//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ñ¸£´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½
 {
     public TextMeshProUGUI Name;
     public TextMeshProUGUI Info;
@@ -31,10 +31,25 @@ public class ChoiceSlot : MonoBehaviour//´­·¯¼­ °ñ¸£´Â Áõ°­ ½½·Ô ¿­·ÈÀ»¶§ ÇØ´çÁõ
     public Image symbolImage;
     public Image symbolImageOption;
     public GameObject symbolOptionObj;
+    private Color defaultBodyColor = Color.white;
+    private bool bodyColorCached;
     //[Range(1, 3)] int StatType;
 
-    private void OnEnable()// ÀÌ¸§,Á¤º¸,»ö ¾÷µ¥ÀÌÆ®
+    private void OnEnable()// ï¿½Ì¸ï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
     {
+        if (stat == null)
+        {
+            Debug.LogWarning($"[ChoiceSlot] stat is null on '{name}'. Slot will be hidden.");
+            gameObject.SetActive(false);
+            return;
+        }
+
+        if (Name == null || Info == null)
+        {
+            Debug.LogWarning($"[ChoiceSlot] Text reference is missing on '{name}'.");
+            return;
+        }
+
         Name.text = stat.Name;
         Ispick = false;
         Info.text = stat.func;
@@ -48,7 +63,14 @@ public class ChoiceSlot : MonoBehaviour//´­·¯¼­ °ñ¸£´Â Áõ°­ ½½·Ô ¿­·ÈÀ»¶§ ÇØ´çÁõ
             }
         }
         bodyImage = gameObject.GetComponent<Image>();
-        symbolOptionObj.SetActive(true);
+        if (!bodyColorCached && bodyImage != null)
+        {
+            defaultBodyColor = bodyImage.color;
+            bodyColorCached = true;
+        }
+        SetSelected(false, defaultBodyColor);
+        if (symbolOptionObj != null)
+            symbolOptionObj.SetActive(true);
 
         switch (rare)
         {
@@ -68,7 +90,8 @@ public class ChoiceSlot : MonoBehaviour//´­·¯¼­ °ñ¸£´Â Áõ°­ ½½·Ô ¿­·ÈÀ»¶§ ÇØ´çÁõ
         {
             case 0:
                 symbolImage.sprite = symbolAll;
-                symbolOptionObj.SetActive(false);
+                if (symbolOptionObj != null)
+                    symbolOptionObj.SetActive(false);
                 break;
             case 1:
                 symbolImage.sprite= symbolSniper;
@@ -86,19 +109,39 @@ public class ChoiceSlot : MonoBehaviour//´­·¯¼­ °ñ¸£´Â Áõ°­ ½½·Ô ¿­·ÈÀ»¶§ ÇØ´çÁõ
                 break;
             case 9:
                 symbolImage.sprite = symbolStat;
-                symbolOptionObj.SetActive(false);
+                if (symbolOptionObj != null)
+                    symbolOptionObj.SetActive(false);
                 break;
         }
     }
     public void pick()
     {
+        if (stat == null)
+            return;
+
+        if (Parent != null)
+        {
+            Parent.OnChoiceSlotClicked(this);
+            return;
+        }
+
         int code = stat.Code;
         Debug.Log($"{code}");
         AugmentManager.Instance.AugmentCall(code);
-        //AugmentManager.Instance.Invoke(str, 0);
         Ispick = true;
-        ResultManager.Instance.close();
-        Parent.SetActiveCheck = false;
+        if (ResultManager.Instance != null)
+            ResultManager.Instance.close();
     }
-   
+
+    public void SetSelected(bool selected, Color selectedColor)
+    {
+        if (bodyImage == null)
+            bodyImage = gameObject.GetComponent<Image>();
+        if (bodyImage == null)
+            return;
+
+        Color baseColor = bodyColorCached ? defaultBodyColor : Color.white;
+        bodyImage.color = selected ? selectedColor : baseColor;
+    }
+    
 }

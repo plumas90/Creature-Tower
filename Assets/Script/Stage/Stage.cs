@@ -18,6 +18,7 @@ public class Stage : MonoBehaviour
     [Header("Choice Result")]
     public RandomHealPoint randomHealPoint;
     public ResultDNA resultDNA;
+    public BloodTransfusionDevice bloodTransfusionDevice;
 
     [Header("Spawn Point")]
     public GameObject spawnPointStairs;
@@ -332,6 +333,9 @@ public class Stage : MonoBehaviour
             resultDNA.Init();
         else
             Debug.LogWarning($"[Stage] resultDNA is null on '{name}'.");
+
+        if (bloodTransfusionDevice != null)
+            bloodTransfusionDevice.Init($"Stage-{roomNumber}", bloodTransfusionDevice.name);
     }
     public void ObjActiveTrue() 
     {

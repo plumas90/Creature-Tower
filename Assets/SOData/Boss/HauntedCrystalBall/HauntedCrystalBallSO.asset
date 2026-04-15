@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HauntedCrystalBallSO
   m_EditorClassIdentifier: 
   enemyName: Haunted Crystal Ball
-  atk: 5
+  atk: 11
   hp: 50
   speed: 0
   bossCount: 0

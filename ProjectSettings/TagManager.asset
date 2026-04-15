@@ -41,3 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: World_Dynamic
+    uniqueID: 100001
+    locked: 0
+  - name: World_Static
+    uniqueID: 100002
+    locked: 0
+  - name: World_Overlay
+    uniqueID: 100003
+    locked: 0
+  - name: UI
+    uniqueID: 100004
+    locked: 0

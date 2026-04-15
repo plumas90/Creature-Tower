@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9665af843a0dad74283ab1755e3bc56e, type: 3}
   m_Name: PlayerSO1TV
   m_EditorClassIdentifier: 
-  atk: 50
-  hp: 100
+  atk: 100
+  hp: 1000
   unitSpeed: 2.5
   atkSpeed: 2
   unitScale: 1
   launchVolume: 1
   bulletSpread: 10
-  bulletLifeTime: 3
+  bulletLifeTime: 30
   BulletSprite: {fileID: -1341790181, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
   CharaterName: T.V.
   reloadCoolTime: 4

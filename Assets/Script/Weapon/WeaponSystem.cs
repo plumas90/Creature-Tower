@@ -81,7 +81,8 @@ public class WeaponSystem : MonoBehaviour
                 {
                     if (playerStatHandler.BulletSprite != null)
                         sr.sprite = playerStatHandler.BulletSprite;
-                    sr.sortingOrder = 9; // 레이어 규칙: 플레이어 아래 오브젝트
+                    sr.sortingLayerName = "World_Dynamic";
+                    sr.sortingOrder = 0;
                 }
                 obj.SetActive(false);
                 objectsPool.Enqueue(obj);

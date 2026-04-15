@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class BossBase : MonoBehaviour
 {
@@ -28,6 +29,17 @@ public class BossBase : MonoBehaviour
 
     [Header("Physics")]
     [SerializeField] private bool forceKinematicBody2D = true;
+    [Header("Collision Split (Optional)")]
+    [SerializeField] private bool useSeparateHurtbox = false;
+    private bool hasChildHurtbox;
+
+    [Header("Y Sorting")]
+    [SerializeField] private bool useYBasedSorting = true;
+    [SerializeField] private string ySortLayerName = "World_Dynamic";
+    [SerializeField] private int ySortBaseOrder = 1500;
+    [SerializeField] private int ySortScale = 10;
+    [SerializeField] private int ySortOrderOffset = 0;
+    [SerializeField] private Transform ySortPivot;
 
     protected bool isDead;
     protected BossBTNode behaviorTreeRoot;
@@ -44,6 +56,8 @@ public class BossBase : MonoBehaviour
     private Coroutine invincibilityRoutine;
     private Coroutine waitRoutine;
     private Coroutine firstRoutine;
+    private SortingGroup _sortingGroup;
+    private SpriteRenderer[] _cachedSpriteRenderers;
 
     // Start is called before the first frame update
     public virtual void StatSet() 
@@ -154,6 +168,8 @@ public class BossBase : MonoBehaviour
     protected virtual void Awake()
     {
         ConfigureBossPhysics();
+        CacheSortingTargets();
+        hasChildHurtbox = HasAnyChildHurtbox();
     }
 
     protected void ConfigureBossPhysics()
@@ -180,6 +196,50 @@ public class BossBase : MonoBehaviour
     }
 
     protected Rigidbody2D Body2D => _rb2d;
+
+    protected virtual void LateUpdate()
+    {
+        ApplyYBasedSorting();
+    }
+
+    private void CacheSortingTargets()
+    {
+        _sortingGroup = GetComponent<SortingGroup>();
+        if (_sortingGroup == null)
+            _sortingGroup = gameObject.AddComponent<SortingGroup>();
+
+        if (!string.IsNullOrEmpty(ySortLayerName))
+            _sortingGroup.sortingLayerName = ySortLayerName;
+
+        _cachedSpriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+    }
+
+    private void ApplyYBasedSorting()
+    {
+        if (!useYBasedSorting)
+            return;
+
+        Transform pivot = ySortPivot != null ? ySortPivot : transform;
+        int order = ySortBaseOrder - Mathf.RoundToInt(pivot.position.y * ySortScale) + ySortOrderOffset;
+
+        if (_sortingGroup != null)
+        {
+            _sortingGroup.sortingOrder = order;
+            return;
+        }
+
+        if (_cachedSpriteRenderers == null || _cachedSpriteRenderers.Length == 0)
+            _cachedSpriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+
+        for (int i = 0; i < _cachedSpriteRenderers.Length; i++)
+        {
+            SpriteRenderer sr = _cachedSpriteRenderers[i];
+            if (sr == null)
+                continue;
+
+            sr.sortingOrder = order;
+        }
+    }
 
     public virtual void Damege(float damege) 
     {
@@ -277,6 +337,9 @@ public class BossBase : MonoBehaviour
 
     public virtual void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!CanProcessContactDamage())
+            return;
+
         if (TryGetPlayerStatFromCollision(collision, out PlayerStatControl playerStat))
         {
             playerStat.TryApplyContactDamage(atk, gameObject.GetInstanceID());
@@ -285,6 +348,9 @@ public class BossBase : MonoBehaviour
 
     public virtual void OnCollisionStay2D(Collision2D collision)
     {
+        if (!CanProcessContactDamage())
+            return;
+
         if (TryGetPlayerStatFromCollision(collision, out PlayerStatControl playerStat))
         {
             playerStat.TryApplyContactDamage(atk, gameObject.GetInstanceID());
@@ -333,9 +399,40 @@ public class BossBase : MonoBehaviour
 
     public virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        Bullet bullet = collision.GetComponent<Bullet>();
+        if (UseHurtboxOnlyDamage())
+            return;
+
+        if (CanProcessContactDamage())
+            TryHandlePlayerContactTrigger(collision);
+
+        TryHandleBulletTrigger(collision);
+    }
+
+    public virtual void OnTriggerStay2D(Collider2D collision)
+    {
+        if (UseHurtboxOnlyDamage())
+            return;
+
+        if (!CanProcessContactDamage())
+            return;
+
+        TryHandlePlayerContactTrigger(collision);
+    }
+
+    public void HandleHurtboxTrigger(Collider2D collision)
+    {
+        if (!UseHurtboxOnlyDamage())
+            return;
+
+        TryHandleBulletTrigger(collision);
+    }
+
+    private void TryHandleBulletTrigger(Collider2D collision)
+    {
+        Bullet bullet = collision != null ? collision.GetComponent<Bullet>() : null;
         if (bullet == null) return;
         if (bullet.targets == null || !bullet.targets.ContainsValue((int)BulletTarget.Enemy)) return;
+        if (!bullet.TryMarkBossHit(gameObject.GetInstanceID())) return;
 
         // 인트로/비활성/사망 구간엔 데미지를 무시하되,
         // 비관통 탄은 즉시 소모해서 인트로 종료 직후 누적 히트가 터지지 않게 한다.
@@ -359,6 +456,73 @@ public class BossBase : MonoBehaviour
 
         if (!bullet.Penetrate)
             bullet.Destroy();
+    }
+
+    private void TryHandlePlayerContactTrigger(Collider2D collision)
+    {
+        if (!TryGetPlayerStatFromCollider(collision, out PlayerStatControl playerStat))
+            return;
+
+        playerStat.TryApplyContactDamage(atk, gameObject.GetInstanceID());
+    }
+
+    private bool TryGetPlayerStatFromCollider(Collider2D collision, out PlayerStatControl playerStat)
+    {
+        playerStat = null;
+        if (collision == null)
+            return false;
+
+        GameObject go = collision.gameObject;
+        if (go != null && go.TryGetComponent(out playerStat))
+            return true;
+
+        if (collision.TryGetComponent(out playerStat))
+            return true;
+
+        if (collision.attachedRigidbody != null)
+        {
+            if (collision.attachedRigidbody.TryGetComponent(out playerStat))
+                return true;
+
+            playerStat = collision.attachedRigidbody.GetComponentInParent<PlayerStatControl>();
+            if (playerStat != null)
+                return true;
+        }
+
+        if (collision.transform != null)
+        {
+            playerStat = collision.transform.GetComponentInParent<PlayerStatControl>();
+            if (playerStat != null)
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool CanProcessContactDamage()
+    {
+        return !isDead && live && !invincibility && atk > 0f;
+    }
+
+    private bool UseHurtboxOnlyDamage()
+    {
+        return useSeparateHurtbox || hasChildHurtbox;
+    }
+
+    private bool HasAnyChildHurtbox()
+    {
+        BossHurtbox[] hurtboxes = GetComponentsInChildren<BossHurtbox>(true);
+        for (int i = 0; i < hurtboxes.Length; i++)
+        {
+            BossHurtbox hb = hurtboxes[i];
+            if (hb == null)
+                continue;
+            if (hb.transform == transform)
+                continue;
+            return true;
+        }
+
+        return false;
     }
     public virtual void BossDie() 
     {

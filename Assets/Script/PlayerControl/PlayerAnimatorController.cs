@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D.Animation;
-using static UnityEditor.PlayerSettings;
-
 public class PlayerAnimatorController : MonoBehaviour
 {
     [SerializeField] private GameObject playerSprite;
@@ -14,11 +12,13 @@ public class PlayerAnimatorController : MonoBehaviour
 
     private SpriteRenderer playerRenderer;
     private SpriteRenderer weaponRenderer;
+    private SpriteRenderer shadowRenderer;
     [HideInInspector] public int isBack;
     public Animator _animation;
     private Animator weaponAnimator;
     private SpriteLibrary PlayerSpritelibrary;
     private SpriteLibrary WeaponSpritelibrary;
+    private bool weaponFront = false;
 
     //private PhotonView pv;
 
@@ -33,6 +33,9 @@ public class PlayerAnimatorController : MonoBehaviour
 
         playerRenderer = playerSprite.GetComponentInChildren<SpriteRenderer>();
         weaponRenderer = weaponSprite.GetComponentInChildren<SpriteRenderer>();
+        Transform shadow = playerSprite != null ? playerSprite.transform.Find("Shadow") : null;
+        if (shadow != null)
+            shadowRenderer = shadow.GetComponent<SpriteRenderer>();
     }
     private void Start()
     {
@@ -77,12 +80,34 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         if (Mathf.Abs(rotY) > 90f)
         {
-            weaponRenderer.sortingOrder = 11;
+            // 플레이어가 뒷모습(위쪽 조준)일 때 무기는 캐릭터 뒤로
+            weaponFront = false;
         }
         else
         {
-            weaponRenderer.sortingOrder = 9;
+            // 플레이어가 정면(아래쪽 조준)일 때 무기는 캐릭터 앞으로
+            weaponFront = true;
         }
+    }
+
+    public bool IsWeaponFront()
+    {
+        return weaponFront;
+    }
+
+    public SpriteRenderer GetWeaponRenderer()
+    {
+        return weaponRenderer;
+    }
+
+    public SpriteRenderer GetPlayerRenderer()
+    {
+        return playerRenderer;
+    }
+
+    public SpriteRenderer GetShadowRenderer()
+    {
+        return shadowRenderer;
     }
 
     private void MoveAnimator(Vector2 direction)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public enum BulletTarget
 {
@@ -48,13 +49,26 @@ public class Bullet : MonoBehaviour
     public bool canAngle;
     Vector3 income;
     Vector3 normal;
+    [SerializeField] private float wallCollisionArmDelay = 0.03f;
+    [SerializeField] private string sortingLayerName = "World_Dynamic";
+    [SerializeField] private int ySortBaseOrder = 1500;
+    [SerializeField] private int ySortScale = 10;
+    [SerializeField] private int ySortOrderOffset = 2;
+    private float spawnedAtTime;
+    private SpriteRenderer spriteRenderer;
+    private HashSet<int> damagedBossIds = new HashSet<int>();
     private void Awake()
     {
         targets = new Dictionary<string, int>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
     }
     public void Init()
     {        
         time = 0f;
+        spawnedAtTime = Time.time;
+        damagedBossIds.Clear();
         BulletLifeTime = UnityEngine.Random.Range(BulletLifeTime * 0.15f, BulletLifeTime * 0.2f);
         //Invoke("Destroy", BulletLifeTime);
         _direction = transform.right;
@@ -71,6 +85,7 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector3.right * BulletSpeed * Time.deltaTime);
+        ApplyYBasedSorting();
         time += Time.deltaTime;
         if (time>= BulletLifeTime) 
         {
@@ -88,9 +103,33 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    private void ApplyYBasedSorting()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        if (!string.IsNullOrEmpty(sortingLayerName))
+            spriteRenderer.sortingLayerName = sortingLayerName;
+
+        int order = ySortBaseOrder - Mathf.RoundToInt(transform.position.y * ySortScale) + ySortOrderOffset;
+        spriteRenderer.sortingOrder = order;
+    }
+
     public void Destroy()
     {
         gameObject.SetActive(false);
+    }
+
+    public bool TryMarkBossHit(int bossInstanceId)
+    {
+        if (bossInstanceId == 0)
+            return true;
+
+        if (damagedBossIds.Contains(bossInstanceId))
+            return false;
+
+        damagedBossIds.Add(bossInstanceId);
+        return true;
     }
 
     private float GetAngle(Vector2 vec1, Vector2 vec2) 
@@ -116,7 +155,7 @@ public class Bullet : MonoBehaviour
         if (collision == null)
             return;
 
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall")) //���ຮ�̶��
+        if (IsBlockingWallCollision(collision)) //���ຮ�̶��
         {
 
             if (canAngle)
@@ -165,5 +204,40 @@ public class Bullet : MonoBehaviour
             Destroy();
             return;
         }
+    }
+
+    private bool IsBlockingWallCollision(Collider2D collision)
+    {
+        if (collision.gameObject.layer != LayerMask.NameToLayer("Wall"))
+            return false;
+
+        // 발사 직후(총구가 벽/타일 경계에 겹친 프레임) 오검출 방지
+        if (Time.time - spawnedAtTime < wallCollisionArmDelay)
+            return false;
+
+        TilemapCollider2D tilemapCollider = collision.GetComponent<TilemapCollider2D>();
+        if (tilemapCollider == null)
+            tilemapCollider = collision.GetComponentInParent<TilemapCollider2D>();
+
+        // Wall 레이어를 임시로 공유하는 바닥 타일맵은 탄 소멸 판정에서 제외
+        if (tilemapCollider != null && !HasWallName(collision.transform))
+            return false;
+
+        return true;
+    }
+
+    private bool HasWallName(Transform tr)
+    {
+        Transform cur = tr;
+        while (cur != null)
+        {
+            if (!string.IsNullOrEmpty(cur.name) &&
+                cur.name.IndexOf("Wall", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                return true;
+
+            cur = cur.parent;
+        }
+
+        return false;
     }
 }
