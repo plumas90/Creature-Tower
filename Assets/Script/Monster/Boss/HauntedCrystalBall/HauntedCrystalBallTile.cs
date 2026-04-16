@@ -8,6 +8,7 @@ public class HauntedCrystalBallTile : MonoBehaviour
     private float activeTime;
     private bool isActive = false;
     private SpriteRenderer spriteRenderer;
+    private WorldGroundFXSorting groundFxSorting;
 
     [Header("Sprite Settings")]
     [Tooltip("경고 상태 스프라이트 (노란색 등)")]
@@ -27,6 +28,10 @@ public class HauntedCrystalBallTile : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer == null)
             spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+
+        groundFxSorting = GetComponent<WorldGroundFXSorting>();
+        if (groundFxSorting == null)
+            groundFxSorting = gameObject.AddComponent<WorldGroundFXSorting>();
     }
 
     public void Initialize(float dmg, float warnTime, float actTime)
@@ -43,6 +48,8 @@ public class HauntedCrystalBallTile : MonoBehaviour
                 spriteRenderer.sprite = warningSprite;
             spriteRenderer.color = warningColor;
         }
+        if (groundFxSorting != null)
+            groundFxSorting.ApplySorting();
 
         StartCoroutine(CoTileSequence());
     }
@@ -85,5 +92,44 @@ public class HauntedCrystalBallTile : MonoBehaviour
             // 플레이어에게 데미지 (지속 접촉)
             playerStat.TryApplyContactDamage(damage, gameObject.GetInstanceID());
         }
+    }
+}
+
+/// <summary>
+/// Ground FX(장판/데칼) 공통 정렬 강제 컴포넌트.
+/// 바닥보다 위, 동적 오브젝트보다 아래로 고정한다.
+/// </summary>
+[DisallowMultipleComponent]
+[RequireComponent(typeof(SpriteRenderer))]
+public class WorldGroundFXSorting : MonoBehaviour
+{
+    [SerializeField] private string sortingLayerName = "World_GroundFX";
+    [SerializeField] private int sortingOrder = 0;
+
+    private SpriteRenderer spriteRenderer;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        ApplySorting();
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        ApplySorting();
+    }
+#endif
+
+    public void ApplySorting()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        if (!string.IsNullOrEmpty(sortingLayerName))
+            spriteRenderer.sortingLayerName = sortingLayerName;
+
+        spriteRenderer.sortingOrder = sortingOrder;
     }
 }
