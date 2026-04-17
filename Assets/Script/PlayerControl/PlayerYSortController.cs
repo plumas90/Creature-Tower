@@ -51,7 +51,9 @@ public class PlayerYSortController : MonoBehaviour
         if (sortingGroup == null)
             return;
 
-        Transform pivot = ySortPivot != null ? ySortPivot : transform;
+        Transform pivot = ySortPivot != null
+            ? ySortPivot
+            : (shadowRenderer != null ? shadowRenderer.transform : transform);
         int rootOrder = ySortBaseOrder - Mathf.RoundToInt(pivot.position.y * ySortScale) + ySortOrderOffset;
         sortingGroup.sortingOrder = rootOrder;
 

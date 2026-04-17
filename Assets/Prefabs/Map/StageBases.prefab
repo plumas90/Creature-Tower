@@ -1262,7 +1262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomNumber: 0
-  bossPrefab: {fileID: 166239516524742241, guid: 7cd0e882c765a054b8d07942c2593c53, type: 3}
+  bossPrefab: {fileID: 3980267895294951188, guid: 29d46066c56302141b15b9575a6dbef6, type: 3}
   bossOBJ: {fileID: 0}
   BossBase: {fileID: 0}
   botDoor: {fileID: 7941684589717858012}

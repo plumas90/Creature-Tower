@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b76e0ab7a6ed92942aba9cd75ae45276, type: 3}
+  m_Name: PeaPodBoss_SO
+  m_EditorClassIdentifier: 
+  enemyName: Pea Pod
+  atk: 8
+  hp: 280
+  speed: 0
+  bossCount: 1
+  IntroAnimationTime: 0
+  bossPatternTime: 0
+  btChaseRange: 100
+  btStopDistance: 0.6
+  btRepathInterval: 0.15
+  btMoveSpeedMultiplier: 1
+  btChaseChance: 1
+  vineSegmentPrefab: {fileID: 6074866649150718740, guid: 5f85768d98eb7024884e01546366ee94, type: 3}
+  vineGrowthSpeed: 3.5
+  vineMaxLength: 1.8
+  vineLifetime: 4
+  maxVineSegments: 8
+  curveDegreesPerSegment: 16
+  randomizeCurveDirection: 1
+  fixedCurveDirectionSign: 1
+  attackInterval: 1.2
+  vineWallProbeRadius: 0.15
+  vineWallMask:
+    serializedVersion: 2
+    m_Bits: 0
+  vineChainCooldown: 0.35
+  maxTurnTowardPlayerDegrees: 20
+  vineDamageMultiplier: 1
+  vineColliderHeightRatio: 0.9
+  deathPeaPrefab: {fileID: 8212738531006899321, guid: 29d46066c56302141b15b9575a6dbef6, type: 3}
+  deathPeaCount: 3
+  deathPeaRiseDuration: 1.5
+  deathPeaFallDuration: 1.5
+  deathPeaArcHeight: 1.6
+  deathPeaLandedWaitDuration: 3
+  deathPeaRedWarningDuration: 1
+  deathPeaExplosionDamage: 25
+  deathPeaExplosionRadius: 1.8
+  deathPeaGroundFxRadiusMultiplier: 1.35
