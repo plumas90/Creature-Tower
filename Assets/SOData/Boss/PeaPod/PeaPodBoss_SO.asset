@@ -24,7 +24,7 @@ MonoBehaviour:
   btRepathInterval: 0.15
   btMoveSpeedMultiplier: 1
   btChaseChance: 1
-  vineSegmentPrefab: {fileID: 6074866649150718740, guid: 5f85768d98eb7024884e01546366ee94, type: 3}
+  vineSegmentPrefab: {fileID: 6074866649150718740, guid: e51614feaf1a9b34d9a2115c809e2eab, type: 3}
   vineGrowthSpeed: 3.5
   vineMaxLength: 1.8
   vineLifetime: 4
@@ -41,7 +41,7 @@ MonoBehaviour:
   maxTurnTowardPlayerDegrees: 20
   vineDamageMultiplier: 1
   vineColliderHeightRatio: 0.9
-  deathPeaPrefab: {fileID: 8212738531006899321, guid: 29d46066c56302141b15b9575a6dbef6, type: 3}
+  deathPeaPrefab: {fileID: 8212738531006899321, guid: 5f85768d98eb7024884e01546366ee94, type: 3}
   deathPeaCount: 3
   deathPeaRiseDuration: 1.5
   deathPeaFallDuration: 1.5
@@ -50,4 +50,4 @@ MonoBehaviour:
   deathPeaRedWarningDuration: 1
   deathPeaExplosionDamage: 25
   deathPeaExplosionRadius: 1.8
-  deathPeaGroundFxRadiusMultiplier: 1.35
+  deathPeaGroundFxRadiusMultiplier: 10

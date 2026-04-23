@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1b46ff742a14bb4b6ab4fdca1f9c2e3, type: 3}
+  m_Name: CaptainShakingCrapBoss_SO
+  m_EditorClassIdentifier: 
+  enemyName: Captain Shaking Crap
+  atk: 10
+  hp: 420
+  speed: 0
+  bossCount: 1
+  IntroAnimationTime: 3
+  bossPatternTime: 0
+  btChaseRange: 100
+  btStopDistance: 0.6
+  btRepathInterval: 0.15
+  btMoveSpeedMultiplier: 1
+  btChaseChance: 1
+  faceDamageMultiplier: 1
+  bubbleBeamProjectilePrefab: {fileID: 7106600087847448044, guid: 867893c708ed4b04083d3a297079bf5a, type: 3}
+  bubbleBombPrefab: {fileID: 7763622815852389629, guid: 6f767295905501c4ea9abae7400a32f2, type: 3}
+  patternInterval: 1.2
+  allowSamePatternRepeat: 0
+  maxConsecutiveSamePattern: 1
+  guardWeight: 1
+  clawSweepWeight: 1
+  bubbleBeamWeight: 1
+  guardMoveDuration: 0.2
+  guardLowerYOffset: 0.2
+  guardCoverCenterX: 1
+  guardDuration: 1.1
+  faceExposeDuration: 1.4
+  clawSweepTelegraphTime: 0.45
+  clawSweepActiveTime: 0.8
+  clawSweepRecoverTime: 0.2
+  clawSweepWindupAngle: 18
+  clawSweepStrikeAngle: 48
+  clawSweepClashInwardDistance: 2
+  clawSweepClashDuration: 0.15
+  clawSweepClashHoldTime: 0.08
+  clawSweepDamage: 14
+  beamTelegraphTime: 0.35
+  beamShotCount: 5
+  beamShotInterval: 0.12
+  beamSpreadAngle: 50
+  beamProjectileSpeed: 8.5
+  beamProjectileLifetime: 4
+  beamProjectileDamage: 10
+  bombSpawnInterval: 1.8
+  maxActiveBombs: 5
+  bombAirMoveSpeed: 3.6
+  bombDescendSpeed: 3.2
+  bombVerticalSweepSpeed: 2.7
+  bombRollSpeed: 3.5
+  bombDamage: 12
+  bombLifetime: 14
+  bombShadowContactThreshold: 0.03
+  leftEdgeOffset: 0
+  rightEdgeOffset: 0
+  topEdgeOffset: 0
+  bottomEdgeOffset: 0
