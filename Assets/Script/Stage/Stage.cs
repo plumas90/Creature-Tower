@@ -193,8 +193,8 @@ public class Stage : MonoBehaviour
 
     private IEnumerator BossRoomEnterSequence(GameObject player)
     {
-        Debug.Log($"[Stage] BossRoomEnterSequence 시작. Player: {(player != null ? player.name : "NULL")}");
-        Debug.Log($"[Stage] GameManager.Instance.playerOBJ: {(GameManager.Instance != null && GameManager.Instance.playerOBJ != null ? GameManager.Instance.playerOBJ.name : "NULL")}");
+        //Debug.Log($"[Stage] BossRoomEnterSequence 시작. Player: {(player != null ? player.name : "NULL")}");
+        //Debug.Log($"[Stage] GameManager.Instance.playerOBJ: {(GameManager.Instance != null && GameManager.Instance.playerOBJ != null ? GameManager.Instance.playerOBJ.name : "NULL")}");
         
         BossBase summonedBoss = SummonBossObjectOnly();
         MovePlayerInside(player);

@@ -165,7 +165,7 @@ public class PlayerInputController : TopDownCharacterController
 
     public void OnSkill(InputValue value)
     {
-        Debug.Log("OnSkill" + value.ToString());
+        //Debug.Log("OnSkill" + value.ToString());
         CallSkillEvent();
     }
 
@@ -195,7 +195,7 @@ public class PlayerInputController : TopDownCharacterController
 
     public void OnReload(InputValue value)
     {
-        Debug.Log("OnReload" + value.ToString());
+        //Debug.Log("OnReload" + value.ToString());
         CallReloadEvent();
     }
 

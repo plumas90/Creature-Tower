@@ -129,7 +129,7 @@ public class TopDownCharacterController : MonoBehaviour
             return;
         }
 
-        Debug.Log("CallSkillEvent triggered");
+        //Debug.Log("CallSkillEvent triggered");
         OnSkillEvent?.Invoke();
     }
     public void SkillReset()
@@ -240,7 +240,7 @@ public class TopDownCharacterController : MonoBehaviour
     {
         if (playerStatHandler.CanReload && playerStatHandler.CurAmmo != playerStatHandler.AmmoMax.total)
         {
-            Debug.Log("Reload started");
+            //Debug.Log("Reload started");
             OnReloadEvent?.Invoke();
         }
     }
