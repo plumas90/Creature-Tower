@@ -795,7 +795,7 @@ GameObject:
   - component: {fileID: 8052052204327091206}
   - component: {fileID: 3940948467754841654}
   m_Layer: 0
-  m_Name: CaptainShakingCrap
+  m_Name: CaptainShakingCrapBoss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

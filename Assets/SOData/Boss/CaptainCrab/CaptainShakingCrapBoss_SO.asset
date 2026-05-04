@@ -48,10 +48,10 @@ MonoBehaviour:
   clawSweepClashHoldTime: 0.08
   clawSweepDamage: 14
   beamTelegraphTime: 0.35
-  beamShotCount: 5
+  beamShotCount: 10
   beamShotInterval: 0.12
   beamSpreadAngle: 50
-  beamProjectileSpeed: 8.5
+  beamProjectileSpeed: 4
   beamProjectileLifetime: 4
   beamProjectileDamage: 10
   bombSpawnInterval: 1.8

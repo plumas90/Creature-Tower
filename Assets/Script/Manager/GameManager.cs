@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public event Action OnStageStartEvent;
+    private const string AugmentManagerPrefabPath = "Prefabs/AugmentManager";
+    private const string MakeAugmentListManagerPrefabPath = "Prefabs/MakeAugmentListManager";
+    private const string ResultManagerPrefabPath = "Prefabs/ResultManager";
 
     public PlayerUiManager playerUiManager;
     // TODO: 게임 상태 분기/초기화 구조를 정리할 필요가 있음.
@@ -138,6 +141,9 @@ public class GameManager : MonoBehaviour
 
         if (thankDemoUI == null)
             thankDemoUI = GameObject.Find("ThankDemoUI");
+
+        // 메인 메뉴 경유 진입 시 누락될 수 있는 보상/증강 매니저를 보장한다.
+        EnsureRewardManagers();
     }
 
     public void MakeStageTree() 
@@ -203,6 +209,7 @@ public class GameManager : MonoBehaviour
     {
         playerOBJ = player;
         Life = 0;
+        EnsureRewardManagers();
 
         // 카메라 Target 설정 (플레이어가 설정되면 즉시 카메라에 알림)
         MainCamera mainCamera = FindFirstObjectByType<MainCamera>();
@@ -324,5 +331,39 @@ public class GameManager : MonoBehaviour
         CurrentStage.ReadyStage();
         playerOBJ.transform.position = CurrentStage.PlayerSpawnPoint.position;
         OnStageStartEvent?.Invoke();
+    }
+
+    private void EnsureRewardManagers()
+    {
+        EnsureManagerInstance(
+            AugmentManager.Instance,
+            AugmentManagerPrefabPath,
+            "[GameManager] AugmentManager prefab not found at Resources/Prefabs/AugmentManager"
+        );
+        EnsureManagerInstance(
+            MakeAugmentListManager.Instance,
+            MakeAugmentListManagerPrefabPath,
+            "[GameManager] MakeAugmentListManager prefab not found at Resources/Prefabs/MakeAugmentListManager"
+        );
+        EnsureManagerInstance(
+            ResultManager.Instance,
+            ResultManagerPrefabPath,
+            "[GameManager] ResultManager prefab not found at Resources/Prefabs/ResultManager"
+        );
+    }
+
+    private void EnsureManagerInstance(MonoBehaviour existing, string resourcePath, string notFoundLog)
+    {
+        if (existing != null)
+            return;
+
+        GameObject prefab = Resources.Load<GameObject>(resourcePath);
+        if (prefab == null)
+        {
+            Debug.LogWarning(notFoundLog);
+            return;
+        }
+
+        Instantiate(prefab);
     }
 }

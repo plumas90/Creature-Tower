@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class HauntedCrystalBallGhost : MonoBehaviour
 {
+    [SerializeField] private bool destroyOnTilemapCollider = true;
     private Vector2 direction;
     private float speed;
     private float damage;
@@ -13,6 +15,9 @@ public class HauntedCrystalBallGhost : MonoBehaviour
         speed = spd;
         damage = dmg;
         hasHit = false;
+
+        if (direction.sqrMagnitude > 0.0001f)
+            transform.right = direction;
     }
 
     private void Update()
@@ -26,6 +31,7 @@ public class HauntedCrystalBallGhost : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log($"[HauntedCrystalBallGhost] OnTriggerEnter2D with {collision.gameObject.name}");
         if (hasHit)
             return;
 
@@ -43,12 +49,39 @@ public class HauntedCrystalBallGhost : MonoBehaviour
             return;
         }
 
-        // 벽 충돌 체크
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
+        // 벽/타일맵 벽 충돌 체크
+        if (IsWallCollision(collision))
         {
             hasHit = true;
             Destroy(gameObject);
         }
+    }
+
+    private bool IsWallCollision(Collider2D collision)
+    {
+        if (collision == null)
+            return false;
+
+        int wallLayer = LayerMask.NameToLayer("Wall");
+        if (wallLayer >= 0)
+        {
+            Transform cur = collision.transform;
+            while (cur != null)
+            {
+                if (cur.gameObject.layer == wallLayer)
+                    return true;
+                cur = cur.parent;
+            }
+        }
+
+        if (!destroyOnTilemapCollider)
+            return false;
+
+        TilemapCollider2D tilemapCol = collision.GetComponent<TilemapCollider2D>();
+        if (tilemapCol == null)
+            tilemapCol = collision.GetComponentInParent<TilemapCollider2D>();
+
+        return tilemapCol != null;
     }
 
     private void OnBecameInvisible()

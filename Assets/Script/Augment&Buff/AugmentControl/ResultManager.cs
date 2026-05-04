@@ -199,39 +199,35 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
     private int RandomTier() 
     {
         //int tier = GameManager.Instance.curStage;
-        int tier = 1; //�ӽ�
-        int random = Random.Range(1, 12); // ���� ������ ����Ͽ� Ƽ�� ����ġ Ÿ��3�� �־��µ� �ʿ��� ���� 10-������ ��
-        int target1 = 4;
-        int target2 = 3;
-        int target3 = 2;
-        if (tier <= 6 && tier >= 4)
-        {
-            target1 = 3;
-            target2 = 4;
-            target3 = 2;
-        }
-        else if (tier >= 6)
-        {
-            target1 = 2;
-            target2 = 3;
-            target3 = 4;
-        }
-        int type = 0;
-        if (random <= target1)
+        int type = 1; //�ӽ�
+        int random = Random.Range(0, 100); // ���� ������ ����Ͽ� Ƽ�� ����ġ Ÿ��3�� �־��µ� �ʿ��� ���� 10-������ ��
+        // int target1 = 4;
+        // int target2 = 3;
+        // int target3 = 2;
+        // if (tier <= 6 && tier >= 4)
+        // {
+        //     target1 = 3;
+        //     target2 = 4;
+        //     target3 = 2;
+        // }
+        // else if (tier >= 6)
+        // {
+        //     target1 = 2;
+        //     target2 = 3;
+        //     target3 = 4;
+        // }
+        // int type = 0;
+        if (random < 70)
         {
             type = 1;
         }
-        else if (random <= target1 + target2)
+        else if (random < 90)
         {
             type = 2;
         }
-        else if (random <= target1 + target2 + target3)
+        else
         {
             type = 3;
-        }
-        else 
-        {
-            type = 4;
         }
         return type;
     }

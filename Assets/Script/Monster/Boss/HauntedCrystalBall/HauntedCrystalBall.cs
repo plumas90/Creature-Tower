@@ -114,10 +114,12 @@ public class HauntedCrystalBall : BossBase
         Vector2[] directions = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
         foreach (Vector2 dir in directions)
         {
+            float randomOffset = Random.Range(-22.5f, 22.5f);
+            Quaternion randomRot = Quaternion.Euler(0f, 0f, randomOffset);
             GameObject ghost = Instantiate(crystalSO.ghostPrefab, transform.position, Quaternion.identity);
             var ghostScript = ghost.GetComponent<HauntedCrystalBallGhost>();
             if (ghostScript != null)
-                ghostScript.Initialize(dir, crystalSO.pattern1GhostSpeed, crystalSO.pattern1Damage);
+                ghostScript.Initialize((randomRot * dir).normalized, crystalSO.pattern1GhostSpeed, crystalSO.pattern1Damage);
         }
         Debug.Log("[HauntedCrystalBall] Cross pattern executed");
     }
@@ -134,10 +136,12 @@ public class HauntedCrystalBall : BossBase
         };
         foreach (Vector2 dir in directions)
         {
+            float randomOffset = Random.Range(-22.5f, 22.5f);
+            Quaternion randomRot = Quaternion.Euler(0f, 0f, randomOffset);
             GameObject ghost = Instantiate(crystalSO.ghostPrefab, transform.position, Quaternion.identity);
             var ghostScript = ghost.GetComponent<HauntedCrystalBallGhost>();
             if (ghostScript != null)
-                ghostScript.Initialize(dir, crystalSO.pattern2GhostSpeed, crystalSO.pattern2Damage);
+                ghostScript.Initialize((randomRot * dir).normalized, crystalSO.pattern2GhostSpeed, crystalSO.pattern2Damage);
         }
         Debug.Log("[HauntedCrystalBall] X pattern executed");
     }

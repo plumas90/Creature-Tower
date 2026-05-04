@@ -363,7 +363,7 @@ Transform:
   m_GameObject: {fileID: 144963145}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.43, y: 14.11, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1749,6 +1749,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 988671322}
   m_CullTransparentMesh: 1
+--- !u!114 &1105383531 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1676137333391347760, guid: 151b003cd19c4414fa98dc8415a49c24, type: 3}
+  m_PrefabInstance: {fileID: 2498422066205791157}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f644ce7cc5f4fc64f89388f89e7e3b9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1195360115
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2767,10 +2778,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: StageHauntedCrystalBall
       objectReference: {fileID: 0}
-    - target: {fileID: 5179446536492058927, guid: 151b003cd19c4414fa98dc8415a49c24, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3002,17 +3009,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b05a3b21ad8c6c641a9e308ec655fe68, type: 3}
---- !u!114 &5105115887654584215 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3409608210827896718, guid: 4f5ad2d86597e114f94456f3b042ebc6, type: 3}
-  m_PrefabInstance: {fileID: 464909225643580860}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f644ce7cc5f4fc64f89388f89e7e3b9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8587318325381777133
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3068,7 +3064,7 @@ PrefabInstance:
     - target: {fileID: 5332037947132965561, guid: 0c7305a89b5a8874f85dcca5711051ff, type: 3}
       propertyPath: stage
       value: 
-      objectReference: {fileID: 5105115887654584215}
+      objectReference: {fileID: 1105383531}
     - target: {fileID: 5332037947132965561, guid: 0c7305a89b5a8874f85dcca5711051ff, type: 3}
       propertyPath: mainCamera
       value: 
