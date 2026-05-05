@@ -259,7 +259,7 @@ public class MonkeyPart : BossBase
             // X 또는 Y 중 하나라도 stuckThreshold 이상 움직였으면 정상 동작 중
             if (deltaX >= stuckThreshold || deltaY >= stuckThreshold)
             {
-                Debug.Log($"[MonkeyPart] Moving normally. Delta: ({deltaX:F3}, {deltaY:F3})");
+                //Debug.Log($"[MonkeyPart] Moving normally. Delta: ({deltaX:F3}, {deltaY:F3})");
                 lastPosition = currentPosition;
                 attemptCount = 0; // 탈출 시도 카운트 리셋
                 continue;

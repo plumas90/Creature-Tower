@@ -45,6 +45,11 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
     bool testsetting;
     public bool SetActiveCheck;
     private bool controlsLocked;
+    private bool hasSpacebarActionSnapshot;
+    private bool rollActionWasEnabled;
+    private bool flashActionWasEnabled;
+    private bool siegeModeActionWasEnabled;
+    private bool reloadActionWasEnabled;
     private ResultSelectionMode selectionMode = ResultSelectionMode.Immediate;
     private ChoiceSlot pendingChoiceSlot;
     private Action<bool, int> transfusionCloseCallback;
@@ -577,6 +582,8 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         if (playerinput == null && Player != null)
             playerinput = Player.GetComponent<PlayerInput>();
 
+        CaptureSpacebarActionSnapshot();
+
         if (Player != null && Player.TryGetComponent(out TopDownCharacterController controller))
             controller.ForceStopAttackInput();
 
@@ -601,6 +608,8 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         if (Player != null && Player.TryGetComponent(out PlayerInputController inputController))
             inputController.ResetSetting();
 
+        RestoreSpacebarActionSnapshot();
+
         // 메뉴 토글 입력은 ResetSetting에서 제어하지 않으므로 명시적으로 복원
         TrySetActionEnabled("AugmentCheck", true);
         controlsLocked = false;
@@ -619,6 +628,47 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
             action.Enable();
         else
             action.Disable();
+    }
+
+    private void CaptureSpacebarActionSnapshot()
+    {
+        hasSpacebarActionSnapshot = false;
+        rollActionWasEnabled = false;
+        flashActionWasEnabled = false;
+        siegeModeActionWasEnabled = false;
+        reloadActionWasEnabled = false;
+
+        if (playerinput == null || playerinput.actions == null)
+            return;
+
+        InputAction rollAction = playerinput.actions.FindAction("Roll");
+        InputAction flashAction = playerinput.actions.FindAction("Flash");
+        InputAction siegeModeAction = playerinput.actions.FindAction("SiegeMode");
+        InputAction reloadAction = playerinput.actions.FindAction("Reload");
+
+        if (rollAction != null)
+            rollActionWasEnabled = rollAction.enabled;
+        if (flashAction != null)
+            flashActionWasEnabled = flashAction.enabled;
+        if (siegeModeAction != null)
+            siegeModeActionWasEnabled = siegeModeAction.enabled;
+        if (reloadAction != null)
+            reloadActionWasEnabled = reloadAction.enabled;
+
+        hasSpacebarActionSnapshot = true;
+    }
+
+    private void RestoreSpacebarActionSnapshot()
+    {
+        if (!hasSpacebarActionSnapshot)
+            return;
+
+        TrySetActionEnabled("Roll", rollActionWasEnabled);
+        TrySetActionEnabled("Flash", flashActionWasEnabled);
+        TrySetActionEnabled("SiegeMode", siegeModeActionWasEnabled);
+        TrySetActionEnabled("Reload", reloadActionWasEnabled);
+
+        hasSpacebarActionSnapshot = false;
     }
 
     private void ShowTransfusionOptions(List<IAugment> options)
