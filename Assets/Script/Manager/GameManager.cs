@@ -227,7 +227,6 @@ public class GameManager : MonoBehaviour
             GameObject Room = Instantiate(curStageList[j], Vector3.zero, Quaternion.identity);
             Stage stage = Room.GetComponent<Stage>();
             stage.roomNumber = i;
-            stage.SetRuntimeBossFlow(true);
             Room.transform.position = new Vector3(0 + (i * 100), 0, 0);
             if (i == 0) 
             {
@@ -404,7 +403,6 @@ public class GameManager : MonoBehaviour
             }
 
             stage.roomNumber = -(i + 1);
-            stage.SetRuntimeBossFlow(false);
             room.transform.position = new Vector3(baseX + (i * 100f), 0f, 0f);
             pendingNormalStageChoices.Add(stage);
         }
@@ -498,7 +496,8 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("[GameManager] StageLevelSet aborted: playerOBJ is null.");
             return;
         }
-        if (CurrentStage.PlayerSpawnPoint == null)
+        Transform playerSpawnPoint = CurrentStage.GetPlayerSpawnPoint();
+        if (playerSpawnPoint == null)
         {
             Debug.LogWarning($"[GameManager] StageLevelSet aborted: PlayerSpawnPoint is null on '{CurrentStage.name}'.");
             return;
@@ -508,7 +507,7 @@ public class GameManager : MonoBehaviour
         // Stage 시작 전에 한 번 미리 활성화해 Awake 사이드이펙트를 소거한다.
         CurrentStage.ObjActiveTrue();
         CurrentStage.ReadyStage();
-        playerOBJ.transform.position = CurrentStage.PlayerSpawnPoint.position;
+        playerOBJ.transform.position = playerSpawnPoint.position;
         OnStageStartEvent?.Invoke();
     }
 

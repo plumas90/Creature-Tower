@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: 
   atk: 10
-  hp: 1000
-  speed: 5
+  hp: 200
+  speed: 15
   bossCount: 3
   IntroAnimationTime: 0
   bossPatternTime: 0

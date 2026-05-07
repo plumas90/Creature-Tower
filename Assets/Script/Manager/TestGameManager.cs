@@ -46,8 +46,9 @@ public class TestGameManager : MonoBehaviour
             characterSelectUI.SetActive(false);
 
         // 선택한 캐릭터 소환
-        Vector3 spawnPos = stage != null && stage.PlayerSpawnPoint != null
-            ? stage.PlayerSpawnPoint.position
+        Transform spawnPoint = stage != null ? stage.GetPlayerSpawnPoint() : null;
+        Vector3 spawnPos = spawnPoint != null
+            ? spawnPoint.position
             : Vector3.zero;
         GameObject player = Instantiate(prefab, spawnPos, Quaternion.identity);
 
@@ -90,8 +91,8 @@ public class TestGameManager : MonoBehaviour
         // 씬에 GameManager 오브젝트가 반드시 존재해야 한다.
         if (stage != null)
         {
-            // Stage에 bossPrefab만 설정되어 있어도 테스트 시작 시 보스 인스턴스를 준비한다.
-            stage.PrepareBossForRuntime();
+            if (stage is BossStage bossStage)
+                bossStage.PrepareBossForRuntime();
             stage.ObjActiveTrue();
             stage.ReadyStage();
         }

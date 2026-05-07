@@ -291,15 +291,7 @@ public class MonkeyPart : BossBase
     private Vector2 GetStageCenter()
     {
         if (StageOwner != null)
-        {
-            // nxnZone이 있으면 Zone 중심 사용
-            if (StageOwner.nxnZone != null)
-                return StageOwner.nxnZone.bounds.center;
-
-            // 없으면 Stage Transform 위치
-            if (StageOwner.transform != null)
-                return StageOwner.transform.position;
-        }
+            return StageOwner.GetZoneCenter();
 
         if (GameManager.Instance != null && GameManager.Instance.transform != null)
             return GameManager.Instance.transform.position;

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 671404274305778504}
   - component: {fileID: 5332037947132965561}
+  - component: {fileID: 2642376376411370104}
   m_Layer: 0
   m_Name: TestGameManager
   m_TagString: Untagged
@@ -51,3 +52,19 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   existingPlayer: {fileID: 0}
   characterSelectUI: {fileID: 0}
+--- !u!114 &2642376376411370104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2380092407139814856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e48b78f24bd5cf44b9fadfa20c5d930a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 0}
+  contentParent: {fileID: 0}
+  rowPrefab: {fileID: 5578053762324381027, guid: bc3514fc0e7d2134a8f0e83d25571c88, type: 3}
+  topRightOffset: {x: 20, y: 20}

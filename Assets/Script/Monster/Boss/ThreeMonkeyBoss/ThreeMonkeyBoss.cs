@@ -885,14 +885,11 @@ public class ThreeMonkeyBoss : BossBase
 
         Debug.LogWarning($"[ThreeMonkeyBoss] {spawned.name} overlapping wall! Searching for safe position...");
 
-        // 스테이지 중심 계산 (nxnZone 우선)
+        // 스테이지 중심 계산
         Vector2 stageCenter = transform.position;
         if (StageOwner != null)
         {
-            if (StageOwner.nxnZone != null)
-                stageCenter = StageOwner.nxnZone.bounds.center;
-            else if (StageOwner.transform != null)
-                stageCenter = StageOwner.transform.position;
+            stageCenter = StageOwner.GetZoneCenter();
         }
 
         // 방법 1: 스테이지 중심 방향으로 직선 이동 시도

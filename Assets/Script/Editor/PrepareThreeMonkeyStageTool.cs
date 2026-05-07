@@ -21,10 +21,10 @@ public static class PrepareThreeMonkeyStageTool
             return;
         }
 
-        var stages = Object.FindObjectsOfType<Stage>(true);
+        var stages = Object.FindObjectsOfType<BossStage>(true);
         if (stages == null || stages.Length == 0)
         {
-            Debug.LogWarning("[PrepareThreeMonkeyStageTool] No Stage component found in current scene.");
+            Debug.LogWarning("[PrepareThreeMonkeyStageTool] No BossStage component found in current scene.");
             return;
         }
 

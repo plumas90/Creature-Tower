@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class NormalStage : Stage
 {
-    protected override bool DefaultBossFlow => false;
-
     public enum NormalStageCase
     {
         Monster,
@@ -16,6 +14,17 @@ public class NormalStage : Stage
     [Header("Normal Stage Case")]
     [SerializeField] private NormalStageCase stageCase = NormalStageCase.RewardOnly;
 
+    [Header("Choice Result")]
+    public RandomHealPoint randomHealPoint;
+    public ResultDNA resultDNA;
+    public BloodTransfusionDevice bloodTransfusionDevice;
+
+    [Header("Spawn Point")]
+    public GameObject spawnPointStairs;
+    public Transform PlayerSpawnPoint;
+    public Transform PlayerStartPosition;
+    public NextStageStairs NextStageStairs;
+
     [Header("Monster Case")]
     [SerializeField] private Transform normalMonsterRoot;
     [SerializeField] private int requiredMonsterCount = 0;
@@ -26,19 +35,31 @@ public class NormalStage : Stage
     private int remainingMonsterCount;
     private bool monsterGateActive;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        ResultSummon();
+    }
+
+    public override Transform GetPlayerSpawnPoint()
+    {
+        return PlayerSpawnPoint;
+    }
+
     public override void ReadyStage()
     {
         base.ReadyStage();
-
         ConfigureOptionalContents();
         SetupMonsterGate();
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.BossCountSet(0);
     }
 
     public override void InCheckClear(GameObject player)
     {
         base.InCheckClear(player);
 
-        // 몬스터 처치형 노말 스테이지는 입장 후 뒤쪽 문을 닫아 전투 공간을 고정한다.
         if (monsterGateActive && botDoor != null)
             CloseBotDoor();
     }
@@ -59,6 +80,22 @@ public class NormalStage : Stage
                 OpenBotDoor();
             monsterGateActive = false;
         }
+    }
+
+    public void ResultSummon()
+    {
+        if (randomHealPoint != null)
+            randomHealPoint.MakePotion();
+        else
+            Debug.LogWarning($"[NormalStage] randomHealPoint is null on '{name}'.");
+
+        if (resultDNA != null)
+            resultDNA.Init();
+        else
+            Debug.LogWarning($"[NormalStage] resultDNA is null on '{name}'.");
+
+        if (bloodTransfusionDevice != null)
+            bloodTransfusionDevice.Init($"Stage-{roomNumber}", bloodTransfusionDevice.name);
     }
 
     private void ConfigureOptionalContents()
