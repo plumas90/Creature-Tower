@@ -5,6 +5,11 @@ using UnityEngine.UI;
 public class UIBossHP : MonoBehaviour
 {
     private static UIBossHP _instance;
+    private const string RuntimeContainerName = "UIBossHP_RuntimeRoot";
+    private const string BossHpPrefabResourcesPath = "Prefabs/UI/UIBossHP_Auto";
+#if UNITY_EDITOR
+    private const string BossHpPrefabAssetPath = "Assets/Prefabs/UI/UIBossHP_Auto.prefab";
+#endif
 
     private BossBase _currentBoss;
     private readonly List<BossBase> _aliveBosses = new List<BossBase>();
@@ -48,18 +53,17 @@ public class UIBossHP : MonoBehaviour
         if (existing != null && existing.Length > 0)
         {
             _instance = existing[0];
+            _instance.EnsureParentCanvas();
             _instance.BuildIfNeeded();
             return;
         }
 
-        Canvas canvas = FindObjectOfType<Canvas>(true);
-        if (canvas == null)
+        Canvas canvas = FindOrCreateCanvas();
+
+        if (TryInstantiatePrefabUnderCanvas(canvas, out _instance))
         {
-            GameObject canvasObj = new GameObject("Canvas");
-            canvas = canvasObj.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObj.AddComponent<CanvasScaler>();
-            canvasObj.AddComponent<GraphicRaycaster>();
+            _instance.BuildIfNeeded();
+            return;
         }
 
         GameObject root = new GameObject("UIBossHP_Auto");
@@ -73,7 +77,9 @@ public class UIBossHP : MonoBehaviour
         if (_instance == null)
             _instance = this;
 
+        EnsureParentCanvas();
         BuildIfNeeded();
+        ApplyUiRuntimeSettings();
     }
 
     private void Update()
@@ -174,17 +180,26 @@ public class UIBossHP : MonoBehaviour
 
     private void BuildIfNeeded()
     {
-        if (_panel != null) return;
-
+        if (TryBindExistingUi())
+        {
+            ApplyUiRuntimeSettings();
+            return;
+        }
+        
         GameObject panelObj = new GameObject("Panel", typeof(RectTransform), typeof(Image));
-        panelObj.transform.SetParent(transform, false);
-        _panel = panelObj.GetComponent<RectTransform>();
+        RectTransform rootRect = GetComponent<RectTransform>();
+        if (rootRect == null)
+        {
+            rootRect = gameObject.AddComponent<RectTransform>();
+            rootRect.anchorMin = new Vector2(0.5f, 1f);
+            rootRect.anchorMax = new Vector2(0.5f, 1f);
+            rootRect.pivot = new Vector2(0.5f, 1f);
+        }
 
-        _panel.anchorMin = new Vector2(0.5f, 1f);
-        _panel.anchorMax = new Vector2(0.5f, 1f);
-        _panel.pivot = new Vector2(0.5f, 1f);
-        _panel.anchoredPosition = new Vector2(0f, -20f);
+        panelObj.transform.SetParent(rootRect, false);
+        _panel = panelObj.GetComponent<RectTransform>();
         _panel.sizeDelta = new Vector2(420f, 76f);
+        ForcePanelToTopCenter();
 
         Image bg = panelObj.GetComponent<Image>();
         bg.color = new Color(0f, 0f, 0f, 0.65f);
@@ -273,5 +288,175 @@ public class UIBossHP : MonoBehaviour
         _hpText.color = Color.white;
 
         _panel.gameObject.SetActive(false);
+        ApplyUiRuntimeSettings();
+    }
+
+    private bool TryBindExistingUi()
+    {
+        if (_panel == null)
+            _panel = FindRectTransform("Panel");
+        if (_icon == null)
+            _icon = FindImage("BossIcon");
+        if (_hpSlider == null)
+            _hpSlider = FindSlider("BossHPBar");
+        if (_bossName == null)
+            _bossName = FindText("BossName");
+        if (_hpText == null)
+            _hpText = FindText("BossHPText");
+
+        return _panel != null && _hpSlider != null && _bossName != null && _hpText != null;
+    }
+
+    private RectTransform FindRectTransform(string name)
+    {
+        Transform target = transform.Find(name);
+        if (target == null)
+            target = transform.Find("Panel/" + name);
+        if (target == null)
+            return null;
+        return target.GetComponent<RectTransform>();
+    }
+
+    private Image FindImage(string name)
+    {
+        Transform target = transform.Find(name);
+        if (target == null)
+            target = transform.Find("Panel/" + name);
+        if (target == null)
+            return null;
+        return target.GetComponent<Image>();
+    }
+
+    private Slider FindSlider(string name)
+    {
+        Transform target = transform.Find(name);
+        if (target == null)
+            target = transform.Find("Panel/" + name);
+        if (target == null)
+            return null;
+        return target.GetComponent<Slider>();
+    }
+
+    private Text FindText(string name)
+    {
+        Transform target = transform.Find(name);
+        if (target == null)
+            target = transform.Find("Panel/" + name);
+        if (target == null)
+            return null;
+        return target.GetComponent<Text>();
+    }
+
+    private void ForcePanelToTopCenter()
+    {
+        if (_panel == null)
+            return;
+
+        _panel.anchorMin = new Vector2(0.5f, 1f);
+        _panel.anchorMax = new Vector2(0.5f, 1f);
+        _panel.pivot = new Vector2(0.5f, 1f);
+        _panel.anchoredPosition = new Vector2(0f, -20f);
+    }
+
+    private void ApplyUiRuntimeSettings()
+    {
+        if (_panel == null)
+            return;
+
+        RectTransform container = EnsureUiContainer();
+        if (container != null && _panel.parent != container)
+        {
+            Vector2 anchored = _panel.anchoredPosition;
+            _panel.SetParent(container, false);
+            _panel.anchoredPosition = anchored;
+        }
+
+        // 해상도 변화에도 상단 중앙 고정
+        _panel.anchorMin = new Vector2(0.5f, 1f);
+        _panel.anchorMax = new Vector2(0.5f, 1f);
+        _panel.pivot = new Vector2(0.5f, 1f);
+
+        Graphic[] graphics = _panel.GetComponentsInChildren<Graphic>(true);
+        for (int i = 0; i < graphics.Length; i++)
+            graphics[i].raycastTarget = false;
+
+        Selectable[] selectables = _panel.GetComponentsInChildren<Selectable>(true);
+        for (int i = 0; i < selectables.Length; i++)
+            selectables[i].interactable = false;
+    }
+
+    private RectTransform EnsureUiContainer()
+    {
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null)
+            canvas = FindOrCreateCanvas();
+
+        Transform existing = canvas.transform.Find(RuntimeContainerName);
+        RectTransform container;
+
+        if (existing == null)
+        {
+            GameObject containerObj = new GameObject(RuntimeContainerName, typeof(RectTransform));
+            container = containerObj.GetComponent<RectTransform>();
+            container.SetParent(canvas.transform, false);
+        }
+        else
+        {
+            container = existing as RectTransform;
+            if (container == null)
+            {
+                container = existing.gameObject.AddComponent<RectTransform>();
+                container.SetParent(canvas.transform, false);
+            }
+        }
+
+        container.anchorMin = new Vector2(0.5f, 1f);
+        container.anchorMax = new Vector2(0.5f, 1f);
+        container.pivot = new Vector2(0.5f, 1f);
+        container.sizeDelta = Vector2.zero;
+
+        return container;
+    }
+
+    private static bool TryInstantiatePrefabUnderCanvas(Canvas canvas, out UIBossHP instance)
+    {
+        instance = null;
+
+        GameObject prefab = Resources.Load<GameObject>(BossHpPrefabResourcesPath);
+#if UNITY_EDITOR
+        if (prefab == null)
+            prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(BossHpPrefabAssetPath);
+#endif
+        if (prefab == null)
+            return false;
+
+        GameObject root = Instantiate(prefab, canvas.transform, false);
+        instance = root.GetComponent<UIBossHP>();
+        if (instance == null)
+            instance = root.AddComponent<UIBossHP>();
+        return true;
+    }
+
+    private static Canvas FindOrCreateCanvas()
+    {
+        Canvas canvas = FindObjectOfType<Canvas>(true);
+        if (canvas != null)
+            return canvas;
+
+        GameObject canvasObj = new GameObject("Canvas");
+        canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvasObj.AddComponent<CanvasScaler>();
+        canvasObj.AddComponent<GraphicRaycaster>();
+        return canvas;
+    }
+
+    private void EnsureParentCanvas()
+    {
+        if (GetComponentInParent<Canvas>() != null)
+            return;
+
+        Canvas canvas = FindOrCreateCanvas();
+        transform.SetParent(canvas.transform, false);
     }
 }

@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class Stage : MonoBehaviour
 {
+    protected virtual bool DefaultBossFlow => true;
+    private bool? runtimeBossFlowOverride;
+    protected bool UsesBossFlow => runtimeBossFlowOverride ?? DefaultBossFlow;
+    public bool IsBossStage => UsesBossFlow;
     public int roomNumber;
     [Header("Boss")]
     public GameObject bossPrefab;
@@ -39,6 +43,11 @@ public class Stage : MonoBehaviour
 
     private bool firstIn;
     private int aliveBossCount;
+
+    public void SetRuntimeBossFlow(bool useBossFlow)
+    {
+        runtimeBossFlowOverride = useBossFlow;
+    }
 
     private void OnValidate()
     {
@@ -162,13 +171,25 @@ public class Stage : MonoBehaviour
         firstIn = true;
         ObjActiveFalse();
     }
-    public void ReadyStage() 
+    public virtual void ReadyStage() 
     {
-        PrepareBossForRuntime();
         ObjActiveTrue();
         aliveBossCount = 0;
-        // 위 문은 보스 처치 전까지 잠금 (근접 감지 비활성)
-        topDoor.Lock();
+
+        if (UsesBossFlow)
+        {
+            PrepareBossForRuntime();
+            // 위 문은 보스 처치 전까지 잠금 (근접 감지 비활성)
+            if (topDoor != null)
+                topDoor.Lock();
+        }
+        else
+        {
+            // 일반 스테이지는 입장 즉시 위 문을 열어 다음 진행을 허용한다.
+            if (topDoor != null)
+                topDoor.UnLock();
+        }
+
         // botDoor는 잠금 없이 활성 상태 유지 → 근접 시 자동 열림
         if (GameManager.Instance != null)
             GameManager.Instance.BossCountSet(0);
@@ -178,15 +199,18 @@ public class Stage : MonoBehaviour
     //    player.transform.position = GameManager.Instance.StageTree[roomNumber + 1].PlayerSpawnPoint.position;
     //}
 
-    public void InCheckClear(GameObject player)
+    public virtual void InCheckClear(GameObject player)
     {
         if (firstIn)
         {
             Debug.Log($"[Stage] InCheckClear on '{name}' | player={player?.name}");
-            // 문 잠금을 먼저 처리 — 보스 세팅 예외와 무관하게 반드시 실행
-            CloseBotDoor();
             firstIn = false;
 
+            if (!UsesBossFlow)
+                return;
+
+            // 문 잠금을 먼저 처리 — 보스 세팅 예외와 무관하게 반드시 실행
+            CloseBotDoor();
             StartCoroutine(BossRoomEnterSequence(player));
         }
     }

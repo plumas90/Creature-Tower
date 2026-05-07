@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public event Action OnStageStartEvent;
+    public event UnityAction OnStageStartEvent;
     private const string AugmentManagerPrefabPath = "Prefabs/AugmentManager";
     private const string MakeAugmentListManagerPrefabPath = "Prefabs/MakeAugmentListManager";
     private const string ResultManagerPrefabPath = "Prefabs/ResultManager";
@@ -35,7 +36,10 @@ public class GameManager : MonoBehaviour
     public GameObject clientPlayer { get { return playerOBJ; } }
     //public PlayerDataSetting characterSetting; // 플레이어 데이터
     public bool isDie; // 플레이어 사망 여부
-    //public int Gold;  // 골드
+    [Header("Economy")]
+    [SerializeField] private int startGold = 0;
+    public int Gold { get; private set; }  // 골드
+    public event UnityAction<int> OnGoldChanged;
     public int Life; // 라이프
 
     [Header("GameData")]
@@ -46,6 +50,14 @@ public class GameManager : MonoBehaviour
     private bool isTransitioningStage;
     //public bool clearRoom; // 방 클리어 여부
     private int EndingTowerStage = 0; // 생성된 총 스테이지 수
+    private enum ProgressionState
+    {
+        BossStage,
+        ChoosingNormalStage,
+        NormalStage
+    }
+    private ProgressionState progressionState = ProgressionState.BossStage;
+    private readonly List<Stage> pendingNormalStageChoices = new List<Stage>();
 
 
     [SerializeField] public List<List<GameObject>> stageList = new List<List<GameObject>>();
@@ -65,6 +77,9 @@ public class GameManager : MonoBehaviour
     public List<GameObject> stageLevel13;
     public List<GameObject> stageLevel14;
     public List<GameObject> stageLevel15;
+    [Header("Normal Stage")]
+    [SerializeField] private List<GameObject> normalStageCandidates = new List<GameObject>();
+    [SerializeField] [Range(1, 3)] private int normalChoiceCount = 3;
     #endregion
 
     [Header("UI")] // UI 참조
@@ -123,6 +138,19 @@ public class GameManager : MonoBehaviour
             SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    private void Update()
+    {
+        if (progressionState != ProgressionState.ChoosingNormalStage)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
+            SelectNormalStageChoice(0);
+        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+            SelectNormalStageChoice(1);
+        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
+            SelectNormalStageChoice(2);
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // MainScene 진입 시 씬 종속 참조를 재연결
@@ -151,6 +179,8 @@ public class GameManager : MonoBehaviour
         bossCount = 0;
         TowerLevelCount = 0;
         EndingTowerStage = 0;
+        progressionState = ProgressionState.BossStage;
+        ClearPendingNormalChoices();
         stageList.Clear();
         StageTree.Clear();
         // 각 층 리스트에서 랜덤으로 1개만 뽑아 stageList에 등록한다.
@@ -197,6 +227,7 @@ public class GameManager : MonoBehaviour
             GameObject Room = Instantiate(curStageList[j], Vector3.zero, Quaternion.identity);
             Stage stage = Room.GetComponent<Stage>();
             stage.roomNumber = i;
+            stage.SetRuntimeBossFlow(true);
             Room.transform.position = new Vector3(0 + (i * 100), 0, 0);
             if (i == 0) 
             {
@@ -209,6 +240,8 @@ public class GameManager : MonoBehaviour
     {
         playerOBJ = player;
         Life = 0;
+        Gold = Mathf.Max(0, startGold);
+        OnGoldChanged?.Invoke(Gold);
         EnsureRewardManagers();
 
         // 카메라 Target 설정 (플레이어가 설정되면 즉시 카메라에 알림)
@@ -263,6 +296,28 @@ public class GameManager : MonoBehaviour
         bossCount = Mathf.Max(0, bossCount - i);
     }
 
+    public void AddGold(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        Gold += amount;
+        OnGoldChanged?.Invoke(Gold);
+    }
+
+    public bool TrySpendGold(int amount)
+    {
+        if (amount <= 0)
+            return true;
+
+        if (Gold < amount)
+            return false;
+
+        Gold -= amount;
+        OnGoldChanged?.Invoke(Gold);
+        return true;
+    }
+
     public void NextLevel() 
     {
         if (isTransitioningStage)
@@ -279,36 +334,157 @@ public class GameManager : MonoBehaviour
             return;
         }
         Debug.Log("2체크");
-        // 마지막 스테이지면 종료 분기
+
+        if (progressionState == ProgressionState.ChoosingNormalStage)
+        {
+            Debug.Log("[GameManager] NextLevel ignored: waiting for normal stage selection (press 1~3).");
+            return;
+        }
+
+        if (progressionState == ProgressionState.NormalStage)
+        {
+            TransitionToNextBossStage();
+            return;
+        }
+
+        // 현재 보스 스테이지에서 계단을 탔을 때 처리
         if (TowerLevelCount >= StageTree.Count - 1)
         {
-            if (false)// 엔딩 연출 분기(예약)
-            {
-
-            }
-            else //
-            {
-                // 데모 종료 UI 표시
+            if (thankDemoUI != null)
                 thankDemoUI.SetActive(true);
+            Debug.Log("3체크");
+            return;
+        }
+
+        BeginNormalStageChoice();
+    }
+
+    private void BeginNormalStageChoice()
+    {
+        if (normalStageCandidates == null || normalStageCandidates.Count == 0)
+        {
+            // 일반 스테이지 풀이 없으면 기존처럼 바로 다음 보스 스테이지로 진행
+            TransitionToNextBossStage();
+            return;
+        }
+
+        ClearPendingNormalChoices();
+
+        int count = Mathf.Min(normalChoiceCount, normalStageCandidates.Count);
+        List<int> usedIndices = new List<int>(count);
+        float baseX = (StageTree.Count + 1) * 100f;
+
+        for (int i = 0; i < count; i++)
+        {
+            int pickIndex = -1;
+            int safety = 0;
+            while (pickIndex < 0 && safety < 32)
+            {
+                int candidate = UnityEngine.Random.Range(0, normalStageCandidates.Count);
+                if (!usedIndices.Contains(candidate))
+                    pickIndex = candidate;
+                safety++;
             }
-             Debug.Log("3체크");
+
+            if (pickIndex < 0)
+                continue;
+
+            usedIndices.Add(pickIndex);
+            GameObject prefab = normalStageCandidates[pickIndex];
+            if (prefab == null)
+                continue;
+
+            GameObject room = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            Stage stage = room.GetComponent<Stage>();
+            if (stage == null)
+            {
+                Debug.LogWarning($"[GameManager] Normal stage prefab has no Stage component: {prefab.name}");
+                Destroy(room);
+                continue;
+            }
+
+            stage.roomNumber = -(i + 1);
+            stage.SetRuntimeBossFlow(false);
+            room.transform.position = new Vector3(baseX + (i * 100f), 0f, 0f);
+            pendingNormalStageChoices.Add(stage);
         }
-        else if (false)  // 분기 예약
+
+        if (pendingNormalStageChoices.Count == 0)
         {
-             Debug.Log("4체크");
+            TransitionToNextBossStage();
+            return;
         }
-        else
+
+        progressionState = ProgressionState.ChoosingNormalStage;
+        Debug.Log($"[GameManager] Normal stage choices ready. Press 1~{pendingNormalStageChoices.Count} to select.");
+        for (int i = 0; i < pendingNormalStageChoices.Count; i++)
+            Debug.Log($"[GameManager] Choice {i + 1}: {pendingNormalStageChoices[i].name}");
+    }
+
+    private void SelectNormalStageChoice(int choiceIndex)
+    {
+        if (progressionState != ProgressionState.ChoosingNormalStage)
+            return;
+
+        if (choiceIndex < 0 || choiceIndex >= pendingNormalStageChoices.Count)
+            return;
+
+        isTransitioningStage = true;
+        Stage previousStage = CurrentStage;
+        Stage selected = pendingNormalStageChoices[choiceIndex];
+
+        for (int i = 0; i < pendingNormalStageChoices.Count; i++)
         {
-             Debug.Log("5체크");
-            isTransitioningStage = true;
-            Stage previousStage = CurrentStage;
-            TowerLevelCount++;
-            CurrentStage = StageTree[TowerLevelCount];
-            if (previousStage != null)
-                previousStage.ObjActiveFalse();
-            StageLevelSet();
-            isTransitioningStage = false;
+            if (i == choiceIndex)
+                continue;
+
+            Stage stage = pendingNormalStageChoices[i];
+            if (stage != null)
+                Destroy(stage.gameObject);
         }
+
+        pendingNormalStageChoices.Clear();
+        CurrentStage = selected;
+        progressionState = ProgressionState.NormalStage;
+
+        if (previousStage != null)
+            previousStage.ObjActiveFalse();
+
+        StageLevelSet();
+        isTransitioningStage = false;
+    }
+
+    private void TransitionToNextBossStage()
+    {
+        if (TowerLevelCount >= StageTree.Count - 1)
+        {
+            if (thankDemoUI != null)
+                thankDemoUI.SetActive(true);
+            return;
+        }
+
+        isTransitioningStage = true;
+        Stage previousStage = CurrentStage;
+        TowerLevelCount++;
+        CurrentStage = StageTree[TowerLevelCount];
+
+        if (previousStage != null)
+            previousStage.ObjActiveFalse();
+
+        progressionState = ProgressionState.BossStage;
+        StageLevelSet();
+        isTransitioningStage = false;
+    }
+
+    private void ClearPendingNormalChoices()
+    {
+        for (int i = 0; i < pendingNormalStageChoices.Count; i++)
+        {
+            Stage stage = pendingNormalStageChoices[i];
+            if (stage != null)
+                Destroy(stage.gameObject);
+        }
+        pendingNormalStageChoices.Clear();
     }
     public void StageLevelSet() 
     {
