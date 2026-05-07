@@ -328,6 +328,9 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // 루트가 비활성 저장된 스테이지는 첫 SetActive(true)에서 Awake가 한 번 더 비활성화할 수 있어
+        // Stage 시작 전에 한 번 미리 활성화해 Awake 사이드이펙트를 소거한다.
+        CurrentStage.ObjActiveTrue();
         CurrentStage.ReadyStage();
         playerOBJ.transform.position = CurrentStage.PlayerSpawnPoint.position;
         OnStageStartEvent?.Invoke();

@@ -17,7 +17,7 @@ public class NextStageStairs : MonoBehaviour
         if (consumed)
             return;
 
-        Debug.Log("[NextStageStairs] 계단 진입 체크");
+        //Debug.Log("[NextStageStairs] 계단 진입 체크");
         // 플레이어 자식 콜라이더 진입도 허용
         var playerStatControl = collision.GetComponentInParent<PlayerStatControl>();
         if (playerStatControl != null && GameManager.Instance != null)
