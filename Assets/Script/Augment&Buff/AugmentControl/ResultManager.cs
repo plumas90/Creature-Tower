@@ -68,7 +68,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
     private int currentTransfusionCostMax;
     private int currentTransfusionCostValue;
 
-    public void OpenSpecialResult(GameObject playerObj)
+    public void OpenSpecialResult(GameObject playerObj, bool isRare = false)
     {
         if (playerObj == null)
         {
@@ -87,7 +87,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         MakeAugmentListManager.Instance.startset(playerObj);
         startset(playerObj);
         StartSet();
-        SpecialResult();
+        SpecialResult(isRare);
     }
 
     public void OpenTransfusionResult(
@@ -119,7 +119,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
 
         if (!transfusionOptionCache.TryGetValue(cacheKey, out List<IAugment> options) || options == null || options.Count == 0)
         {
-            options = BuildTransfusionOptions();
+            options = BuildTransfusionOptions(confirmedPurchaseCount);
             transfusionOptionCache[cacheKey] = options;
         }
 
@@ -193,7 +193,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         readycheck = false;
     }
 
-    public void SpecialResult()
+    public void SpecialResult(bool isRare = false)
     {
         selectionMode = ResultSelectionMode.Immediate;
         pendingChoiceSlot = null;
@@ -202,7 +202,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         SetTransfusionUiVisible(false);
         if (!testsetting)//���� �׽�Ʈ�� �����ũ �׽�Ʈ true�� ������Ÿ�Ը���Ʈ��������
         {
-            CallSpecialResult();
+            CallSpecialResult(isRare);
         }
         else 
         {
@@ -286,9 +286,9 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
             }
         }
     }
-    public void CallSpecialResult()
+    public void CallSpecialResult(bool isRare = false)
     {
-        PickSpecialListBySlotTier();
+        PickSpecialListBySlotTier(isRare);
     }
   
     void PickStatList(List<IAugment> origin)// ������ �Ȼ縮���� Ÿ�� = �Ϲݽ���
@@ -350,22 +350,31 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
 
     }
 
-    void PickSpecialListBySlotTier()
+    void PickSpecialListBySlotTier(bool isRare = false)
     {
         LockPlayerControls();
 
         int count = picklist.Length;
         HashSet<int> usedCodes = new HashSet<int>();
 
+        int commonTier = 1;
+        if (isRare)
+        {
+            commonTier = 3;
+        }
+        else
+        {
+            commonTier = Random.Range(0, 100) < 50 ? 1 : 2;
+        }
+
         for (int i = 0; i < count; ++i)
         {
             SpecialAugment pickedAugment = null;
 
-            // 각 슬롯마다 독립적으로 티어를 굴린다.
+            // 각 슬롯마다 공통 티어를 사용하여 시도한다.
             for (int attempt = 0; attempt < 12; attempt++)
             {
-                int tier = RandomTier();
-                List<SpecialAugment> source = ResolveSpecialTierList(tier);
+                List<SpecialAugment> source = ResolveSpecialTierList(commonTier);
                 if (source == null || source.Count == 0)
                     continue;
 
@@ -717,11 +726,39 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         UpdateTransfusionConfirmInteractable();
     }
 
-    private List<IAugment> BuildTransfusionOptions()
+    private List<IAugment> BuildTransfusionOptions(int confirmedPurchaseCount)
     {
         List<IAugment> result = new List<IAugment>();
         HashSet<int> usedCodes = new HashSet<int>();
         int count = picklist != null ? picklist.Length : 0;
+
+        int randomVal = Random.Range(0, 100);
+        int commonTier = 1;
+        
+        if (confirmedPurchaseCount == 0)
+        {
+            if (randomVal < 55) commonTier = 1;
+            else if (randomVal < 85) commonTier = 2;
+            else commonTier = 3;
+        }
+        else if (confirmedPurchaseCount == 1)
+        {
+            if (randomVal < 45) commonTier = 1;
+            else if (randomVal < 85) commonTier = 2;
+            else commonTier = 3;
+        }
+        else if (confirmedPurchaseCount == 2)
+        {
+            if (randomVal < 25) commonTier = 1;
+            else if (randomVal < 70) commonTier = 2;
+            else commonTier = 3;
+        }
+        else
+        {
+            if (randomVal < 30) commonTier = 1;
+            else if (randomVal < 80) commonTier = 2;
+            else commonTier = 3;
+        }
 
         for (int i = 0; i < count; i++)
         {
@@ -729,7 +766,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
 
             for (int attempt = 0; attempt < 12; attempt++)
             {
-                List<IAugment> tierList = ResolveStatTierList(RandomTier());
+                List<IAugment> tierList = ResolveStatTierList(commonTier);
                 if (tierList == null || tierList.Count == 0)
                     continue;
 

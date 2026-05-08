@@ -11,7 +11,7 @@ public class BossStage : Stage
 
     [Header("Choice Result")]
     public RandomHealPoint randomHealPoint;
-    public ResultDNA resultDNA;
+    public ResultBox resultBox;
     public BloodTransfusionDevice bloodTransfusionDevice;
 
     [Header("Spawn Point")]
@@ -70,9 +70,9 @@ public class BossStage : Stage
         if (PlayerSpawnPointSprite != null)
             PlayerSpawnPointSprite.color = new Color(0f, 0f, 0f, 0f);
 
-        if (resultDNA != null)
+        if (resultBox != null)
         {
-            defaultResultPosition = resultDNA.transform.position;
+            defaultResultPosition = resultBox.transform.position;
             hasDefaultResultPosition = true;
         }
 
@@ -334,16 +334,18 @@ public class BossStage : Stage
                 bloodTransfusionDevice.Init($"Stage-{roomNumber}", bloodTransfusionDevice.name);
         }
 
-        if (resultDNA != null)
+        if (resultBox != null)
         {
             if (!shouldShowTransfusion && bloodTransfusionDevice != null)
-                resultDNA.transform.position = bloodTransfusionDevice.transform.position;
+                resultBox.transform.position = bloodTransfusionDevice.transform.position;
             else if (hasDefaultResultPosition)
-                resultDNA.transform.position = defaultResultPosition;
-            resultDNA.Init();
+                resultBox.transform.position = defaultResultPosition;
+            
+            resultBox.forceDNA = true; // 보스방 확정 DNA
+            resultBox.gameObject.SetActive(true);
         }
         else
-            Debug.LogWarning($"[BossStage] resultDNA is null on '{name}'.");
+            Debug.LogWarning($"[BossStage] resultBox is null on '{name}'.");
     }
 
     private bool ShouldShowTransfusionForFloor()

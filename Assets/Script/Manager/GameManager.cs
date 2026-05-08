@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
     public int Gold { get; private set; }  // 골드
     public event UnityAction<int> OnGoldChanged;
     public int Life; // 라이프
+    public GameObject coinPrefab; // 코인 프리팹
 
     [Header("GameData")]
     //public StageData stageData; // 필요 시 스테이지 데이터 구조로 분리
@@ -315,6 +316,21 @@ public class GameManager : MonoBehaviour
         Gold -= amount;
         OnGoldChanged?.Invoke(Gold);
         return true;
+    }
+
+    public void SpawnCoins(Vector3 position, int amount)
+    {
+        if (coinPrefab == null || amount <= 0) return;
+        
+        for (int i = 0; i < amount; i++)
+        {
+            GameObject coin = Instantiate(coinPrefab, position, Quaternion.identity);
+            CoinItem coinItem = coin.GetComponent<CoinItem>();
+            if (coinItem != null)
+            {
+                coinItem.Init(1); // 각 코인은 1골드 가치
+            }
+        }
     }
 
     public void NextLevel() 

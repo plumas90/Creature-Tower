@@ -16,7 +16,7 @@ public class NormalStage : Stage
 
     [Header("Choice Result")]
     public RandomHealPoint randomHealPoint;
-    public ResultDNA resultDNA;
+    public ResultBox resultBox;
     public BloodTransfusionDevice bloodTransfusionDevice;
 
     [Header("Spawn Point")]
@@ -94,10 +94,10 @@ public class NormalStage : Stage
         else
             Debug.LogWarning($"[NormalStage] randomHealPoint is null on '{name}'.");
 
-        if (resultDNA != null)
-            resultDNA.Init();
+        if (resultBox != null)
+            resultBox.gameObject.SetActive(true);
         else
-            Debug.LogWarning($"[NormalStage] resultDNA is null on '{name}'.");
+            Debug.LogWarning($"[NormalStage] resultBox is null on '{name}'.");
 
         if (bloodTransfusionDevice != null)
             bloodTransfusionDevice.Init($"Stage-{roomNumber}", bloodTransfusionDevice.name);
@@ -109,8 +109,8 @@ public class NormalStage : Stage
         bool enableTransfusion = stageCase == NormalStageCase.TransfusionOnly || stageCase == NormalStageCase.ShopAndTransfusion;
         bool enableShop = stageCase == NormalStageCase.ShopOnly || stageCase == NormalStageCase.ShopAndTransfusion;
 
-        if (resultDNA != null)
-            resultDNA.gameObject.SetActive(enableReward);
+        if (resultBox != null)
+            resultBox.gameObject.SetActive(enableReward);
 
         if (bloodTransfusionDevice != null)
             bloodTransfusionDevice.gameObject.SetActive(enableTransfusion);
@@ -169,8 +169,8 @@ public class NormalStage : Stage
         if (randomHealPoint != null && randomHealPoint.gameObject.activeSelf)
             list.Add(randomHealPoint.transform);
 
-        if (resultDNA != null && resultDNA.gameObject.activeSelf)
-            list.Add(resultDNA.transform);
+        if (resultBox != null && resultBox.gameObject.activeSelf)
+            list.Add(resultBox.transform);
 
         if (bloodTransfusionDevice != null && bloodTransfusionDevice.gameObject.activeSelf)
             list.Add(bloodTransfusionDevice.transform);

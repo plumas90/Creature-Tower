@@ -8,6 +8,7 @@ public class ResultDNA : MonoBehaviour
     private bool picked = false;
     public Sprite resultdna;
     public Sprite resultdna_red;
+    public bool isRare = false;
 
     private void Awake()
     {
@@ -20,9 +21,15 @@ public class ResultDNA : MonoBehaviour
     }
 
     // Stage.Awake의 ResultSummon에서 호출 - 방 재사용 시 초기화
-    public void Init()
+    public void Init(bool rare = false)
     {
         picked = false;
+        isRare = rare;
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.sprite = isRare ? resultdna_red : resultdna;
+        }
         gameObject.SetActive(true);
     }
 
@@ -39,7 +46,7 @@ public class ResultDNA : MonoBehaviour
         gameObject.SetActive(false);
 
         // 현재 플레이어 기준으로 증강 매니저를 재동기화한 뒤 결과 UI를 연다.
-        ResultManager.Instance.OpenSpecialResult(playerStat.gameObject);
+        ResultManager.Instance.OpenSpecialResult(playerStat.gameObject, isRare);
     }
 
     private void RegisterChildTriggerRelays()

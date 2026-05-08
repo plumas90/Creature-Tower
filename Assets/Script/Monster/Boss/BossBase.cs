@@ -533,7 +533,11 @@ public class BossBase : MonoBehaviour
         behaviorTreeRoot = null;
 
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.BossCountMinus(bossCount);
+            int coinDropAmount = UnityEngine.Random.Range(5, 16); // 10 +- 5
+            GameManager.Instance.SpawnCoins(transform.position, coinDropAmount);
+        }
 
         if (StageOwner != null)
             StageOwner.NotifyBossDied(this, bossCount);

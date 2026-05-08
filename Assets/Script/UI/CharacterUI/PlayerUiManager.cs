@@ -22,6 +22,7 @@ public class PlayerUiManager : MonoBehaviour
     private UIPlayerSkill skillGauge;
     private AmmoUpdate ammoUpdate;
     private UIReloadHUD reloadHUD;
+    private UIGoldHUD goldHUD;
     //private UIBulletIndicator bulletIndicator;
     private GameObject player;
     private bool ready;
@@ -41,6 +42,7 @@ public class PlayerUiManager : MonoBehaviour
         skillGauge = GetComponentInChildren<UIPlayerSkill>(true);
         ammoUpdate = GetComponentInChildren<AmmoUpdate>(true);
         reloadHUD = GetComponentInChildren<UIReloadHUD>(true);
+        goldHUD = GetComponentInChildren<UIGoldHUD>(true);
     }
 
     public void SetupData()
