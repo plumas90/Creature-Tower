@@ -6,6 +6,8 @@ using UnityEngine;
 public class ResultDNA : MonoBehaviour
 {
     private bool picked = false;
+    public Sprite resultdna;
+    public Sprite resultdna_red;
 
     private void Awake()
     {

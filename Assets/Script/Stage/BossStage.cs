@@ -30,7 +30,13 @@ public class BossStage : Stage
     [Header("Boss Entry Sequence")]
     [Min(0f)] public float bossNameShowDuration = 1.2f;
 
+    [Header("Boss Reward Rule")]
+    [SerializeField, Min(1)] private int transfusionMinFloor = 5;
+    [SerializeField, Range(0f, 1f)] private float transfusionSpawnChance = 0.1f;
+
     private int aliveBossCount;
+    private bool hasDefaultResultPosition;
+    private Vector3 defaultResultPosition;
 
     private void OnValidate()
     {
@@ -64,7 +70,12 @@ public class BossStage : Stage
         if (PlayerSpawnPointSprite != null)
             PlayerSpawnPointSprite.color = new Color(0f, 0f, 0f, 0f);
 
-        ResultSummon();
+        if (resultDNA != null)
+        {
+            defaultResultPosition = resultDNA.transform.position;
+            hasDefaultResultPosition = true;
+        }
+
     }
 
     public override Transform GetPlayerSpawnPoint()
@@ -76,6 +87,7 @@ public class BossStage : Stage
     {
         base.ReadyStage();
         aliveBossCount = 0;
+        ResultSummon();
 
         PrepareBossForRuntime();
         if (topDoor != null)
@@ -313,13 +325,34 @@ public class BossStage : Stage
         else
             Debug.LogWarning($"[BossStage] randomHealPoint is null on '{name}'.");
 
-        if (resultDNA != null)
-            resultDNA.Init();
-        else
-            Debug.LogWarning($"[BossStage] resultDNA is null on '{name}'.");
+        bool shouldShowTransfusion = ShouldShowTransfusionForFloor();
 
         if (bloodTransfusionDevice != null)
-            bloodTransfusionDevice.Init($"Stage-{roomNumber}", bloodTransfusionDevice.name);
+        {
+            bloodTransfusionDevice.gameObject.SetActive(shouldShowTransfusion);
+            if (shouldShowTransfusion)
+                bloodTransfusionDevice.Init($"Stage-{roomNumber}", bloodTransfusionDevice.name);
+        }
+
+        if (resultDNA != null)
+        {
+            if (!shouldShowTransfusion && bloodTransfusionDevice != null)
+                resultDNA.transform.position = bloodTransfusionDevice.transform.position;
+            else if (hasDefaultResultPosition)
+                resultDNA.transform.position = defaultResultPosition;
+            resultDNA.Init();
+        }
+        else
+            Debug.LogWarning($"[BossStage] resultDNA is null on '{name}'.");
+    }
+
+    private bool ShouldShowTransfusionForFloor()
+    {
+        int floor = Mathf.Max(1, roomNumber + 1);
+        if (floor < transfusionMinFloor)
+            return false;
+
+        return Random.value <= transfusionSpawnChance;
     }
 
     public override Vector2 GetRandomPositionInZone()

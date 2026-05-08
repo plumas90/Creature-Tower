@@ -1013,6 +1013,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd96da519dc42bb4eaf84074a568a108, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resultdna: {fileID: 97185941, guid: 342a9b50c799acc47ac7ba0fe7352dc4, type: 3}
+  resultdna_red: {fileID: 1504449013396123664, guid: a60bb1f0dbcf6a7458a8a6a376663f1d, type: 3}
 --- !u!1 &1749696701892508699
 GameObject:
   m_ObjectHideFlags: 0
@@ -1262,11 +1264,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomNumber: 0
+  botDoor: {fileID: 7941684589717858012}
+  topDoor: {fileID: 4287916623234919389}
   bossPrefab: {fileID: 3980267895294951188, guid: 29d46066c56302141b15b9575a6dbef6, type: 3}
   bossOBJ: {fileID: 0}
   BossBase: {fileID: 0}
-  botDoor: {fileID: 7941684589717858012}
-  topDoor: {fileID: 4287916623234919389}
   randomHealPoint: {fileID: 1514509361107389384}
   resultDNA: {fileID: 7489456576014209648}
   bloodTransfusionDevice: {fileID: 8472947032703073644}
@@ -1280,6 +1282,8 @@ MonoBehaviour:
   PlayerSpawnPointSprite: {fileID: 3930418963078441672}
   nxnZone: {fileID: 4128445994571125965}
   bossNameShowDuration: 1.2
+  transfusionMinFloor: 5
+  transfusionSpawnChance: 0.1
 --- !u!1 &2342228030646336285
 GameObject:
   m_ObjectHideFlags: 0
@@ -2704,6 +2708,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51e8b09e09dfd4948a536e51020d0e53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  costType: 0
+  baseMinCost: 5
+  baseMaxCost: 10
+  increasePerPurchase: 1
 --- !u!61 &2441164914421472102
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -5,14 +5,44 @@ using UnityEngine;
 // 다음 스테이지로 넘어가면 Stage.Init()에서 목록 캐시가 초기화된다.
 public class BloodTransfusionDevice : MonoBehaviour
 {
+    private enum TransfusionCostType
+    {
+        Percent,
+        Flat
+    }
+
+    [Header("Transfusion Cost")]
+    [SerializeField] private TransfusionCostType costType = TransfusionCostType.Percent;
+    [SerializeField] private int baseMinCost = 5;
+    [SerializeField] private int baseMaxCost = 10;
+    [SerializeField] private int increasePerPurchase = 1;
+
     private bool interactionLocked;
     private string cacheKey;
+    private int confirmedPurchaseCount;
+
+    private void OnValidate()
+    {
+        baseMinCost = Mathf.Max(1, baseMinCost);
+        increasePerPurchase = Mathf.Max(0, increasePerPurchase);
+
+        if (costType == TransfusionCostType.Percent)
+        {
+            baseMaxCost = Mathf.Clamp(baseMaxCost, baseMinCost, 100);
+        }
+        else
+        {
+            // 상수 타입은 항상 범위 폭 15 유지
+            baseMaxCost = baseMinCost + 15;
+        }
+    }
 
     public void Init(string stageCacheKey, string deviceId)
     {
         interactionLocked = false;
         gameObject.SetActive(true);
         cacheKey = $"{stageCacheKey}:{deviceId}";
+        confirmedPurchaseCount = 0;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -28,11 +58,22 @@ public class BloodTransfusionDevice : MonoBehaviour
             return;
 
         interactionLocked = true;
-        ResultManager.Instance.OpenTransfusionResult(playerStat.gameObject, cacheKey, OnTransfusionClosed);
+        ResultManager.Instance.OpenTransfusionResult(
+            playerStat.gameObject,
+            cacheKey,
+            costType == TransfusionCostType.Percent,
+            baseMinCost,
+            baseMaxCost,
+            increasePerPurchase,
+            confirmedPurchaseCount,
+            OnTransfusionClosed
+        );
     }
 
     private void OnTransfusionClosed(bool confirmed, int selectedCode)
     {
+        if (confirmed)
+            confirmedPurchaseCount++;
         interactionLocked = false;
     }
 }

@@ -32,6 +32,10 @@ public class NormalStage : Stage
     [Header("Optional Content")]
     [SerializeField] private GameObject shopRoot;
 
+    [Header("Choice Result Layout")]
+    [SerializeField] private BoxCollider2D battleZone;
+    [SerializeField] private float choiceResultSpacing = 2f;
+
     private int remainingMonsterCount;
     private bool monsterGateActive;
 
@@ -51,6 +55,7 @@ public class NormalStage : Stage
         base.ReadyStage();
         ConfigureOptionalContents();
         SetupMonsterGate();
+        LayoutChoiceResults();
 
         if (GameManager.Instance != null)
             GameManager.Instance.BossCountSet(0);
@@ -133,6 +138,44 @@ public class NormalStage : Stage
             CloseTopDoor();
         else
             OpenTopDoor();
+    }
+
+    private void LayoutChoiceResults()
+    {
+        Transform[] activeResults = CollectActiveChoiceResults();
+        if (activeResults.Length == 0)
+            return;
+
+        Vector2 center = battleZone != null ? (Vector2)battleZone.bounds.center : (Vector2)transform.position;
+        float spacing = Mathf.Max(0.1f, choiceResultSpacing);
+        float startOffset = -((activeResults.Length - 1) * 0.5f) * spacing;
+
+        for (int i = 0; i < activeResults.Length; i++)
+        {
+            Transform target = activeResults[i];
+            if (target == null)
+                continue;
+
+            float offsetX = startOffset + (i * spacing);
+            Vector3 pos = target.position;
+            target.position = new Vector3(center.x + offsetX, center.y, pos.z);
+        }
+    }
+
+    private Transform[] CollectActiveChoiceResults()
+    {
+        System.Collections.Generic.List<Transform> list = new System.Collections.Generic.List<Transform>(3);
+
+        if (randomHealPoint != null && randomHealPoint.gameObject.activeSelf)
+            list.Add(randomHealPoint.transform);
+
+        if (resultDNA != null && resultDNA.gameObject.activeSelf)
+            list.Add(resultDNA.transform);
+
+        if (bloodTransfusionDevice != null && bloodTransfusionDevice.gameObject.activeSelf)
+            list.Add(bloodTransfusionDevice.transform);
+
+        return list.ToArray();
     }
 
     private int ResolveRequiredMonsterCount()

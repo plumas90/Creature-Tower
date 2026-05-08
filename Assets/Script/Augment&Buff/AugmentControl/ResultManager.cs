@@ -59,11 +59,14 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
     [SerializeField] private Button transfusionCancelButton;
     [SerializeField] private GameObject transfusionCostRoot;
     [SerializeField] private TextMeshProUGUI transfusionCostText;
-    [SerializeField] [Range(0.01f, 0.9f)] private float transfusionHpCostPercent = 0.1f;
     [SerializeField] private Color transfusionSelectedColor = Color.white;
     [SerializeField] private Color transfusionUnselectedColor = new Color(0.65f, 0.65f, 0.65f, 1f);
     private readonly Dictionary<string, List<IAugment>> transfusionOptionCache = new Dictionary<string, List<IAugment>>();
     private string currentTransfusionCacheKey;
+    private bool currentTransfusionCostIsPercent;
+    private int currentTransfusionCostMin;
+    private int currentTransfusionCostMax;
+    private int currentTransfusionCostValue;
 
     public void OpenSpecialResult(GameObject playerObj)
     {
@@ -87,7 +90,15 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         SpecialResult();
     }
 
-    public void OpenTransfusionResult(GameObject playerObj, string cacheKey, Action<bool, int> onClosed)
+    public void OpenTransfusionResult(
+        GameObject playerObj,
+        string cacheKey,
+        bool usePercentCost,
+        int baseMinCost,
+        int baseMaxCost,
+        int increasePerPurchase,
+        int confirmedPurchaseCount,
+        Action<bool, int> onClosed)
     {
         if (playerObj == null || AugmentManager.Instance == null || MakeAugmentListManager.Instance == null)
             return;
@@ -104,6 +115,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         pendingChoiceSlot = null;
         transfusionCloseCallback = onClosed;
         currentTransfusionCacheKey = cacheKey;
+        BuildCurrentTransfusionCost(usePercentCost, baseMinCost, baseMaxCost, increasePerPurchase, confirmedPurchaseCount);
 
         if (!transfusionOptionCache.TryGetValue(cacheKey, out List<IAugment> options) || options == null || options.Count == 0)
         {
@@ -872,7 +884,8 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         if (transfusionCostText == null)
             return;
 
-        transfusionCostText.text = $"HP {Mathf.RoundToInt(transfusionHpCostPercent * 100f)}%";
+        string unit = currentTransfusionCostIsPercent ? "%" : "";
+        transfusionCostText.text = $"HP {currentTransfusionCostValue}{unit} ({currentTransfusionCostMin}~{currentTransfusionCostMax}{unit})";
     }
 
     private void UpdateTransfusionConfirmInteractable()
@@ -896,8 +909,48 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         if (playerStat == null)
             return 0f;
 
-        float maxHp = playerStat.HP != null ? playerStat.HP.total : 0f;
-        return Mathf.Max(1f, maxHp * transfusionHpCostPercent);
+        if (currentTransfusionCostIsPercent)
+        {
+            float maxHp = playerStat.HP != null ? playerStat.HP.total : 0f;
+            return Mathf.Max(1f, maxHp * (currentTransfusionCostValue / 100f));
+        }
+
+        return Mathf.Max(1f, currentTransfusionCostValue);
+    }
+
+    private void BuildCurrentTransfusionCost(
+        bool usePercentCost,
+        int baseMinCost,
+        int baseMaxCost,
+        int increasePerPurchase,
+        int confirmedPurchaseCount)
+    {
+        int minCost = Mathf.Max(1, baseMinCost);
+        int maxCost = Mathf.Max(minCost, baseMaxCost);
+        int increase = Mathf.Max(0, increasePerPurchase);
+        int purchaseCount = Mathf.Max(0, confirmedPurchaseCount);
+
+        minCost += increase * purchaseCount;
+        maxCost += increase * purchaseCount;
+
+        if (usePercentCost)
+        {
+            minCost = Mathf.Min(100, minCost);
+            maxCost = Mathf.Min(100, maxCost);
+        }
+        else
+        {
+            // 고정 코스트 타입은 항상 폭 15를 유지한다.
+            maxCost = minCost + 15;
+        }
+
+        if (maxCost < minCost)
+            maxCost = minCost;
+
+        currentTransfusionCostIsPercent = usePercentCost;
+        currentTransfusionCostMin = minCost;
+        currentTransfusionCostMax = maxCost;
+        currentTransfusionCostValue = Random.Range(currentTransfusionCostMin, currentTransfusionCostMax + 1);
     }
 
     private void EnsureTransfusionUiReferences()
