@@ -10,6 +10,8 @@ public class ResultDNA : MonoBehaviour
     public Sprite resultdna_red;
     public bool isRare = false;
 
+    private float pickupTime = 0f;
+
     private void Awake()
     {
         RegisterChildTriggerRelays();
@@ -25,6 +27,7 @@ public class ResultDNA : MonoBehaviour
     {
         picked = false;
         isRare = rare;
+        pickupTime = Time.time + 0.5f; // 생성 후 0.5초 대기
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null)
         {
@@ -36,6 +39,7 @@ public class ResultDNA : MonoBehaviour
     public void TryConsume(Collider2D collision)
     {
         if (picked) return;
+        if (Time.time < pickupTime) return; // 일정 시간 지나야 획득 가능
         if (collision == null) return;
 
         PlayerStatControl playerStat = collision.GetComponentInParent<PlayerStatControl>();

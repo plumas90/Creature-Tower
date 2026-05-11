@@ -338,7 +338,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 3
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -657,7 +657,7 @@ MonoBehaviour:
   topDoor: {fileID: 868274665}
   stageCase: 1
   randomHealPoint: {fileID: 868274664}
-  resultDNA: {fileID: 868274663}
+  resultBox: {fileID: 0}
   bloodTransfusionDevice: {fileID: 868274662}
   spawnPointStairs: {fileID: 868274661}
   PlayerSpawnPoint: {fileID: 868274660}
@@ -1758,17 +1758,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 51e8b09e09dfd4948a536e51020d0e53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &868274663 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7489456576014209648, guid: a422e6d24a47d6649b58f35747e43bd4, type: 3}
-  m_PrefabInstance: {fileID: 868274655}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd96da519dc42bb4eaf84074a568a108, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &868274664 stripped

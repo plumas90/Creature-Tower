@@ -1004,7 +1004,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4604621141263817660}
-  - component: {fileID: 2077791792472937071}
+  - component: {fileID: 7168318110548475631}
   m_Layer: 0
   m_Name: ResultBoxNeedFix
   m_TagString: Untagged
@@ -1026,9 +1026,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1117370176794888436}
+  - {fileID: 2977204180597891351}
   m_Father: {fileID: 4628675144166694547}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2077791792472937071
+--- !u!114 &7168318110548475631
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1037,7 +1038,162 @@ MonoBehaviour:
   m_GameObject: {fileID: 1937567199461604712}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd96da519dc42bb4eaf84074a568a108, type: 3}
+  m_Script: {fileID: 11500000, guid: c93e5cfd0f6c94540a61933512413a1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isRareBox: 0
+  forceDNA: 0
+  coinDropChance: 0.5
+  childDNA: {fileID: 7190044306311469453}
+  closedSprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
+  openedSprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
+  boxSpriteRenderer: {fileID: 9119934435644567662}
+  pushForce: 1
+--- !u!1 &2227345570752937068
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2977204180597891351}
+  - component: {fileID: 9119934435644567662}
+  - component: {fileID: 1961390355542956171}
+  - component: {fileID: 343104346959050351}
+  m_Layer: 0
+  m_Name: Box
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2977204180597891351
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2227345570752937068}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4604621141263817660}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &9119934435644567662
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2227345570752937068}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 100001
+  m_SortingLayer: 3
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!61 &1961390355542956171
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2227345570752937068}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
+--- !u!114 &343104346959050351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2227345570752937068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c2dd80d3fc91c548a151dde315b5c23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2294764079514729858
@@ -2723,13 +2879,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomNumber: 0
+  botDoor: {fileID: 2948946626963168413}
+  topDoor: {fileID: 4607652504058677959}
   bossPrefab: {fileID: 166239516524742241, guid: 7cd0e882c765a054b8d07942c2593c53, type: 3}
   bossOBJ: {fileID: 0}
   BossBase: {fileID: 0}
-  botDoor: {fileID: 2948946626963168413}
-  topDoor: {fileID: 4607652504058677959}
   randomHealPoint: {fileID: 4070102601822665472}
-  resultDNA: {fileID: 2077791792472937071}
+  resultBox: {fileID: 7168318110548475631}
   bloodTransfusionDevice: {fileID: 7339968557380599449}
   spawnPointStairs: {fileID: 6048375331534087763}
   PlayerSpawnPoint: {fileID: 5067962524054515542}
@@ -2741,6 +2897,8 @@ MonoBehaviour:
   PlayerSpawnPointSprite: {fileID: 5294734061124981463}
   nxnZone: {fileID: 8157079954696095855}
   bossNameShowDuration: 1.2
+  transfusionMinFloor: 5
+  transfusionSpawnChance: 0.1
 --- !u!1 &5276142369029153285
 GameObject:
   m_ObjectHideFlags: 0
@@ -3196,13 +3354,14 @@ GameObject:
   - component: {fileID: 1117370176794888436}
   - component: {fileID: 6073848172527403022}
   - component: {fileID: 8482361747216494459}
+  - component: {fileID: 2965508259032921108}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1117370176794888436
 Transform:
   m_ObjectHideFlags: 0
@@ -3259,8 +3418,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 100001
+  m_SortingLayer: 3
   m_SortingOrder: 3
   m_Sprite: {fileID: 97185941, guid: 342a9b50c799acc47ac7ba0fe7352dc4, type: 3}
   m_Color: {r: 0.40557134, g: 0.72213084, b: 0.9245283, a: 1}
@@ -3319,6 +3478,21 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1.6}
   m_EdgeRadius: 0
+--- !u!114 &2965508259032921108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7190044306311469453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd96da519dc42bb4eaf84074a568a108, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resultdna: {fileID: 97185941, guid: 342a9b50c799acc47ac7ba0fe7352dc4, type: 3}
+  resultdna_red: {fileID: 1504449013396123664, guid: a60bb1f0dbcf6a7458a8a6a376663f1d, type: 3}
+  isRare: 0
 --- !u!1 &7191673282043824927
 GameObject:
   m_ObjectHideFlags: 0
@@ -6621,6 +6795,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51e8b09e09dfd4948a536e51020d0e53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  costType: 0
+  baseMinCost: 5
+  baseMaxCost: 10
+  increasePerPurchase: 1
 --- !u!61 &3937715952114321818
 BoxCollider2D:
   m_ObjectHideFlags: 0
