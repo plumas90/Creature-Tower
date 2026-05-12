@@ -1954,6 +1954,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3734453321728820694, guid: 653baa6d90d249b43a731841b97a2d5f, type: 3}
+      propertyPath: coinPrefab
+      value: 
+      objectReference: {fileID: 176505947818178641, guid: c16c71ea01e8f9a4c9de080a9d6de6f9, type: 3}
+    - target: {fileID: 3734453321728820694, guid: 653baa6d90d249b43a731841b97a2d5f, type: 3}
       propertyPath: stageLevel1.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -1972,7 +1976,7 @@ PrefabInstance:
     - target: {fileID: 3734453321728820694, guid: 653baa6d90d249b43a731841b97a2d5f, type: 3}
       propertyPath: 'stageLevel1.Array.data[1]'
       value: 
-      objectReference: {fileID: 4321829367275256000, guid: ae47ea19820bcb34d997b2ae0d40b411, type: 3}
+      objectReference: {fileID: 176505947818178641, guid: c16c71ea01e8f9a4c9de080a9d6de6f9, type: 3}
     - target: {fileID: 3734453321728820694, guid: 653baa6d90d249b43a731841b97a2d5f, type: 3}
       propertyPath: 'stageLevel1.Array.data[2]'
       value: 

@@ -98,8 +98,9 @@ public class ResultBox : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            int coinAmount = Random.Range(3, 8); // 5 +- 2
-            GameManager.Instance.SpawnCoins(transform.position, coinAmount);
+            // 5 ± 2원 (3~7원) 드랍
+            int coinAmount = Random.Range(3, 8);
+            GameManager.Instance.SpawnCoinsForAmount(transform.position, coinAmount);
         }
     }
 }

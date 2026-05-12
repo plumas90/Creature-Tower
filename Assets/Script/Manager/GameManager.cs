@@ -318,19 +318,49 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// 개수 기반 코인 스폰 (하위 호환). 각 코인은 1원짜리.
+    /// </summary>
     public void SpawnCoins(Vector3 position, int amount)
     {
         if (coinPrefab == null || amount <= 0) return;
-        
+
         for (int i = 0; i < amount; i++)
         {
-            GameObject coin = Instantiate(coinPrefab, position, Quaternion.identity);
-            CoinItem coinItem = coin.GetComponent<CoinItem>();
-            if (coinItem != null)
-            {
-                coinItem.Init(1); // 각 코인은 1골드 가치
-            }
+            SpawnOneCoin(position, CoinItem.CoinType.Won1);
         }
+    }
+
+    /// <summary>
+    /// 총 금액을 10원 → 5원 → 1원 코인으로 분해해서 스폰한다.
+    /// 예) 23원 → 10원×2 + 1원×3
+    /// </summary>
+    public void SpawnCoinsForAmount(Vector3 position, int totalAmount)
+    {
+        if (coinPrefab == null || totalAmount <= 0) return;
+
+        int remaining = totalAmount;
+
+        // 10원짜리
+        int count10 = remaining / 10;
+        remaining  %= 10;
+        // 5원짜리
+        int count5  = remaining / 5;
+        remaining  %= 5;
+        // 1원짜리
+        int count1  = remaining;
+
+        for (int i = 0; i < count10; i++) SpawnOneCoin(position, CoinItem.CoinType.Won10);
+        for (int i = 0; i < count5;  i++) SpawnOneCoin(position, CoinItem.CoinType.Won5);
+        for (int i = 0; i < count1;  i++) SpawnOneCoin(position, CoinItem.CoinType.Won1);
+    }
+
+    private void SpawnOneCoin(Vector3 position, CoinItem.CoinType type)
+    {
+        GameObject coin = Instantiate(coinPrefab, position, Quaternion.identity);
+        CoinItem coinItem = coin.GetComponent<CoinItem>();
+        if (coinItem != null)
+            coinItem.Init(type);
     }
 
     public void NextLevel() 

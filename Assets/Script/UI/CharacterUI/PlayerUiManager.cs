@@ -63,6 +63,7 @@ public class PlayerUiManager : MonoBehaviour
         skillGauge?.Initialize();
         ammoUpdate?.Initialize();
         reloadHUD?.Initialize();
+        goldHUD?.Initialize();
         this.gameObject.SetActive(true);
         //�ʻ�ȭ
         //string spritePath = "Images/CharClass";
