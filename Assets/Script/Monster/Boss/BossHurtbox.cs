@@ -3,27 +3,27 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class BossHurtbox : MonoBehaviour
 {
-    [SerializeField] private BossBase ownerBoss;
+    [SerializeField] private CreatureBase ownerCreature;
 
     private void Awake()
     {
-        if (ownerBoss == null)
-            ownerBoss = GetComponentInParent<BossBase>();
+        if (ownerCreature == null)
+            ownerCreature = GetComponentInParent<CreatureBase>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (ownerBoss == null)
+        if (ownerCreature == null)
             return;
 
-        ownerBoss.HandleHurtboxTrigger(collision);
+        ownerCreature.HandleHurtboxTrigger(collision);
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (ownerBoss == null)
+        if (ownerCreature == null)
             return;
 
-        ownerBoss.HandleHurtboxTrigger(collision);
+        ownerCreature.HandleHurtboxTrigger(collision);
     }
 }
