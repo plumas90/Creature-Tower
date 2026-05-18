@@ -163,10 +163,6 @@ public class BossBase : CreatureBase
         if (GameManager.Instance != null)
         {
             GameManager.Instance.BossCountMinus(bossCount);
-            // 10 ± 5원 (5~15원) 드랍
-            int coinDropTotal = UnityEngine.Random.Range(5, 16);
-            Vector3 dropPos = transform.position + new Vector3(0f, 0.5f, 0f);
-            GameManager.Instance.SpawnCoinsForAmount(dropPos, coinDropTotal);
         }
 
         if (StageOwner != null)

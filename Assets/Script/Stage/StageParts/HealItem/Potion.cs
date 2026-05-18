@@ -20,6 +20,15 @@ public class Potion : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         RandomSetting();
     }
+    public void InitFixed(float percent)
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        _persent = percent;
+        if (percent >= 1f) spriteRenderer.sprite = OnehundredPersentHeal;
+        else if (percent >= 0.5f) spriteRenderer.sprite = FiveZeroPersentHeal;
+        else if (percent >= 0.25f) spriteRenderer.sprite = TwoFivePersentHeal;
+        else spriteRenderer.sprite = TenPerentHeal;
+    }
     public void RandomSetting()
     {
         int random = Random.Range(0, 100);

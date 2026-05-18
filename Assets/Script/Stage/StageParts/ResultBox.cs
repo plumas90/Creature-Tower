@@ -20,6 +20,8 @@ public class ResultBox : MonoBehaviour
 
     private bool isOpened = false;
 
+    public System.Action OnOpened;
+
     private void Awake()
     {
         if (boxSpriteRenderer != null && closedSprite != null)
@@ -49,6 +51,7 @@ public class ResultBox : MonoBehaviour
     private void OpenBox(PlayerStatControl player)
     {
         isOpened = true;
+        OnOpened?.Invoke();
 
         // Push player back slightly using Knockback coroutine
         Vector2 pushDir = (player.transform.position - transform.position).normalized;

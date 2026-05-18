@@ -32,4 +32,11 @@ public class ShopController : MonoBehaviour
             }
         }
     }
+
+    public System.Action OnInteracted;
+
+    public void NotifyItemPurchased(ShopItem item)
+    {
+        OnInteracted?.Invoke();
+    }
 }

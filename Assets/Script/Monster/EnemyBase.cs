@@ -109,11 +109,22 @@ public class EnemyBase : CreatureBase
         isDead = true;
         live = false;
 
-        // 코인 드랍 (5 ± 2원)
+        // 코인 드랍 (10% 확률)
         if (GameManager.Instance != null)
         {
-            int drop = UnityEngine.Random.Range(3, 8);
-            GameManager.Instance.SpawnCoinsForAmount(transform.position, drop);
+            if (UnityEngine.Random.value <= 0.1f) // 10% 확률로 코인 드랍 시도
+            {
+                float coinRoll = UnityEngine.Random.value * 100f; // 0 ~ 100
+                if (coinRoll <= 93f) // 93% 확률로 1원
+                {
+                    GameManager.Instance.SpawnCoinsForAmount(transform.position, 1);
+                }
+                else if (coinRoll <= 99f) // 6% 확률로 니켈 (5원)
+                {
+                    GameManager.Instance.SpawnCoinsForAmount(transform.position, 5);
+                }
+                // 나머지 1%는 0원이므로 드랍하지 않음
+            }
 
             // 플레이어 킬 이벤트
             if (GameManager.Instance.playerOBJ != null)

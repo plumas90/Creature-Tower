@@ -21,6 +21,8 @@ public class BloodTransfusionDevice : MonoBehaviour
     private string cacheKey;
     private int confirmedPurchaseCount;
 
+    public System.Action OnInteracted;
+
     private void OnValidate()
     {
         baseMinCost = Mathf.Max(1, baseMinCost);
@@ -58,6 +60,7 @@ public class BloodTransfusionDevice : MonoBehaviour
             return;
 
         interactionLocked = true;
+        OnInteracted?.Invoke();
         ResultManager.Instance.OpenTransfusionResult(
             playerStat.gameObject,
             cacheKey,

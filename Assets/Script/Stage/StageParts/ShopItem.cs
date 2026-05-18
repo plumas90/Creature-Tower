@@ -89,6 +89,13 @@ public class ShopItem : MonoBehaviour
         if (GameManager.Instance != null && GameManager.Instance.TrySpendGold(price))
         {
             isPurchased = true;
+
+            ShopController controller = GetComponentInParent<ShopController>();
+            if (controller != null)
+            {
+                controller.NotifyItemPurchased(this);
+            }
+
             ApplyEffect(playerStat);
             gameObject.SetActive(false); // 구매 후 사라짐
         }
