@@ -64,19 +64,21 @@ public class NormalStage : Stage
             Destroy(spawnedBalanceScale);
             spawnedBalanceScale = null;
         }
+
+        hasExecutedWaves = false;
     }
 
-    // 외부 몬스터 웨이브 소환 그룹이 총 스폰 마릿수를 스테이지에 등록하는 메서드
     public void SetRequiredMonsterCount(int count)
     {
         remainingMonsterCount = count;
         monsterGateActive = count > 0;
         
+        Debug.Log($"[NormalStage] SetRequiredMonsterCount: count={count}, remainingMonsterCount={remainingMonsterCount}, monsterGateActive={monsterGateActive}");
+
         if (monsterGateActive)
         {
             CloseTopDoor();
-            if (botDoor != null)
-                CloseBotDoor();
+            // 입장 전이므로 botDoor(입구)는 닫지 않음. InCheckClear에서 닫힙니다.
         }
         else
         {
@@ -106,12 +108,17 @@ public class NormalStage : Stage
     [SerializeField] private GameObject balanceScalePrefab;
     [SerializeField] private GameObject potionPrefab;
     [SerializeField] private int maxRewardOverride = 0; // 0이면 Act 제한 적용, 1~4면 고정 제한
-    [SerializeField] private float balanceScaleGimmickChance = 0.5f; // 저울 양자택일방 스폰 확률
+    [SerializeField] private float balanceScaleGimmickChance = 0f; // 저울 양자택일방 스폰 확률 (우선 비활성화) // 저울 양자택일방 스폰 확률
+
+    [Header("Monster Wave Spawner")]
+    [SerializeField] private MonsterGroupSO monsterGroup;
+    [SerializeField] private List<MonsterGroupSO> availableMonsterGroups = new List<MonsterGroupSO>();
 
     private int remainingMonsterCount;
     private bool monsterGateActive;
     private List<GameObject> spawnedRewards = new List<GameObject>();
     private GameObject spawnedBalanceScale = null;
+    private bool hasExecutedWaves = false;
 
     protected override void Awake()
     {
@@ -128,6 +135,8 @@ public class NormalStage : Stage
         base.ReadyStage();
 
         // 물음표(?) 방이고 전투가 계획된 방인 경우, 20% 확률로 몬스터 전투 없이 바로 보상을 스폰하는 안전 방(ChoiceResult)으로 전환
+        // 물음표(?) 방 20% 확률 전투 스킵 기능 우선 비활성화 (전투 및 일반 보상 테스트를 원활하게 수행하기 위함)
+        /*
         if (roomTheme == RoomTheme.Mystery && stageCase == NormalStageCase.MonsterWithReward)
         {
             if (Random.value <= 0.2f)
@@ -136,6 +145,7 @@ public class NormalStage : Stage
                 Debug.Log("[NormalStage] ? 방 20% 보너스 성공! 전투가 없고 바로 보상을 주는 안전 선택방으로 변경되었습니다.");
             }
         }
+        */
 
         SetupMonsterGate();
 
@@ -144,30 +154,70 @@ public class NormalStage : Stage
         {
             ResultSummon();
         }
+        else
+        {
+            PrepareMonsterWaves();
+        }
 
         if (GameManager.Instance != null)
             GameManager.Instance.BossCountSet(0);
+
+        // 씬에 미리 배치되어 있는 일반 몬스터가 있다면 자동 감지 및 등록
+        EnemyBase[] prePlacedEnemies = GetComponentsInChildren<EnemyBase>(true);
+        if (prePlacedEnemies != null && prePlacedEnemies.Length > 0)
+        {
+            int prePlacedCount = 0;
+            foreach (var enemy in prePlacedEnemies)
+            {
+                if (enemy.ownerStage == null)
+                {
+                    enemy.ownerStage = this;
+                    prePlacedCount++;
+                }
+            }
+            if (prePlacedCount > 0)
+            {
+                Debug.Log($"[NormalStage] 씬에 미리 배치된 몬스터 {prePlacedCount}마리를 감지하여 등록했습니다.");
+                int currentRequired = remainingMonsterCount > 0 ? remainingMonsterCount : 0;
+                SetRequiredMonsterCount(currentRequired + prePlacedCount);
+            }
+        }
     }
 
     public override void InCheckClear(GameObject player)
     {
         base.InCheckClear(player);
 
+        if (hasExecutedWaves)
+            return;
+        hasExecutedWaves = true;
+
         if (monsterGateActive && botDoor != null)
             CloseBotDoor();
+
+        if (stageCase != NormalStageCase.ChoiceResult)
+        {
+            ExecuteMonsterWaves();
+        }
     }
 
     public void NotifyNormalMonsterDied(int count = 1)
     {
         if (!monsterGateActive)
+        {
+            Debug.LogWarning($"[NormalStage] NotifyNormalMonsterDied 호출됨. 하지만 monsterGateActive가 false입니다. count={count}");
             return;
+        }
 
         if (count <= 0)
             count = 1;
 
         remainingMonsterCount = Mathf.Max(0, remainingMonsterCount - count);
+        Debug.Log($"[NormalStage] NotifyNormalMonsterDied: count={count}, remainingMonsterCount={remainingMonsterCount}");
+
         if (remainingMonsterCount == 0)
         {
+            Debug.Log("[NormalStage] 모든 몬스터 처치 완료! 문 개방 및 보상 생성 준비");
             OpenTopDoor();
             if (botDoor != null)
                 OpenBotDoor();
@@ -192,6 +242,7 @@ public class NormalStage : Stage
 
     private void SpawnUnifiedResults()
     {
+        Debug.Log($"[NormalStage] SpawnUnifiedResults() 실행됨. roomTheme={roomTheme}, stageCase={stageCase}");
         // 이전 소환 오브젝트 정리
         foreach (var obj in spawnedRewards)
         {
@@ -275,7 +326,10 @@ public class NormalStage : Stage
 
         // 4. 기믹 선택 (저울 양자택일 vs 연쇄 획득)
         Vector2 center = battleZone != null ? (Vector2)battleZone.bounds.center : (Vector2)transform.position;
-        bool doBalanceScale = allowBalanceScale && chosenTypes.Count >= 2 && Random.value <= balanceScaleGimmickChance && balanceScalePrefab != null;
+        // bool doBalanceScale = allowBalanceScale && chosenTypes.Count >= 2 && Random.value <= balanceScaleGimmickChance && balanceScalePrefab != null;
+        
+        // 보상선택방(천칭) 기능 준비 전까지 완전히 등장하지 않도록 강제 비활성화
+        bool doBalanceScale = false; 
 
         if (doBalanceScale)
         {
@@ -417,6 +471,7 @@ public class NormalStage : Stage
                     spawned = Instantiate(randomBoxPrefab, transform);
                     ConfigureResultBox(spawned, 0.5f, false);
                 }
+                else Debug.LogError("[NormalStage] randomBoxPrefab이 할당되지 않았습니다!");
                 break;
             case RewardType.CoinBox:
                 if (coinBoxPrefab != null)
@@ -424,6 +479,7 @@ public class NormalStage : Stage
                     spawned = Instantiate(coinBoxPrefab, transform);
                     ConfigureResultBox(spawned, 1.0f, false);
                 }
+                else Debug.LogError("[NormalStage] coinBoxPrefab이 할당되지 않았습니다!");
                 break;
             case RewardType.AugmentBox:
                 if (augmentBoxPrefab != null)
@@ -431,6 +487,7 @@ public class NormalStage : Stage
                     spawned = Instantiate(augmentBoxPrefab, transform);
                     ConfigureResultBox(spawned, 0f, true);
                 }
+                else Debug.LogError("[NormalStage] augmentBoxPrefab이 할당되지 않았습니다!");
                 break;
             case RewardType.Shop:
                 if (shopPrefab != null)
@@ -439,6 +496,7 @@ public class NormalStage : Stage
                     ShopController shop = spawned.GetComponent<ShopController>();
                     if (shop != null) shop.InitShop();
                 }
+                else Debug.LogError("[NormalStage] shopPrefab이 할당되지 않았습니다!");
                 break;
             case RewardType.Transfuser:
                 if (bloodTransfusionPrefab != null)
@@ -447,6 +505,7 @@ public class NormalStage : Stage
                     BloodTransfusionDevice bt = spawned.GetComponent<BloodTransfusionDevice>();
                     if (bt != null) bt.Init($"Stage-{roomNumber}", bt.name);
                 }
+                else Debug.LogError("[NormalStage] bloodTransfusionPrefab이 할당되지 않았습니다!");
                 break;
             case RewardType.Potion:
                 if (potionPrefab != null)
@@ -458,6 +517,7 @@ public class NormalStage : Stage
                         pot.InitFixed(0.5f); // 항상 50% 포션
                     }
                 }
+                else Debug.LogError("[NormalStage] potionPrefab이 할당되지 않았습니다!");
                 break;
         }
 
@@ -515,7 +575,99 @@ public class NormalStage : Stage
         // 기본적으로는 외부 스폰 시스템이 SetRequiredMonsterCount를 호출하여 채워주기 전까지 대기 상태
         monsterGateActive = true;
         CloseTopDoor();
-        if (botDoor != null)
-            CloseBotDoor();
+        // 입장 전이므로 botDoor(입구)는 닫지 않음. InCheckClear에서 닫힙니다.
+    }
+
+    private int GetCurrentFloor()
+    {
+        return Mathf.Abs(roomNumber) + 1;
+    }
+
+    private void PrepareMonsterWaves()
+    {
+        if (monsterGroup == null && availableMonsterGroups != null && availableMonsterGroups.Count > 0)
+        {
+            int currentFloor = GetCurrentFloor();
+            List<MonsterGroupSO> matchingGroups = new List<MonsterGroupSO>();
+            
+            foreach (var group in availableMonsterGroups)
+            {
+                if (group != null && currentFloor >= group.targetFloorMin && currentFloor <= group.targetFloorMax)
+                {
+                    matchingGroups.Add(group);
+                }
+            }
+
+            if (matchingGroups.Count > 0)
+            {
+                monsterGroup = matchingGroups[Random.Range(0, matchingGroups.Count)];
+                Debug.Log($"[NormalStage] 현재 {currentFloor}층에 적합한 몬스터 그룹 '{monsterGroup.groupName}'을(를) 자동 선택했습니다.");
+            }
+        }
+
+        if (monsterGroup == null)
+        {
+            Debug.LogWarning("[NormalStage] monsterGroup이 설정되지 않아 스폰을 건너뜁니다.");
+            SetRequiredMonsterCount(0);
+            return;
+        }
+
+        int totalMonsters = 0;
+        foreach (var wave in monsterGroup.waves)
+        {
+            if (wave != null && wave.spawnList != null)
+            {
+                totalMonsters += wave.spawnList.Count;
+            }
+        }
+
+        SetRequiredMonsterCount(totalMonsters);
+    }
+
+    private void ExecuteMonsterWaves()
+    {
+        if (remainingMonsterCount > 0)
+        {
+            StartCoroutine(SpawnWavesCoroutine());
+        }
+    }
+
+    private System.Collections.IEnumerator SpawnWavesCoroutine()
+    {
+        if (monsterGroup == null) yield break;
+
+        Bounds bounds = battleZone != null ? battleZone.bounds : new Bounds(transform.position, new Vector3(10, 10, 0));
+
+        for (int waveIndex = 0; waveIndex < monsterGroup.waves.Count; waveIndex++)
+        {
+            var wave = monsterGroup.waves[waveIndex];
+            if (wave == null) continue;
+
+            if (wave.delayBeforeWave > 0f)
+            {
+                yield return new WaitForSeconds(wave.delayBeforeWave);
+            }
+
+            if (wave.spawnList != null)
+            {
+                foreach (var spawnData in wave.spawnList)
+                {
+                    if (spawnData == null || spawnData.monsterPrefab == null) continue;
+
+                    // nxn zone (battleZone) 내에서 무작위 위치 계산
+                    float rx = Random.Range(bounds.min.x + 1f, bounds.max.x - 1f);
+                    float ry = Random.Range(bounds.min.y + 1f, bounds.max.y - 1f);
+                    Vector3 spawnPos = new Vector3(rx, ry, transform.position.z);
+
+                    GameObject monsterObj = Instantiate(spawnData.monsterPrefab, spawnPos, Quaternion.identity, transform);
+                    
+                    EnemyBase enemy = monsterObj.GetComponent<EnemyBase>();
+                    if (enemy != null)
+                    {
+                        enemy.ownerStage = this;
+                    }
+                }
+            }
+        }
     }
 }

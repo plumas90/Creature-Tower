@@ -62,6 +62,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
     [SerializeField] private Color transfusionSelectedColor = Color.white;
     [SerializeField] private Color transfusionUnselectedColor = new Color(0.65f, 0.65f, 0.65f, 1f);
     private readonly Dictionary<string, List<IAugment>> transfusionOptionCache = new Dictionary<string, List<IAugment>>();
+    private readonly Dictionary<string, int> transfusionCostCache = new Dictionary<string, int>();
     private string currentTransfusionCacheKey;
     private bool currentTransfusionCostIsPercent;
     private int currentTransfusionCostMin;
@@ -894,7 +895,10 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
 
         // 결제(확정) 완료 시에는 같은 장치라도 다음 진입에서 새 목록을 뽑는다.
         if (confirmed && !string.IsNullOrEmpty(cacheKey))
+        {
             transfusionOptionCache.Remove(cacheKey);
+            transfusionCostCache.Remove(cacheKey);
+        }
 
         UnlockPlayerControls();
         callback?.Invoke(confirmed, selectedCode);
@@ -922,7 +926,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
             return;
 
         string unit = currentTransfusionCostIsPercent ? "%" : "";
-        transfusionCostText.text = $"HP {currentTransfusionCostValue}{unit} ({currentTransfusionCostMin}~{currentTransfusionCostMax}{unit})";
+        transfusionCostText.text = $"HP {currentTransfusionCostValue}{unit}";
     }
 
     private void UpdateTransfusionConfirmInteractable()
@@ -987,7 +991,19 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         currentTransfusionCostIsPercent = usePercentCost;
         currentTransfusionCostMin = minCost;
         currentTransfusionCostMax = maxCost;
-        currentTransfusionCostValue = Random.Range(currentTransfusionCostMin, currentTransfusionCostMax + 1);
+
+        if (!string.IsNullOrEmpty(currentTransfusionCacheKey) && transfusionCostCache.TryGetValue(currentTransfusionCacheKey, out int cachedCost))
+        {
+            currentTransfusionCostValue = cachedCost;
+        }
+        else
+        {
+            currentTransfusionCostValue = Random.Range(currentTransfusionCostMin, currentTransfusionCostMax + 1);
+            if (!string.IsNullOrEmpty(currentTransfusionCacheKey))
+            {
+                transfusionCostCache[currentTransfusionCacheKey] = currentTransfusionCostValue;
+            }
+        }
     }
 
     private void EnsureTransfusionUiReferences()

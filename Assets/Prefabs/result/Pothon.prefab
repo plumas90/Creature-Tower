@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 3607927763241884156}
   - component: {fileID: 3735554007642282835}
   m_Layer: 0
-  m_Name: RandomHealPoint
+  m_Name: Pothon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

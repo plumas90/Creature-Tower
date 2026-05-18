@@ -212,7 +212,8 @@ public abstract class CreatureBase : MonoBehaviour
 
         if (isDead || !live || invincibility)
         {
-            if (!bullet.Penetrate) bullet.Destroy();
+            // if (!bullet.Penetrate) bullet.Destroy();
+            bullet.Destroy();
             return;
         }
 
@@ -227,7 +228,7 @@ public abstract class CreatureBase : MonoBehaviour
                 OnCreatureDie();
         }
 
-        if (!bullet.Penetrate)
+        // if (!bullet.Penetrate)
             bullet.Destroy();
     }
 

@@ -9,12 +9,7 @@ using UnityEngine;
 /// </summary>
 public class EnemyBase : CreatureBase
 {
-    // ──────────────────── 접촉 데미지 게이트 ────────────────────
-    [Header("Contact Damage Gate")]
-    [SerializeField] private float contactHitInvincibilityDuration = 1.0f;
-    [SerializeField] private float contactHitTickInterval = 1.0f;
-    private readonly System.Collections.Generic.Dictionary<int, float> nextContactTickByAttacker
-        = new System.Collections.Generic.Dictionary<int, float>();
+    // 접촉 데미지 무적/쿨타임은 PlayerStatControl.TryApplyContactDamage() 에서 일원화 관리
 
     // ──────────────────── 스테이지 연결 ────────────────────
     /// <summary>이 몬스터가 속한 NormalStage. 사망 시 카운트 차감에 사용.</summary>
@@ -32,6 +27,18 @@ public class EnemyBase : CreatureBase
     protected virtual void Start()
     {
         ResolvePlayer();
+
+        // 프리팹이나 인스펙터에 MainSO가 할당되어 있다면 자동 초기화
+        if (MainSO != null)
+        {
+            StatSet();
+        }
+        else
+        {
+            // SO가 없어도 일단 죽을 수는 있도록 임시 상태 부여 (문 열림 테스트용)
+            isDead = false;
+            StartCoroutine(SpawnDelayRoutine());
+        }
     }
 
     protected virtual void Update()
@@ -63,14 +70,37 @@ public class EnemyBase : CreatureBase
         curHp = MainSO.hp;
         speed = MainSO.speed;
 
-        live = true;
+        // 임시로 무적 및 이동 불가 상태
+        live = false;
         isDead = false;
-        invincibility = false;
-
-        nextContactTickByAttacker.Clear();
+        invincibility = true;
 
         ResolvePlayer();
         OnStatSetDone();
+
+        // 생성 연출: 1초 대기 후 활성화
+        StartCoroutine(SpawnDelayRoutine());
+    }
+
+    private IEnumerator SpawnDelayRoutine()
+    {
+        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var r in renderers)
+        {
+            if (r != null) r.color = new Color(r.color.r, r.color.g, r.color.b, 0.5f);
+        }
+
+        yield return new WaitForSeconds(1.0f);
+
+        if (isDead) yield break;
+
+        live = true;
+        invincibility = false;
+
+        foreach (var r in renderers)
+        {
+            if (r != null) r.color = new Color(r.color.r, r.color.g, r.color.b, 1f);
+        }
     }
 
     /// <summary>StatSet 완료 직후 파생 클래스 훅.</summary>
@@ -109,6 +139,8 @@ public class EnemyBase : CreatureBase
         isDead = true;
         live = false;
 
+        Debug.Log($"[EnemyBase] Die() 실행됨: name={name}, ownerStage={(ownerStage != null ? ownerStage.name : "null")}");
+
         // 코인 드랍 (10% 확률)
         if (GameManager.Instance != null)
         {
@@ -123,7 +155,10 @@ public class EnemyBase : CreatureBase
                 {
                     GameManager.Instance.SpawnCoinsForAmount(transform.position, 5);
                 }
-                // 나머지 1%는 0원이므로 드랍하지 않음
+                else // 1% 확률로 10원
+                {
+                    GameManager.Instance.SpawnCoinsForAmount(transform.position, 10);
+                }
             }
 
             // 플레이어 킬 이벤트

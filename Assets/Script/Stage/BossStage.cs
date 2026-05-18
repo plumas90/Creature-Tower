@@ -213,6 +213,12 @@ public class BossStage : Stage
 
         player.transform.position = PlayerStartPosition.position;
 
+        MainCamera mc = Camera.main != null ? Camera.main.GetComponent<MainCamera>() : null;
+        if (mc != null)
+        {
+            mc.FocusOnPlayerInstant();
+        }
+
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
@@ -254,6 +260,13 @@ public class BossStage : Stage
 
         boss.StatSet();
         RegisterBossSpawnCount(boss.bossCount);
+
+        // 보스 인트로 연출 카메라 추적 및 플레이어 조작 차단
+        MainCamera mc = Camera.main != null ? Camera.main.GetComponent<MainCamera>() : null;
+        if (mc != null && boss.IntroTime > 0f)
+        {
+            mc.StartBossIntroTracking(boss.gameObject, boss.IntroTime);
+        }
 
         Debug.Log($"[BossStage] Boss battle started on '{name}' => {boss.name}");
     }

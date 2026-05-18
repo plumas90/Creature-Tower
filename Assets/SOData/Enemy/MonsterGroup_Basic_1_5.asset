@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0bf542d786f89445ad20c45e0dfb365, type: 3}
+  m_Name: MonsterGroup_Basic_1_5
+  m_EditorClassIdentifier: 
+  groupName: Floors 1-5 Normal Basic Group (3 Melee, 2 Ranged)
+  targetFloorMin: 1
+  targetFloorMax: 5
+  waves:
+  - waveName: Floor 1-5 Wave (3 Melee, 2 Ranged)
+    spawnList:
+    - monsterPrefab: {fileID: 6646246831167701657, guid: 122dd90bf29d6e940b132afdbe66e900, type: 3}
+      spawnOffset: {x: -2.5, y: -1}
+    - monsterPrefab: {fileID: 6646246831167701657, guid: 122dd90bf29d6e940b132afdbe66e900, type: 3}
+      spawnOffset: {x: 2.5, y: -1}
+    - monsterPrefab: {fileID: 6646246831167701657, guid: 122dd90bf29d6e940b132afdbe66e900, type: 3}
+      spawnOffset: {x: 0, y: 0}
+    - monsterPrefab: {fileID: 6964553681987251415, guid: 795de3cf1cdb3924aab041b945179cda, type: 3}
+      spawnOffset: {x: -3.5, y: 2}
+    - monsterPrefab: {fileID: 6964553681987251415, guid: 795de3cf1cdb3924aab041b945179cda, type: 3}
+      spawnOffset: {x: 3.5, y: 2}
+    delayBeforeWave: 1

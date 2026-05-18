@@ -554,6 +554,13 @@ public class GameManager : MonoBehaviour
         CurrentStage.ObjActiveTrue();
         CurrentStage.ReadyStage();
         playerOBJ.transform.position = playerSpawnPoint.position;
+        
+        MainCamera mc = Camera.main != null ? Camera.main.GetComponent<MainCamera>() : null;
+        if (mc != null)
+        {
+            mc.FocusOnPlayerInstant();
+        }
+
         OnStageStartEvent?.Invoke();
     }
 

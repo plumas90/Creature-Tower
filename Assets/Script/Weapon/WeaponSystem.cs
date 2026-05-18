@@ -25,15 +25,15 @@ public class WeaponSystem : MonoBehaviour
 
     public bool fire;
     public bool water;
-    public bool ice;
+    // public bool ice;
     public bool burn;
-    public bool gravity;
-    public bool Penetrate;
+    // public bool gravity;
+    // public bool Penetrate;
 
     public bool pivotSet;
     public bool humanAttackintelligentmissile;
-    public bool canresurrection;
-    public bool sniperAtkBuff;
+    // public bool canresurrection;
+    // public bool sniperAtkBuff;
 
     // �߰�
     public int bulletNum;
@@ -128,9 +128,7 @@ public class WeaponSystem : MonoBehaviour
         fire = false; // �� ����� üũ
         water = false; // �� ����� üũ
         //ice = false; // ���� ����� üũ = ���ý��� ���� ���� �ʿ�
-        burn = false;  // ȭ�� üũ 
-        gravity = false; // �߷� ��� üũ
-        Penetrate = false; //  ���� üũ
+        burn = false;  // ȭ üũ \n        // gravity = false; // ߷  üũ\n        // Penetrate = false; //   üũ //  ���� üũ
         pivotSet = false; // �ǹ����� 
         //canresurrection = false; // ��Ȱ üũ ��Ƽ x
         //sniperAtkBuff = false; // ���� üũ ��Ƽ x
@@ -254,12 +252,7 @@ public class WeaponSystem : MonoBehaviour
         //_object.GetComponent<SpriteRenderer>().sprite = _controller.playerStatHandler.BulletSprite;
         _bullet.fire = fire;
         _bullet.water = water;
-        _bullet.ice = ice;
-        _bullet.burn = burn;
-        _bullet.gravity = gravity;
-        _bullet.Penetrate = Penetrate;
-        _bullet.canresurrection = canresurrection;
-        _bullet.sniperAtkBuff = sniperAtkBuff;
+        // _bullet.ice = ice;\n        _bullet.burn = burn;\n        // _bullet.gravity = gravity;\n        // _bullet.Penetrate = Penetrate;\n        // _bullet.canresurrection = canresurrection;\n        // _bullet.sniperAtkBuff = sniperAtkBuff;
         _bullet.canAngle = canAngle;
         _object.GetComponent<Bullet>().Init();
         if (humanAttackintelligentmissile)
@@ -326,12 +319,7 @@ public class WeaponSystem : MonoBehaviour
             _object.GetComponent<SpriteRenderer>().sprite = _controller.playerStatHandler.BulletSprite;
             _bullet.fire = fire;
             _bullet.water = water;
-            _bullet.ice = ice;
-            _bullet.burn = burn;
-            _bullet.gravity = gravity;
-            _bullet.Penetrate = Penetrate;
-            _bullet.canresurrection = canresurrection;
-            _bullet.sniperAtkBuff = sniperAtkBuff;
+            // _bullet.ice = ice;\n            _bullet.burn = burn;\n            // _bullet.gravity = gravity;\n            // _bullet.Penetrate = Penetrate;\n            // _bullet.canresurrection = canresurrection;\n            // _bullet.sniperAtkBuff = sniperAtkBuff;
             _bullet.canAngle = canAngle;
             _object.GetComponent<Bullet>().Init();
             if (humanAttackintelligentmissile)

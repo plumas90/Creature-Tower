@@ -25,6 +25,14 @@ public class TestGameManager : MonoBehaviour
     [Header("캐릭터 선택 UI")]
     public GameObject characterSelectUI;
 
+    [Header("물음표(?) 방 및 몬스터 그룹 테스트 설정")]
+    [Tooltip("물음표(?) 방에 입장한 것으로 가정하여 테스트할지 여부")]
+    public bool simulateMysteryRoom = true;
+    [Tooltip("물음표(?) 방 20% 확률 보상 스킵(즉시 보상 스폰)을 100% 강제 적용할지 여부")]
+    public bool forceMysteryRoomRewardSkip = false;
+    [Tooltip("테스트 층 번호 (1~5층 몬스터 소환을 위해 -2(3층) 등으로 설정)")]
+    public int testRoomNumber = -2;
+
     private void Start()
     {
         // 씬에 있던 기본 플레이어 비활성화 (선택 후 교체)
@@ -91,8 +99,27 @@ public class TestGameManager : MonoBehaviour
         // 씬에 GameManager 오브젝트가 반드시 존재해야 한다.
         if (stage != null)
         {
-            if (stage is BossStage bossStage)
+            if (stage is NormalStage normalStage)
+            {
+                if (simulateMysteryRoom)
+                {
+                    normalStage.InitStage(testRoomNumber, NormalStage.NormalStageCase.MonsterWithReward, NormalStage.RoomTheme.Mystery);
+                    if (forceMysteryRoomRewardSkip)
+                    {
+                        normalStage.SetStageCase(NormalStage.NormalStageCase.ChoiceResult);
+                        Debug.Log("[TestGameManager] 물음표 방 20% 보상 스킵 테스트 강제 성공 설정!");
+                    }
+                }
+                else
+                {
+                    normalStage.roomNumber = testRoomNumber;
+                }
+            }
+            else if (stage is BossStage bossStage)
+            {
                 bossStage.PrepareBossForRuntime();
+            }
+
             stage.ObjActiveTrue();
             stage.ReadyStage();
         }
@@ -127,7 +154,13 @@ public class TestGameManager : MonoBehaviour
             }
 
             GameObject hudRoot = null;
-            GameObject hudPrefab = Resources.Load<GameObject>("Prefabs/PlayerHUD/PlayerHUD");
+            GameObject hudPrefab = null;
+#if UNITY_EDITOR
+            hudPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/PlayerHUD/PlayerHUD.prefab");
+#endif
+            if (hudPrefab == null)
+                hudPrefab = Resources.Load<GameObject>("Prefabs/PlayerHUD/PlayerHUD");
+
             if (hudPrefab != null)
             {
                 hudRoot = Instantiate(hudPrefab, canvas.transform);

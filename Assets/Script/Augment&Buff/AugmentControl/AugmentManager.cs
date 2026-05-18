@@ -493,7 +493,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     }
     private void A216()//아이스
     {
-        playerWeapon.ice = true;
+        // playerWeapon.ice = true;
     }
     private void A217()//용기의 깃발 범위내 이속 공속증가
     {
@@ -501,7 +501,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     }
     private void A218()//과질량 장치
     {
-        playerWeapon.gravity = true;
+        // playerWeapon.gravity = true;
     }
     private void A219() //고장내기mk2 1,2,3 공용 증강 이기에 좀 남다른 코드임 30
     {
@@ -640,7 +640,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@스나이퍼 2티어
     private void A1201()//관통탄
     {
-        playerWeapon.Penetrate = true;
+        // playerWeapon.Penetrate = true;
         playerstatHandler.AmmoMax.added -= playerstatHandler.AmmoMax.total - 1;
         playerstatHandler.ReloadCoolTime.coefficient *= 0.5f;
         playerstatHandler.ATK.added += 5f;
@@ -691,11 +691,11 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@스나이퍼 3티어
     private void A1301()//고급지원가 
     {
-        playerWeapon.sniperAtkBuff = true;
+        // playerWeapon.sniperAtkBuff = true;
     }
     private void A1302()//리바이브샷 스테이지당 한번 아군 부활시키기
     {
-        playerWeapon.canresurrection = true;
+        // playerWeapon.canresurrection = true;
         player.AddComponent<A1302>();
     }
     private void A1303()// 내용 이해 못함 나중에 제목보고 다시 체크 할것

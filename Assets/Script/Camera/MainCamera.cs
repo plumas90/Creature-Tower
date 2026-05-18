@@ -49,36 +49,100 @@ public class MainCamera : MonoBehaviour
     }
 
 
-    //���� ī�޶� �� , �� , ��2 , Ÿ�ٸ� �ٲ�
+    public void FocusOnPlayerInstant()
+    {
+        if (Target == null || (GameManager.Instance != null && Target != GameManager.Instance.playerOBJ))
+        {
+            SetInitialTarget();
+        }
+
+        if (Target != null)
+        {
+            transform.position = new Vector3(
+                Target.transform.position.x + offsetX,
+                Target.transform.position.y + offsetY,
+                offsetZ
+            );
+        }
+    }
+
+    public void FocusOnTargetInstant(GameObject customTarget)
+    {
+        if (customTarget != null)
+        {
+            transform.position = new Vector3(
+                customTarget.transform.position.x + offsetX,
+                customTarget.transform.position.y + offsetY,
+                offsetZ
+            );
+        }
+    }
+
+    public void StartBossIntroTracking(GameObject bossObj, float introDuration)
+    {
+        StartCoroutine(CoBossIntroSequence(bossObj, introDuration));
+    }
+
+    private IEnumerator CoBossIntroSequence(GameObject bossObj, float introDuration)
+    {
+        // 1. 플레이어 입력 비활성화
+        PlayerInputController playerInput = null;
+        if (GameManager.Instance != null && GameManager.Instance.playerOBJ != null)
+        {
+            playerInput = GameManager.Instance.playerOBJ.GetComponent<PlayerInputController>();
+            if (playerInput != null)
+            {
+                playerInput.InputOff();
+            }
+        }
+
+        // 2. 카메라 타겟을 보스로 임시 변경 및 즉시 이동
+        GameObject originalTarget = Target;
+        Target = bossObj;
+        FocusOnTargetInstant(bossObj);
+
+        // 3. 인트로 타임 대기
+        yield return new WaitForSeconds(introDuration);
+
+        // 4. 카메라 타겟 원상 복구 및 플레이어 입력 재활성화
+        Target = originalTarget;
+        if (playerInput != null)
+        {
+            playerInput.InputOn();
+        }
+        FocusOnPlayerInstant();
+    }
+
+    // ī޶  ,  , 2 , Ÿٸ ٲ
 
     /*public void ChangeTarget()
     {
-        var playerInfoDictionary = GameManager.Instance.playerInfoDictionary; //���ӸŴ������� �÷��̾� ���� ��ųʸ� �޾ƿ�
+        var playerInfoDictionary = GameManager.Instance.playerInfoDictionary; //ӸŴ ÷̾  ųʸ ޾ƿ
 
-        //���� Ÿ�� ���� ������Ʈ
-        if (Input.GetKeyDown(KeyCode.Q)) // Ű ������ 
+        // Ÿ  Ʈ
+        if (Input.GetKeyDown(KeyCode.Q)) // Ű  
         {
             bool foundNewTarget = false;
             foreach (var viewID in playerInfoDictionary.Keys)
             {
-                if (viewID != GameManager.Instance.clientPlayer.gameObject.GetPhotonView().ViewID //���� �ƴϰų�, ���� ���� �ִ� Ÿ���� �ƴ� ��쿡�� �۵�
+                if (viewID != GameManager.Instance.clientPlayer.gameObject.GetPhotonView().ViewID // ƴϰų,   ִ Ÿ ƴ 쿡 ۵
                     && viewID != currentOtherTargetViewID)
                 {
                     OtherTargetPos = new Vector3(playerInfoDictionary[viewID].position.x, playerInfoDictionary[viewID].position.y, offsetZ);
                     currentOtherTargetViewID = viewID;
                     foundNewTarget = true;
-                    break; // ù ��° �ٸ� �÷��̾ �����ϵ��� ����
+                    break; // ù ° ٸ ÷̾ ϵ 
                 }
             }
 
-            // Q �Է� �� �ٸ� �÷��̾ ã�� ���� ��� �ʱ� Ÿ��
+            // Q Է  ٸ ÷̾ ã   ʱ Ÿ
             if (!foundNewTarget)
             {
                 SetInitialTarget();
             }
         }
 
-        //�ƹ� �Էµ� ���°�� OtherTargetPos�� ���� Ÿ������ ����ؼ� ������Ʈ
+        //ƹ Էµ ° OtherTargetPos  Ÿ ؼ Ʈ
         if (currentOtherTargetViewID != null)
             OtherTargetPos = new Vector3(playerInfoDictionary[currentOtherTargetViewID].position.x, playerInfoDictionary[currentOtherTargetViewID].position.y, offsetZ);
     }

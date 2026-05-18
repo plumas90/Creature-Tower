@@ -17,6 +17,6 @@ public class A1302 : MonoBehaviour
     // Update is called once per frame
     void reloaing()
     {
-        weaponSystem.canresurrection = true;
+        // weaponSystem.canresurrection = true;
     }
 }
