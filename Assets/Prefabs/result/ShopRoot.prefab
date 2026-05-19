@@ -73,8 +73,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 100005
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0.6, g: 0.4, b: 0.2, a: 1}
@@ -340,8 +340,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 100001
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -407,12 +407,12 @@ MonoBehaviour:
   potionHealPercent: 0
   priceText: {fileID: 1153541322948419212}
   spriteRenderer: {fileID: 8679733119860709208}
-  normalDNASprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  rareDNASprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  potion10Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  potion25Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  potion50Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  potion100Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  normalDNASprite: {fileID: 97185941, guid: 342a9b50c799acc47ac7ba0fe7352dc4, type: 3}
+  rareDNASprite: {fileID: 1504449013396123664, guid: a60bb1f0dbcf6a7458a8a6a376663f1d, type: 3}
+  potion10Sprite: {fileID: -1341544893, guid: 4d1a2093ded4e07458f0ea73b2ebcc62, type: 3}
+  potion25Sprite: {fileID: 2033061190, guid: 4d1a2093ded4e07458f0ea73b2ebcc62, type: 3}
+  potion50Sprite: {fileID: 1018499787, guid: 105dc640234adcb4cbabcc1eab7cd259, type: 3}
+  potion100Sprite: {fileID: -15225543, guid: 4d1a2093ded4e07458f0ea73b2ebcc62, type: 3}
 --- !u!1 &7079394419908912210
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,8 +486,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 100001
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0, g: 0, b: 1, a: 1}
@@ -576,8 +576,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 100001
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -778,8 +778,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 100001
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -845,12 +845,12 @@ MonoBehaviour:
   potionHealPercent: 0
   priceText: {fileID: 1696468868274708046}
   spriteRenderer: {fileID: 2692066406580176636}
-  normalDNASprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  rareDNASprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  potion10Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  potion25Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  potion50Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  potion100Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  normalDNASprite: {fileID: 97185941, guid: 342a9b50c799acc47ac7ba0fe7352dc4, type: 3}
+  rareDNASprite: {fileID: 1504449013396123664, guid: a60bb1f0dbcf6a7458a8a6a376663f1d, type: 3}
+  potion10Sprite: {fileID: -1341544893, guid: 4d1a2093ded4e07458f0ea73b2ebcc62, type: 3}
+  potion25Sprite: {fileID: 2033061190, guid: 4d1a2093ded4e07458f0ea73b2ebcc62, type: 3}
+  potion50Sprite: {fileID: 1018499787, guid: 105dc640234adcb4cbabcc1eab7cd259, type: 3}
+  potion100Sprite: {fileID: -15225543, guid: 4d1a2093ded4e07458f0ea73b2ebcc62, type: 3}
 --- !u!1 &8208144857584961107
 GameObject:
   m_ObjectHideFlags: 0

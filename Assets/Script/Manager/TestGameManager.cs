@@ -33,6 +33,78 @@ public class TestGameManager : MonoBehaviour
     [Tooltip("테스트 층 번호 (1~5층 몬스터 소환을 위해 -2(3층) 등으로 설정)")]
     public int testRoomNumber = -2;
 
+    [Header("테스트 코인 설정")]
+    public GameObject coinPrefab;
+
+    public static TestGameManager Instance { get; private set; }
+
+    [Header("테스트 골드 시스템")]
+    public int Gold { get; private set; } = 1000; // 테스트 상점 이용을 위해 넉넉한 초기 1000골드 증정!
+    public event UnityEngine.Events.UnityAction<int> OnGoldChanged;
+
+    public void AddGold(int amount)
+    {
+        if (amount <= 0) return;
+        Gold += amount;
+        OnGoldChanged?.Invoke(Gold);
+        Debug.Log($"[TestGameManager] Gold Added: {amount}. Total: {Gold}");
+    }
+
+    public bool TrySpendGold(int amount)
+    {
+        if (amount <= 0) return false;
+        if (Gold < amount) return false;
+        Gold -= amount;
+        OnGoldChanged?.Invoke(Gold);
+        Debug.Log($"[TestGameManager] Gold Spent: {amount}. Total: {Gold}");
+        return true;
+    }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
+    /// <summary>
+    /// GameManager가 없는 테스트룸에서 코인을 소환할 수 있도록 대행하는 메서드입니다.
+    /// </summary>
+    public void SpawnCoinsForAmount(Vector3 position, int totalAmount)
+    {
+        if (coinPrefab == null || totalAmount <= 0)
+        {
+            Debug.LogWarning("[TestGameManager] coinPrefab이 할당되지 않았거나 totalAmount <= 0 입니다.");
+            return;
+        }
+
+        int remaining = totalAmount;
+
+        // 10원짜리
+        int count10 = remaining / 10;
+        remaining  %= 10;
+        // 5원짜리
+        int count5  = remaining / 5;
+        remaining  %= 5;
+        // 1원짜리
+        int count1  = remaining;
+
+        for (int i = 0; i < count10; i++) SpawnOneCoin(position, CoinItem.CoinType.Won10);
+        for (int i = 0; i < count5;  i++) SpawnOneCoin(position, CoinItem.CoinType.Won5);
+        for (int i = 0; i < count1;  i++) SpawnOneCoin(position, CoinItem.CoinType.Won1);
+    }
+
+    private void SpawnOneCoin(Vector3 position, CoinItem.CoinType type)
+    {
+        GameObject coin = Instantiate(coinPrefab, position, Quaternion.identity);
+        CoinItem coinItem = coin.GetComponent<CoinItem>();
+        if (coinItem != null)
+            coinItem.Init(type);
+    }
+
     private void Start()
     {
         // 씬에 있던 기본 플레이어 비활성화 (선택 후 교체)
@@ -41,7 +113,17 @@ public class TestGameManager : MonoBehaviour
 
         if (characterSelectUI != null)
             characterSelectUI.SetActive(true);
+
+        // // 테스트 편의성: 플레이 모드 진입 시 0.5초 후 자동으로 TV 캐릭터를 선택하여 테스트를 시작합니다.
+        // StartCoroutine(AutoStartTestRoutine());
     }
+
+    // private System.Collections.IEnumerator AutoStartTestRoutine()
+    // {
+    //     yield return new WaitForSeconds(0.5f);
+    //     Debug.Log("[TestGameManager] 0.5초 대기 후 자동으로 TV 캐릭터를 선택하여 테스트룸을 실행합니다.");
+    //     SelectTV();
+    // }
 
     // UI 버튼 OnClick에 연결
     public void SelectTV()         => StartTest(prefabTV);

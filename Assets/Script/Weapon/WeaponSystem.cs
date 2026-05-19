@@ -76,6 +76,11 @@ public class WeaponSystem : MonoBehaviour
                 {
                     obj.transform.SetParent(poolParent.transform);
                 }
+                Bullet bComp = obj.GetComponent<Bullet>();
+                if (bComp != null)
+                {
+                    bComp.isPooled = true;
+                }
                 SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null)
                 {

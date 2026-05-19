@@ -84,6 +84,20 @@ public class EnemyBase : CreatureBase
 
     private IEnumerator SpawnDelayRoutine()
     {
+        // 소환 대기 동안 Collider2D 일시 비활성화하여 플레이어가 밀거나 끼이는 현상 방지
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
+        foreach (var c in colliders)
+        {
+            if (c != null) c.enabled = false;
+        }
+
+        // Rigidbody2D 속도 강제 리셋
+        if (_rb2d != null)
+        {
+            _rb2d.linearVelocity = Vector2.zero;
+            _rb2d.angularVelocity = 0f;
+        }
+
         SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
         foreach (var r in renderers)
         {
@@ -96,6 +110,12 @@ public class EnemyBase : CreatureBase
 
         live = true;
         invincibility = false;
+
+        // 소환 완료 후 Collider2D 원복 활성화
+        foreach (var c in colliders)
+        {
+            if (c != null) c.enabled = true;
+        }
 
         foreach (var r in renderers)
         {
@@ -142,32 +162,52 @@ public class EnemyBase : CreatureBase
         Debug.Log($"[EnemyBase] Die() 실행됨: name={name}, ownerStage={(ownerStage != null ? ownerStage.name : "null")}");
 
         // 코인 드랍 (10% 확률)
-        if (GameManager.Instance != null)
+        if (UnityEngine.Random.value <= 0.1f) // 10% 확률로 코인 드랍 시도
         {
-            if (UnityEngine.Random.value <= 0.1f) // 10% 확률로 코인 드랍 시도
+            float coinRoll = UnityEngine.Random.value * 100f; // 0 ~ 100
+            int amount = 1;
+            if (coinRoll <= 93f) // 93% 확률로 1원
             {
-                float coinRoll = UnityEngine.Random.value * 100f; // 0 ~ 100
-                if (coinRoll <= 93f) // 93% 확률로 1원
-                {
-                    GameManager.Instance.SpawnCoinsForAmount(transform.position, 1);
-                }
-                else if (coinRoll <= 99f) // 6% 확률로 니켈 (5원)
-                {
-                    GameManager.Instance.SpawnCoinsForAmount(transform.position, 5);
-                }
-                else // 1% 확률로 10원
-                {
-                    GameManager.Instance.SpawnCoinsForAmount(transform.position, 10);
-                }
+                amount = 1;
+            }
+            else if (coinRoll <= 99f) // 6% 확률로 니켈 (5원)
+            {
+                amount = 5;
+            }
+            else // 1% 확률로 10원
+            {
+                amount = 10;
             }
 
-            // 플레이어 킬 이벤트
-            if (GameManager.Instance.playerOBJ != null)
+            if (GameManager.Instance != null)
             {
-                PlayerStatControl stat = GameManager.Instance.playerOBJ
-                    .GetComponent<PlayerStatControl>();
-                stat?.KillEvent();
+                GameManager.Instance.SpawnCoinsForAmount(transform.position, amount);
             }
+            else if (TestGameManager.Instance != null)
+            {
+                TestGameManager.Instance.SpawnCoinsForAmount(transform.position, amount);
+            }
+        }
+
+        // 플레이어 킬 이벤트
+        GameObject player = null;
+        if (GameManager.Instance != null && GameManager.Instance.playerOBJ != null)
+        {
+            player = GameManager.Instance.playerOBJ;
+        }
+        else
+        {
+            player = GameObject.FindWithTag("Player");
+            if (player == null)
+            {
+                player = Object.FindFirstObjectByType<PlayerStatControl>()?.gameObject;
+            }
+        }
+
+        if (player != null)
+        {
+            PlayerStatControl stat = player.GetComponent<PlayerStatControl>();
+            stat?.KillEvent();
         }
 
         // 스테이지 게이트 카운트 차감

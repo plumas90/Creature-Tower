@@ -21,6 +21,13 @@ public class UIGoldHUD : MonoBehaviour
             GameManager.Instance.OnGoldChanged += UpdateGoldUI;
             UpdateGoldUI(GameManager.Instance.Gold);
         }
+        else if (TestGameManager.Instance != null)
+        {
+            // 중복 구독 방지
+            TestGameManager.Instance.OnGoldChanged -= UpdateGoldUI;
+            TestGameManager.Instance.OnGoldChanged += UpdateGoldUI;
+            UpdateGoldUI(TestGameManager.Instance.Gold);
+        }
     }
 
     private void OnDestroy()
@@ -28,6 +35,10 @@ public class UIGoldHUD : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnGoldChanged -= UpdateGoldUI;
+        }
+        if (TestGameManager.Instance != null)
+        {
+            TestGameManager.Instance.OnGoldChanged -= UpdateGoldUI;
         }
     }
 

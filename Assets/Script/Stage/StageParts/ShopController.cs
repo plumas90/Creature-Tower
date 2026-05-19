@@ -12,6 +12,9 @@ public class ShopController : MonoBehaviour
 
     public void InitShop()
     {
+        // 런타임에 자식 ShopItem 컴포넌트들을 동적으로 검색하여 정합성 보장
+        shopItems = GetComponentsInChildren<ShopItem>(true);
+
         if (shopItems == null || shopItems.Length == 0) return;
 
         // 가능한 아이템 종류
@@ -27,6 +30,7 @@ public class ShopController : MonoBehaviour
         {
             if (shopItems[i] != null)
             {
+                Debug.Log($"[ShopController] ShopItem {i} found. Initializing...");
                 ShopItem.ItemType randomType = availableTypes[Random.Range(0, availableTypes.Count)];
                 shopItems[i].Init(randomType);
             }

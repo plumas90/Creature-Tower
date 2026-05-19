@@ -33,9 +33,11 @@ public class ShopItem : MonoBehaviour
         itemType = type;
         isPurchased = false;
         gameObject.SetActive(true);
+        Debug.Log($"[ShopItem] Initializing {itemType} item.");
 
         switch (itemType)
         {
+
             case ItemType.NormalDNA:
                 price = Random.Range(100, 201); // 150 +/- 50
                 if (spriteRenderer != null) spriteRenderer.sprite = normalDNASprite;
@@ -85,8 +87,18 @@ public class ShopItem : MonoBehaviour
         PlayerStatControl playerStat = collision.GetComponentInParent<PlayerStatControl>();
         if (playerStat == null) return;
 
-        // 골드 확인 및 차감
-        if (GameManager.Instance != null && GameManager.Instance.TrySpendGold(price))
+        // 골드 확인 및 차감 (GameManager가 없으면 TestGameManager 활용)
+        bool canSpend = false;
+        if (GameManager.Instance != null)
+        {
+            canSpend = GameManager.Instance.TrySpendGold(price);
+        }
+        else if (TestGameManager.Instance != null)
+        {
+            canSpend = TestGameManager.Instance.TrySpendGold(price);
+        }
+
+        if (canSpend)
         {
             isPurchased = true;
 

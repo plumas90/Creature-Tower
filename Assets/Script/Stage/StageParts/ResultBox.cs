@@ -9,6 +9,7 @@ public class ResultBox : MonoBehaviour
 
     [Header("Spawns")]
     public GameObject childDNA; // 자식 오브젝트 (Square)
+    public GameObject dnaPrefab; // 동적 스폰할 DNA 프리팹
 
     [Header("Animation (Placeholders)")]
     public Sprite closedSprite;
@@ -24,6 +25,11 @@ public class ResultBox : MonoBehaviour
 
     private void Awake()
     {
+        if (boxSpriteRenderer == null)
+        {
+            boxSpriteRenderer = GetComponent<SpriteRenderer>();
+        }
+
         if (boxSpriteRenderer != null && closedSprite != null)
         {
             boxSpriteRenderer.sprite = closedSprite;
@@ -62,15 +68,24 @@ public class ResultBox : MonoBehaviour
 
     private IEnumerator SpawnRewardRoutine()
     {
+        Debug.Log($"[ResultBox] SpawnRewardRoutine started. isOpened={isOpened}, forceDNA={forceDNA}, isRareBox={isRareBox}");
         // Wait a short moment to let the player get pushed back and show open animation
         yield return new WaitForSeconds(0.5f);
 
         if (boxSpriteRenderer != null && openedSprite != null)
         {
             boxSpriteRenderer.sprite = openedSprite;
+            Debug.Log("[ResultBox] Changed sprite to openedSprite.");
+        }
+        else
+        {
+            Debug.LogWarning($"[ResultBox] Failed to change sprite. boxSpriteRenderer={boxSpriteRenderer != null}, openedSprite={openedSprite != null}");
         }
 
-        if (isRareBox || forceDNA || Random.value > coinDropChance)
+        bool shouldSpawnDNA = isRareBox || forceDNA || (Random.value > coinDropChance);
+        Debug.Log($"[ResultBox] Reward decision: shouldSpawnDNA={shouldSpawnDNA} (isRareBox={isRareBox}, forceDNA={forceDNA}, coinDropChance={coinDropChance})");
+
+        if (shouldSpawnDNA)
         {
             SpawnDNA();
         }
@@ -82,28 +97,57 @@ public class ResultBox : MonoBehaviour
 
     private void SpawnDNA()
     {
-        if (childDNA == null) return;
+        GameObject targetDnaObj = null;
 
-        ResultDNA resultDna = childDNA.GetComponent<ResultDNA>();
-        if (resultDna != null)
+        if (childDNA != null)
         {
-            // 일반 상자(isRareBox == false)에서도 5% 확률로 레어 DNA가 나올 수 있음
-            bool spawnRareDna = isRareBox || (Random.value < 0.05f);
-            resultDna.Init(spawnRareDna);
+            targetDnaObj = childDNA;
+            targetDnaObj.SetActive(true);
+            Debug.Log("[ResultBox] Activated existing childDNA.");
+        }
+        else if (dnaPrefab != null)
+        {
+            targetDnaObj = Instantiate(dnaPrefab, transform.position, Quaternion.identity);
+            Debug.Log($"[ResultBox] Instantiated dnaPrefab successfully at {transform.position}.");
         }
         else
         {
-            childDNA.SetActive(true);
+            Debug.LogError("[ResultBox] SpawnDNA failed: Both childDNA and dnaPrefab are null!");
+        }
+
+        if (targetDnaObj != null)
+        {
+            ResultDNA resultDna = targetDnaObj.GetComponent<ResultDNA>();
+            if (resultDna != null)
+            {
+                // 일반 상자(isRareBox == false)에서도 5% 확률로 레어 DNA가 나올 수 있음
+                bool spawnRareDna = isRareBox || (Random.value < 0.05f);
+                Debug.Log($"[ResultBox] Initializing ResultDNA. isRare={spawnRareDna}");
+                resultDna.Init(spawnRareDna);
+            }
+            else
+            {
+                Debug.LogWarning("[ResultBox] Spawned DNA object does not have ResultDNA component!");
+            }
         }
     }
 
     private void SpawnCoins()
     {
+        int coinAmount = Random.Range(3, 8);
         if (GameManager.Instance != null)
         {
-            // 5 ± 2원 (3~7원) 드랍
-            int coinAmount = Random.Range(3, 8);
+            Debug.Log($"[ResultBox] Spawning {coinAmount} coins via GameManager at {transform.position}.");
             GameManager.Instance.SpawnCoinsForAmount(transform.position, coinAmount);
+        }
+        else if (TestGameManager.Instance != null)
+        {
+            Debug.Log($"[ResultBox] Spawning {coinAmount} coins via TestGameManager at {transform.position}.");
+            TestGameManager.Instance.SpawnCoinsForAmount(transform.position, coinAmount);
+        }
+        else
+        {
+            Debug.LogError("[ResultBox] SpawnCoins failed: Both GameManager.Instance and TestGameManager.Instance are null!");
         }
     }
 }

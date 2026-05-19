@@ -75,11 +75,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 100001
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.8106513, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -133,7 +133,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &7686363578970690690
 MonoBehaviour:
@@ -150,7 +150,9 @@ MonoBehaviour:
   isRareBox: 0
   forceDNA: 0
   coinDropChance: 0.5
-  resultDNAPrefab: {fileID: 0}
+  childDNA: {fileID: 0}
+  dnaPrefab: {fileID: 8639842615049523772, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
   closedSprite: {fileID: 0}
   openedSprite: {fileID: 0}
-  pushForce: 5
+  boxSpriteRenderer: {fileID: 2271506146400865569}
+  pushForce: 1

@@ -52,6 +52,7 @@ public class Bullet : MonoBehaviour
     private float spawnedAtTime;
     private SpriteRenderer spriteRenderer;
     private HashSet<int> damagedBossIds = new HashSet<int>();
+    public bool isPooled = false;
 
     private void Awake()
     {
@@ -112,7 +113,14 @@ public class Bullet : MonoBehaviour
 
     public void Destroy()
     {
-        gameObject.SetActive(false);
+        if (isPooled)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     public bool TryMarkBossHit(int bossInstanceId)

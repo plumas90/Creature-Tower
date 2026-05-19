@@ -242,7 +242,7 @@ public class NormalStage : Stage
 
     private void SpawnUnifiedResults()
     {
-        Debug.Log($"[NormalStage] SpawnUnifiedResults() 실행됨. roomTheme={roomTheme}, stageCase={stageCase}");
+        Debug.Log($"[NormalStage] SpawnUnifiedResults() 실행됨. roomTheme={roomTheme}, stageCase={stageCase}, roomNumber={roomNumber}");
         // 이전 소환 오브젝트 정리
         foreach (var obj in spawnedRewards)
         {
@@ -324,6 +324,10 @@ public class NormalStage : Stage
             }
         }
 
+        // 디버그 로그: 어떤 보상들이 결정되었는지 출력
+        string chosenListStr = string.Join(", ", chosenTypes);
+        Debug.Log($"[NormalStage] SpawnUnifiedResults: Chosen Reward Types: [{chosenListStr}] (Total count: {chosenTypes.Count})");
+
         // 4. 기믹 선택 (저울 양자택일 vs 연쇄 획득)
         Vector2 center = battleZone != null ? (Vector2)battleZone.bounds.center : (Vector2)transform.position;
         // bool doBalanceScale = allowBalanceScale && chosenTypes.Count >= 2 && Random.value <= balanceScaleGimmickChance && balanceScalePrefab != null;
@@ -363,6 +367,11 @@ public class NormalStage : Stage
                 if (obj != null)
                 {
                     spawnedRewards.Add(obj);
+                    Debug.Log($"[NormalStage] Spawned reward object: {obj.name} for type {type} successfully at {obj.transform.position}");
+                }
+                else
+                {
+                    Debug.LogError($"[NormalStage] Failed to spawn reward object for type {type}!");
                 }
             }
 
@@ -376,6 +385,7 @@ public class NormalStage : Stage
 
     private System.Collections.IEnumerator FadeInAndActivateRewards(List<GameObject> rewards, GameObject scaleObj)
     {
+        Debug.Log($"[NormalStage] FadeInAndActivateRewards starting. rewardsCount={rewards.Count}, hasScaleObj={scaleObj != null}");
         // 1. 모든 보상 객체의 Collider2D 수집 후 비활성화
         List<Collider2D> colliders = new List<Collider2D>();
         List<SpriteRenderer> renderers = new List<SpriteRenderer>();
@@ -392,6 +402,8 @@ public class NormalStage : Stage
             colliders.AddRange(scaleObj.GetComponentsInChildren<Collider2D>(true));
             renderers.AddRange(scaleObj.GetComponentsInChildren<SpriteRenderer>(true));
         }
+
+        Debug.Log($"[NormalStage] Gathered {colliders.Count} colliders and {renderers.Count} sprite renderers for fade-in.");
 
         // 콜라이더 비활성화 (물리 충돌/트리거 차단)
         foreach (var col in colliders)
@@ -447,6 +459,7 @@ public class NormalStage : Stage
         {
             if (col != null) col.enabled = true;
         }
+        Debug.Log("[NormalStage] FadeInAndActivateRewards completed successfully. Enabled all colliders.");
     }
 
     private int ResolveMaxRewards()
@@ -543,20 +556,93 @@ public class NormalStage : Stage
         if (items == null || items.Count == 0)
             return;
 
-        Vector2 center = battleZone != null ? (Vector2)battleZone.bounds.center : (Vector2)transform.position;
-        float spacing = Mathf.Max(0.1f, choiceResultSpacing);
-        float startOffset = -((items.Count - 1) * 0.5f) * spacing;
-
-        for (int i = 0; i < items.Count; i++)
+        // 아이템 중 null 필터링
+        List<GameObject> validItems = new List<GameObject>();
+        foreach (var item in items)
         {
-            GameObject target = items[i];
-            if (target == null)
-                continue;
-
-            float offsetX = startOffset + (i * spacing);
-            Vector3 pos = target.transform.position;
-            target.transform.position = new Vector3(center.x + offsetX, center.y, pos.z);
+            if (item != null) validItems.Add(item);
         }
+
+        if (validItems.Count == 0) return;
+
+        Vector2 center = battleZone != null ? (Vector2)battleZone.bounds.center : (Vector2)transform.position;
+
+        // 각 오브젝트의 실제 가로 크기(Width)를 계산합니다.
+        float[] widths = new float[validItems.Count];
+        float totalWidth = 0f;
+        float gap = 1.8f; // 기물 사이의 최소 여유 공간 마진
+
+        for (int i = 0; i < validItems.Count; i++)
+        {
+            widths[i] = GetRewardObjectWidth(validItems[i]);
+            totalWidth += widths[i];
+            if (i > 0)
+            {
+                totalWidth += gap;
+            }
+        }
+
+        // 전체 가로폭을 기준으로 시작 지점 X를 잡습니다.
+        float currentX = center.x - (totalWidth * 0.5f);
+
+        for (int i = 0; i < validItems.Count; i++)
+        {
+            GameObject target = validItems[i];
+            float objectWidth = widths[i];
+
+            // 객체 자체의 가로 오프셋 보정 (Pivot이 정중앙이 아닐 수 있음을 감안)
+            float localCenterX = GetRewardObjectLocalCenterX(target);
+            float targetX = currentX + (objectWidth * 0.5f) - localCenterX;
+
+            target.transform.position = new Vector3(targetX, center.y, 0f);
+            Debug.Log($"[NormalStage] LayoutUnifiedResults: Placed {target.name} (width={objectWidth}) at {target.transform.position}");
+
+            currentX += objectWidth + gap; // 다음 배치 지점으로 전진
+        }
+    }
+
+    private float GetRewardObjectWidth(GameObject obj)
+    {
+        SpriteRenderer[] srs = obj.GetComponentsInChildren<SpriteRenderer>(true);
+        if (srs.Length == 0) return 1.5f;
+
+        float minX = float.MaxValue;
+        float maxX = float.MinValue;
+        bool foundValid = false;
+
+        foreach (var sr in srs)
+        {
+            if (sr == null || sr.sprite == null) continue;
+            minX = Mathf.Min(minX, sr.bounds.min.x);
+            maxX = Mathf.Max(maxX, sr.bounds.max.x);
+            foundValid = true;
+        }
+
+        if (!foundValid) return 1.5f;
+        return Mathf.Max(0.5f, maxX - minX);
+    }
+
+    private float GetRewardObjectLocalCenterX(GameObject obj)
+    {
+        SpriteRenderer[] srs = obj.GetComponentsInChildren<SpriteRenderer>(true);
+        if (srs.Length == 0) return 0f;
+
+        float minX = float.MaxValue;
+        float maxX = float.MinValue;
+        bool foundValid = false;
+
+        foreach (var sr in srs)
+        {
+            if (sr == null || sr.sprite == null) continue;
+            float localMin = obj.transform.InverseTransformPoint(sr.bounds.min).x;
+            float localMax = obj.transform.InverseTransformPoint(sr.bounds.max).x;
+            minX = Mathf.Min(minX, localMin);
+            maxX = Mathf.Max(maxX, localMax);
+            foundValid = true;
+        }
+
+        if (!foundValid) return 0f;
+        return (minX + maxX) * 0.5f;
     }
 
     private void SetupMonsterGate()

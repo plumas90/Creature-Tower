@@ -170,7 +170,13 @@ public class CoinItem : MonoBehaviour
         {
             isCollected = true;
             if (GameManager.Instance != null)
+            {
                 GameManager.Instance.AddGold(coinValue);
+            }
+            else if (TestGameManager.Instance != null)
+            {
+                TestGameManager.Instance.AddGold(coinValue);
+            }
             Destroy(gameObject);
         }
     }
