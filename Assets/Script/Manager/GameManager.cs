@@ -80,7 +80,17 @@ public class GameManager : MonoBehaviour
     public List<GameObject> stageLevel15;
     [Header("Normal Stage")]
     [SerializeField] private List<GameObject> normalStageCandidates = new List<GameObject>();
+    [SerializeField] private List<GameObject> normalStageCandidates_1_5 = new List<GameObject>();
+    [SerializeField] private List<GameObject> normalStageCandidates_6_10 = new List<GameObject>();
+    [SerializeField] private List<GameObject> normalStageCandidates_11_15 = new List<GameObject>();
     [SerializeField] [Range(1, 3)] private int normalChoiceCount = 3;
+
+    [Header("Map UI Reference")]
+    public MapSelectionUI mapSelectionUI;
+    [SerializeField] private List<MapFloor> mapFloors = new List<MapFloor>();
+    private int currentMapFloor = 0;
+    private int currentMapNode = 0;
+    private Dictionary<int, int> selectedPath = new Dictionary<int, int>(); // floorIndex -> selectedNodeIndex
     #endregion
 
     [Header("UI")] // UI 참조
@@ -171,6 +181,9 @@ public class GameManager : MonoBehaviour
         if (thankDemoUI == null)
             thankDemoUI = GameObject.Find("ThankDemoUI");
 
+        if (mapSelectionUI == null)
+            mapSelectionUI = FindFirstObjectByType<MapSelectionUI>(FindObjectsInactive.Include);
+
         // 메인 메뉴 경유 진입 시 누락될 수 있는 보상/증강 매니저를 보장한다.
         EnsureRewardManagers();
     }
@@ -201,6 +214,8 @@ public class GameManager : MonoBehaviour
         AddRandomStageFromLevel(stageLevel14);
         AddRandomStageFromLevel(stageLevel15);
 
+        // Generate Map Structure
+        GenerateMapStructure();
     }
 
     private void AddRandomStageFromLevel(List<GameObject> levelCandidates)
@@ -382,7 +397,7 @@ public class GameManager : MonoBehaviour
 
         if (progressionState == ProgressionState.ChoosingNormalStage)
         {
-            Debug.Log("[GameManager] NextLevel ignored: waiting for normal stage selection (press 1~3).");
+            Debug.Log("[GameManager] NextLevel ignored: waiting for normal stage selection.");
             return;
         }
 
@@ -401,7 +416,20 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        BeginNormalStageChoice();
+        // Open Map UI
+        if (mapSelectionUI == null)
+            mapSelectionUI = FindFirstObjectByType<MapSelectionUI>(FindObjectsInactive.Include);
+
+        if (mapSelectionUI != null)
+        {
+            progressionState = ProgressionState.ChoosingNormalStage;
+            mapSelectionUI.OpenMap();
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] MapSelectionUI not found in scene! Falling back to original choice.");
+            BeginNormalStageChoice();
+        }
     }
 
     private void BeginNormalStageChoice()
@@ -515,6 +543,10 @@ public class GameManager : MonoBehaviour
         if (previousStage != null)
             previousStage.ObjActiveFalse();
 
+        // Update Map position: Boss floor is even (2 * TowerLevelCount)
+        currentMapFloor = TowerLevelCount * 2;
+        currentMapNode = 0;
+
         progressionState = ProgressionState.BossStage;
         StageLevelSet();
         isTransitioningStage = false;
@@ -529,6 +561,209 @@ public class GameManager : MonoBehaviour
                 Destroy(stage.gameObject);
         }
         pendingNormalStageChoices.Clear();
+    }
+
+    private void GenerateMapStructure()
+    {
+        mapFloors.Clear();
+        currentMapFloor = 0;
+        currentMapNode = 0;
+        selectedPath.Clear();
+
+        // 15 Boss stages means 15 Boss floors (0, 2, 4, ... 28) and 14 Normal floors (1, 3, 5, ... 27)
+        int totalFloors = EndingTowerStage * 2 - 1; // 29 floors
+
+        for (int f = 0; f < totalFloors; f++)
+        {
+            MapFloor floor = new MapFloor();
+            floor.floorIndex = f;
+            floor.isBossFloor = (f % 2 == 0);
+
+            if (floor.isBossFloor)
+            {
+                MapNode bossNode = new MapNode();
+                bossNode.floorIndex = f;
+                bossNode.nodeIndex = 0;
+                bossNode.isBoss = true;
+                floor.nodes.Add(bossNode);
+            }
+            else
+            {
+                List<GameObject> candidates = GetCandidatesForFloor(f);
+                if (candidates == null || candidates.Count == 0)
+                {
+                    candidates = normalStageCandidates;
+                }
+
+                // Randomly select 3 unique themes from RoomTheme (Guarantee no duplicate room types)
+                List<NormalStage.RoomTheme> allThemes = new List<NormalStage.RoomTheme> {
+                    NormalStage.RoomTheme.Mystery,
+                    NormalStage.RoomTheme.Shop,
+                    NormalStage.RoomTheme.Transfusion,
+                    NormalStage.RoomTheme.DNA,
+                    NormalStage.RoomTheme.Coin,
+                    NormalStage.RoomTheme.Box,
+                    NormalStage.RoomTheme.Potion
+                };
+
+                // Shuffle themes
+                for (int i = 0; i < allThemes.Count; i++)
+                {
+                    int rand = UnityEngine.Random.Range(i, allThemes.Count);
+                    var temp = allThemes[i];
+                    allThemes[i] = allThemes[rand];
+                    allThemes[rand] = temp;
+                }
+
+                int choiceCount = normalChoiceCount;
+                for (int n = 0; n < choiceCount; n++)
+                {
+                    MapNode normalNode = new MapNode();
+                    normalNode.floorIndex = f;
+                    normalNode.nodeIndex = n;
+                    normalNode.isBoss = false;
+                    normalNode.roomTheme = allThemes[n];
+                    normalNode.prefabIndex = (candidates != null && candidates.Count > 0) ? UnityEngine.Random.Range(0, candidates.Count) : 0;
+                    floor.nodes.Add(normalNode);
+                }
+            }
+
+            mapFloors.Add(floor);
+        }
+    }
+
+    private List<GameObject> GetCandidatesForFloor(int floorIndex)
+    {
+        // Odd floors are normal stages (1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27)
+        // 1 to 9 correspond to choices 1 to 5 (Act 1)
+        if (floorIndex <= 9)
+            return (normalStageCandidates_1_5 != null && normalStageCandidates_1_5.Count > 0) ? normalStageCandidates_1_5 : normalStageCandidates;
+        // 11 to 19 correspond to choices 6 to 10 (Act 2)
+        if (floorIndex <= 19)
+            return (normalStageCandidates_6_10 != null && normalStageCandidates_6_10.Count > 0) ? normalStageCandidates_6_10 : normalStageCandidates;
+        // 21 to 27 correspond to choices 11 to 14 (Act 3)
+        return (normalStageCandidates_11_15 != null && normalStageCandidates_11_15.Count > 0) ? normalStageCandidates_11_15 : normalStageCandidates;
+    }
+
+    public List<MapFloor> GetMapFloors() => mapFloors;
+    public int GetCurrentMapFloorIndex() => currentMapFloor;
+
+    public bool IsNodeCurrent(int floorIndex, int nodeIndex)
+    {
+        if (floorIndex % 2 == 0) // Boss floor
+        {
+            return currentMapFloor == floorIndex;
+        }
+        else // Normal floor
+        {
+            return currentMapFloor == floorIndex && currentMapNode == nodeIndex;
+        }
+    }
+
+    public bool IsNodeVisited(int floorIndex, int nodeIndex)
+    {
+        if (floorIndex % 2 == 0) // Boss floor
+        {
+            return currentMapFloor >= floorIndex;
+        }
+        else // Normal floor
+        {
+            if (currentMapFloor > floorIndex)
+            {
+                return selectedPath.ContainsKey(floorIndex) && selectedPath[floorIndex] == nodeIndex;
+            }
+            if (currentMapFloor == floorIndex)
+            {
+                return currentMapNode == nodeIndex;
+            }
+            return false;
+        }
+    }
+
+    public bool IsNodeSelectable(int floorIndex, int nodeIndex)
+    {
+        if (progressionState != ProgressionState.ChoosingNormalStage)
+            return false;
+
+        return floorIndex == currentMapFloor + 1;
+    }
+
+    public void SelectMapNode(int floorIndex, int nodeIndex)
+    {
+        if (progressionState != ProgressionState.ChoosingNormalStage)
+            return;
+
+        if (floorIndex != currentMapFloor + 1)
+            return;
+
+        var floor = mapFloors[floorIndex];
+        if (nodeIndex < 0 || nodeIndex >= floor.nodes.Count)
+            return;
+
+        MapNode nodeData = floor.nodes[nodeIndex];
+
+        isTransitioningStage = true;
+        Stage previousStage = CurrentStage;
+
+        ClearPendingNormalChoices();
+
+        List<GameObject> candidates = GetCandidatesForFloor(floorIndex);
+        if (candidates == null || candidates.Count == 0)
+        {
+            candidates = normalStageCandidates;
+        }
+
+        if (candidates == null || candidates.Count == 0)
+        {
+            Debug.LogError("[GameManager] SelectMapNode failed: candidates list is empty!");
+            isTransitioningStage = false;
+            return;
+        }
+
+        int prefabIndex = Mathf.Clamp(nodeData.prefabIndex, 0, candidates.Count - 1);
+        GameObject prefab = candidates[prefabIndex];
+        if (prefab == null)
+        {
+            Debug.LogError($"[GameManager] SelectMapNode failed: Chosen normal stage prefab is null at index {prefabIndex}!");
+            isTransitioningStage = false;
+            return;
+        }
+
+        GameObject room = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+        NormalStage stage = room.GetComponent<NormalStage>();
+        if (stage == null)
+        {
+            Debug.LogError($"[GameManager] SelectMapNode failed: Normal stage prefab has no NormalStage component: {prefab.name}");
+            Destroy(room);
+            isTransitioningStage = false;
+            return;
+        }
+
+        NormalStage.NormalStageCase stageCase = NormalStage.NormalStageCase.MonsterWithReward;
+        if (nodeData.roomTheme == NormalStage.RoomTheme.Shop || 
+            nodeData.roomTheme == NormalStage.RoomTheme.Transfusion ||
+            nodeData.roomTheme == NormalStage.RoomTheme.Potion)
+        {
+            stageCase = NormalStage.NormalStageCase.ChoiceResult; // Direct reward
+        }
+
+        stage.InitStage(-floorIndex, stageCase, nodeData.roomTheme);
+
+        float baseX = (StageTree.Count + 1) * 100f;
+        room.transform.position = new Vector3(baseX, 0f, 0f);
+
+        selectedPath[floorIndex] = nodeIndex;
+        currentMapFloor = floorIndex;
+        currentMapNode = nodeIndex;
+
+        CurrentStage = stage;
+        progressionState = ProgressionState.NormalStage;
+
+        if (previousStage != null)
+            previousStage.ObjActiveFalse();
+
+        StageLevelSet();
+        isTransitioningStage = false;
     }
     public void StageLevelSet() 
     {
