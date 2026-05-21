@@ -9,7 +9,8 @@ using UnityEngine.Rendering;
 public abstract class CreatureBase : MonoBehaviour
 {
     // ──────────────────── 공통 스탯 ────────────────────
-    [HideInInspector] public EnemySO MainSO;
+    [Header("Base Stat Data")]
+    public EnemySO MainSO;
 
     public float atk;
     public float maxHp;

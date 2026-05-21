@@ -26,15 +26,31 @@ public class EnemySO : ScriptableObject
     //public float enemyChaseSpeed; // �⺻ �����ӵ�
     //public float viewAngle;       // Ž�� ����
     //public float viewDistance;     // Ž�� ����
-    //public float attackRange;     // ���� ����
-    //public int dropGold;          // �ִ� ��ȭ�� ��
-    //public int unitScale;         // ���� ũ��
+    //public float bulletSpeed;     // źȯ ӵ
+    //public float atkDelay;        //  
+    //public float SpecialAttackDelay; // Ư  
+    //public float patrolDelay;     //  
+    //public float chaseTime;       //  ð
+    //public float groggyTiem;      //  ð
+    //public float bulletLifeTime;  // Ѿ  ð
+    //public float breathAttackDelay; // 극  
+    //public float enemyMoveSpeed;  // ⺻ ̵ӵ
+    //public float enemyChaseSpeed; // ⺻ ӵ
+    //public float viewAngle;       // Ž 
+    //public float viewDistance;     // Ž 
+    //public float attackRange;     //  
+    //public int dropGold;          // ִ ȭ 
+    //public int unitScale;         //  ũ
     //public SpriteLibraryAsset enemySpriteLibrary;
     //public Bullet enemyBulletPrefab;
 
-    //����
+    //
 
     public float bossPatternTime;
+
+    [Header("Slime Special Settings")]
+    public float slimeLandRestTime = 1.0f; // 점프 착지 후 대기 시간 (휴식)
+    public float slimeKeepDistance = 4.0f; // 플레이어와 유지할 최소 거리 (이 거리 이하로 접근하지 않음)
 
     //[Header("Boss BT")] 
     [HideInInspector] public float btChaseRange = 100f;

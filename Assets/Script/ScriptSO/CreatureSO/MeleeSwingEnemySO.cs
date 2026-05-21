@@ -1,0 +1,27 @@
+using UnityEngine;
+
+public enum MeleeAttackType
+{
+    Thrust, // 찌르기
+    Swing   // 휘두르기
+}
+
+/// <summary>
+/// 무기를 휘두르는/찌르는 타입의 근접 몬스터 전용 ScriptableObject.
+/// </summary>
+[CreateAssetMenu(fileName = "MeleeSwingEnemySO", menuName = "ScriptableObject/MeleeSwingEnemySO", order = 3)]
+public class MeleeSwingEnemySO : EnemySO
+{
+    [Header("근접 공격 설정")]
+    [Tooltip("근접 공격 타입 (찌르기 또는 휘두르기)")]
+    public MeleeAttackType attackType = MeleeAttackType.Thrust;
+
+    [Tooltip("무기 공격 사거리 (이 거리 이내로 접근 시 경고 및 타격 개시)")]
+    public float attackRange = 1.6f;
+
+    [Tooltip("공격 쿨타임 (휘두른 후 대기 시간, 초)")]
+    public float attackCooldown = 2.0f;
+
+    [Tooltip("공격 전 빨간색 경고 궤적 실선/범위 노출 시간 (초)")]
+    public float attackWarningTime = 0.8f;
+}

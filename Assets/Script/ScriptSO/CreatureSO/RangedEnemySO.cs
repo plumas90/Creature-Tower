@@ -32,4 +32,10 @@ public class RangedEnemySO : EnemySO
 
     [Tooltip("투사체 프리팹 (Bullet 컴포넌트 필수)")]
     public GameObject projectilePrefab;
+
+    [Tooltip("도망가는(뒤로 물러나는) 중에도 조준하여 공격할지 여부")]
+    public bool attackWhileFleeing = false;
+
+    [Tooltip("도망가는 중 벽에 막히면 양옆으로 우회하여 회피 도망할지 여부")]
+    public bool evadeObstaclesWhileFleeing = false;
 }

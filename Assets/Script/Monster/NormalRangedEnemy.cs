@@ -80,8 +80,54 @@ public class NormalRangedEnemy : EnemyBase
         else if (dist < keepDist)
         {
             // 너무 가까움: 뒤로 물러남
-            _rb2d.linearVelocity = -toPlayer * speed;
+            Vector2 fleeDir = -toPlayer;
+
+            // 벽 우회 회피 옵션이 켜진 경우
+            if (_rangedSO != null && _rangedSO.evadeObstaclesWhileFleeing)
+            {
+                int wallMask = 1 << LayerMask.NameToLayer("Wall");
+                float detectDist = 1.0f; // 감지할 벽 거리
+                
+                // 도망 방향에 벽이 있는지 Raycast 검사
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, fleeDir, detectDist, wallMask);
+                if (hit.collider != null)
+                {
+                    // 수직인 양옆 방향 계산
+                    Vector2 leftDir = new Vector2(-fleeDir.y, fleeDir.x).normalized;
+                    Vector2 rightDir = new Vector2(fleeDir.y, -fleeDir.x).normalized;
+
+                    // 양옆 방향의 장애물 감지 거리 측정
+                    RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, leftDir, detectDist, wallMask);
+                    RaycastHit2D hitRight = Physics2D.Raycast(transform.position, rightDir, detectDist, wallMask);
+
+                    float leftDist = hitLeft.collider != null ? hitLeft.distance : detectDist;
+                    float rightDist = hitRight.collider != null ? hitRight.distance : detectDist;
+
+                    // 덜 막혀있는(거리가 더 먼) 쪽으로 방향 선택
+                    if (leftDist >= rightDist && leftDist > 0.1f)
+                    {
+                        fleeDir = leftDir;
+                    }
+                    else if (rightDist > leftDist && rightDist > 0.1f)
+                    {
+                        fleeDir = rightDir;
+                    }
+                }
+            }
+
+            _rb2d.linearVelocity = fleeDir * speed;
             SetWalk(true);
+
+            if (_rangedSO != null && _rangedSO.attackWhileFleeing)
+            {
+                _atkTimer -= Time.deltaTime;
+                if (_atkTimer <= 0f)
+                {
+                    FireProjectiles(toPlayer);
+                    float cooldown = _rangedSO.attackCooldown;
+                    _atkTimer = cooldown;
+                }
+            }
         }
         else
         {
@@ -100,7 +146,12 @@ public class NormalRangedEnemy : EnemyBase
     }
 
     // ─── 투사체 발사 ──────────────────────────────────────────
-    private void FireProjectiles(Vector2 toPlayer)
+    protected virtual Vector3 GetBulletSpawnPosition()
+    {
+        return transform.position;
+    }
+
+    protected virtual void FireProjectiles(Vector2 toPlayer)
     {
         if (_rangedSO == null || _rangedSO.projectilePrefab == null)
         {
@@ -139,10 +190,10 @@ public class NormalRangedEnemy : EnemyBase
             _animator.SetTrigger(AnimAttack);
     }
 
-    private void SpawnBullet(float angleDeg, float damage, float projSpeed, float lifeTime)
+    protected virtual void SpawnBullet(float angleDeg, float damage, float projSpeed, float lifeTime)
     {
         Quaternion rot = Quaternion.Euler(0f, 0f, angleDeg);
-        GameObject obj = Object.Instantiate(_rangedSO.projectilePrefab, transform.position, rot);
+        GameObject obj = Object.Instantiate(_rangedSO.projectilePrefab, GetBulletSpawnPosition(), rot);
 
         Bullet bullet = obj.GetComponent<Bullet>();
         if (bullet == null)

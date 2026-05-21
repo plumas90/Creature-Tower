@@ -3817,7 +3817,7 @@ MonoBehaviour:
   balanceScaleGimmickChance: 0.5
   monsterGroup: {fileID: 0}
   availableMonsterGroups:
-  - {fileID: 11400000, guid: 7669ac7d1a4026d4dad27c06be7fd2d7, type: 2}
+  - {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f08, type: 2}
 --- !u!1 &7775634567717313354
 GameObject:
   m_ObjectHideFlags: 0
