@@ -55,6 +55,7 @@ public class Door : MonoBehaviour
         EnsureClosedGapBlocker();
         EnsureBlockingCollidersLayer();
         RefreshClosedGapBlockerState();
+        SetupSlidingDoorMasking();
     }
 
     private void EnsureDoorRigidbody2D()
@@ -131,6 +132,35 @@ public class Door : MonoBehaviour
 
         // 문이 닫혀있을 때만 중앙 틈새를 막는다.
         closedGapBlocker.enabled = useClosedGapBlocker && !isOpen;
+    }
+
+    private void SetupSlidingDoorMasking()
+    {
+        if (leftDoor == null || rightDoor == null) return;
+
+        // 1. 문의 SpriteRenderer들의 마스크 인터랙션 설정을 "마스크 안에서만 보이게" 변경
+        leftDoor.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+        rightDoor.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+
+        // 2. 원래 닫혀있던 위치(leftClosed)에 좌측 문 전용 고정 마스크 생성
+        GameObject leftMaskObj = new GameObject("LeftDoorSpriteMask");
+        leftMaskObj.transform.SetParent(transform, false);
+        leftMaskObj.transform.localPosition = leftClosed;
+        leftMaskObj.transform.localScale = leftDoor.transform.localScale;
+        leftMaskObj.transform.localRotation = leftDoor.transform.localRotation;
+        
+        SpriteMask leftMask = leftMaskObj.AddComponent<SpriteMask>();
+        leftMask.sprite = leftDoor.sprite;
+
+        // 3. 원래 닫혀있던 위치(rightClosed)에 우측 문 전용 고정 마스크 생성
+        GameObject rightMaskObj = new GameObject("RightDoorSpriteMask");
+        rightMaskObj.transform.SetParent(transform, false);
+        rightMaskObj.transform.localPosition = rightClosed;
+        rightMaskObj.transform.localScale = rightDoor.transform.localScale;
+        rightMaskObj.transform.localRotation = rightDoor.transform.localRotation;
+        
+        SpriteMask rightMask = rightMaskObj.AddComponent<SpriteMask>();
+        rightMask.sprite = rightDoor.sprite;
     }
 
     private void Update()

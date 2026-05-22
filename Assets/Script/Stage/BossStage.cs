@@ -202,7 +202,7 @@ public class BossStage : Stage
             yield break;
         }
 
-        yield return ShowBossNameRoutine(summonedBoss.GetDisplayName(), bossNameShowDuration);
+        StartCoroutine(ShowBossNameRoutine(summonedBoss.GetDisplayName(), bossNameShowDuration));
         BeginBossBattle(summonedBoss);
     }
 
@@ -312,8 +312,8 @@ public class BossStage : Stage
         titleObj.transform.SetParent(canvas.transform, false);
 
         RectTransform rt = titleObj.GetComponent<RectTransform>();
-        rt.anchorMin = new Vector2(0.5f, 0.5f);
-        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.anchorMin = new Vector2(0.5f, 0.2f); // 중앙 하단으로 내려 보스와 겹치지 않게 방지
+        rt.anchorMax = new Vector2(0.5f, 0.2f);
         rt.pivot = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = Vector2.zero;
         rt.sizeDelta = new Vector2(1000f, 120f);

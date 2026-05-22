@@ -10,9 +10,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public event UnityAction OnStageStartEvent;
-    private const string AugmentManagerPrefabPath = "Prefabs/AugmentManager";
-    private const string MakeAugmentListManagerPrefabPath = "Prefabs/MakeAugmentListManager";
-    private const string ResultManagerPrefabPath = "Prefabs/ResultManager";
+
+    [Header("Manager Prefabs")]
+    [SerializeField] private GameObject augmentManagerPrefab;
+    [SerializeField] private GameObject makeAugmentListManagerPrefab;
+    [SerializeField] private GameObject resultManagerPrefab;
 
     public PlayerUiManager playerUiManager;
     // TODO: 게임 상태 분기/초기화 구조를 정리할 필요가 있음.
@@ -401,14 +403,21 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // 노멀 또는 보스 완료 → 게임 끝 체크 후 지도 열기
         if (progressionState == ProgressionState.NormalStage)
         {
-            TransitionToNextBossStage();
-            return;
+            // 노멀 클리어 후 다음 보스가 없으면 종료
+            if (TowerLevelCount >= StageTree.Count - 1)
+            {
+                if (thankDemoUI != null)
+                    thankDemoUI.SetActive(true);
+                Debug.Log("[GameManager] 마지막 보스 이후 노멀 클리어 → 게임 종료");
+                return;
+            }
         }
 
-        // 현재 보스 스테이지에서 계단을 탔을 때 처리
-        if (TowerLevelCount >= StageTree.Count - 1)
+        // 보스 스테이지에서 계단: 마지막 보스면 종료
+        if (progressionState == ProgressionState.BossStage && TowerLevelCount >= StageTree.Count - 1)
         {
             if (thankDemoUI != null)
                 thankDemoUI.SetActive(true);
@@ -416,7 +425,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // Open Map UI
+        // 지도 열기 (보스방/노멀방 모두 플레이어가 클릭해서 선택)
         if (mapSelectionUI == null)
             mapSelectionUI = FindFirstObjectByType<MapSelectionUI>(FindObjectsInactive.Include);
 
@@ -427,8 +436,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[GameManager] MapSelectionUI not found in scene! Falling back to original choice.");
-            BeginNormalStageChoice();
+            Debug.LogWarning("[GameManager] MapSelectionUI not found! Falling back.");
+            // 폴백: 지도 없이 자동 전환
+            if (progressionState == ProgressionState.NormalStage)
+                TransitionToNextBossStage();
+            else
+                BeginNormalStageChoice();
         }
     }
 
@@ -696,10 +709,23 @@ public class GameManager : MonoBehaviour
         if (floorIndex != currentMapFloor + 1)
             return;
 
+        if (floorIndex < 0 || floorIndex >= mapFloors.Count)
+            return;
+
         var floor = mapFloors[floorIndex];
         if (nodeIndex < 0 || nodeIndex >= floor.nodes.Count)
             return;
 
+        // ── 보스 층 선택 ──────────────────────────────────────────
+        if (floor.isBossFloor)
+        {
+            Debug.Log($"[GameManager] 보스 층 선택됨: Floor={floorIndex}");
+            selectedPath[floorIndex] = nodeIndex;
+            TransitionToNextBossStage();
+            return;
+        }
+
+        // ── 노멀 층 선택 ──────────────────────────────────────────
         MapNode nodeData = floor.nodes[nodeIndex];
 
         isTransitioningStage = true;
@@ -709,9 +735,7 @@ public class GameManager : MonoBehaviour
 
         List<GameObject> candidates = GetCandidatesForFloor(floorIndex);
         if (candidates == null || candidates.Count == 0)
-        {
             candidates = normalStageCandidates;
-        }
 
         if (candidates == null || candidates.Count == 0)
         {
@@ -724,7 +748,7 @@ public class GameManager : MonoBehaviour
         GameObject prefab = candidates[prefabIndex];
         if (prefab == null)
         {
-            Debug.LogError($"[GameManager] SelectMapNode failed: Chosen normal stage prefab is null at index {prefabIndex}!");
+            Debug.LogError($"[GameManager] SelectMapNode failed: prefab null at index {prefabIndex}!");
             isTransitioningStage = false;
             return;
         }
@@ -733,18 +757,19 @@ public class GameManager : MonoBehaviour
         NormalStage stage = room.GetComponent<NormalStage>();
         if (stage == null)
         {
-            Debug.LogError($"[GameManager] SelectMapNode failed: Normal stage prefab has no NormalStage component: {prefab.name}");
+            Debug.LogError($"[GameManager] SelectMapNode failed: No NormalStage on {prefab.name}");
             Destroy(room);
             isTransitioningStage = false;
             return;
         }
 
+        // 테마 → stageCase 매핑
         NormalStage.NormalStageCase stageCase = NormalStage.NormalStageCase.MonsterWithReward;
-        if (nodeData.roomTheme == NormalStage.RoomTheme.Shop || 
+        if (nodeData.roomTheme == NormalStage.RoomTheme.Shop ||
             nodeData.roomTheme == NormalStage.RoomTheme.Transfusion ||
             nodeData.roomTheme == NormalStage.RoomTheme.Potion)
         {
-            stageCase = NormalStage.NormalStageCase.ChoiceResult; // Direct reward
+            stageCase = NormalStage.NormalStageCase.ChoiceResult;
         }
 
         stage.InitStage(-floorIndex, stageCase, nodeData.roomTheme);
@@ -801,35 +826,28 @@ public class GameManager : MonoBehaviour
 
     private void EnsureRewardManagers()
     {
-        EnsureManagerInstance(
-            AugmentManager.Instance,
-            AugmentManagerPrefabPath,
-            "[GameManager] AugmentManager prefab not found at Resources/Prefabs/AugmentManager"
-        );
-        EnsureManagerInstance(
-            MakeAugmentListManager.Instance,
-            MakeAugmentListManagerPrefabPath,
-            "[GameManager] MakeAugmentListManager prefab not found at Resources/Prefabs/MakeAugmentListManager"
-        );
-        EnsureManagerInstance(
-            ResultManager.Instance,
-            ResultManagerPrefabPath,
-            "[GameManager] ResultManager prefab not found at Resources/Prefabs/ResultManager"
-        );
-    }
-
-    private void EnsureManagerInstance(MonoBehaviour existing, string resourcePath, string notFoundLog)
-    {
-        if (existing != null)
-            return;
-
-        GameObject prefab = Resources.Load<GameObject>(resourcePath);
-        if (prefab == null)
+        if (AugmentManager.Instance == null)
         {
-            Debug.LogWarning(notFoundLog);
-            return;
+            if (augmentManagerPrefab != null)
+                Instantiate(augmentManagerPrefab);
+            else
+                Debug.LogWarning("[GameManager] augmentManagerPrefab이 인스펙터에 연결되지 않았습니다.");
         }
 
-        Instantiate(prefab);
+        if (MakeAugmentListManager.Instance == null)
+        {
+            if (makeAugmentListManagerPrefab != null)
+                Instantiate(makeAugmentListManagerPrefab);
+            else
+                Debug.LogWarning("[GameManager] makeAugmentListManagerPrefab이 인스펙터에 연결되지 않았습니다.");
+        }
+
+        if (ResultManager.Instance == null)
+        {
+            if (resultManagerPrefab != null)
+                Instantiate(resultManagerPrefab);
+            else
+                Debug.LogWarning("[GameManager] resultManagerPrefab이 인스펙터에 연결되지 않았습니다.");
+        }
     }
 }

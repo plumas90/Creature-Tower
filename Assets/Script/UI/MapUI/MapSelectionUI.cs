@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,12 +16,23 @@ public class MapSelectionUI : MonoBehaviour
     [SerializeField] private Transform lineContainer;
     [SerializeField] private TextMeshProUGUI titleText;
 
+    [Header("Theme Sprites (비워두면 기존 텍스트 심볼 사용)")]
+    [SerializeField] private Sprite bossSprite;
+    [SerializeField] private Sprite mysterySprite;
+    [SerializeField] private Sprite shopSprite;
+    [SerializeField] private Sprite transfusionSprite;
+    [SerializeField] private Sprite dnaSprite;
+    [SerializeField] private Sprite coinSprite;
+    [SerializeField] private Sprite boxSprite;
+    [SerializeField] private Sprite potionSprite;
+
     [Header("Prefabs")]
-    [SerializeField] private GameObject nodePrefab; // MapRoomNodeUI prefab
+    [SerializeField] private GameObject nodePrefab;
 
     [Header("Layout Settings")]
     [SerializeField] private float verticalSpacing = 160f;
     [SerializeField] private float horizontalSpacing = 180f;
+    [SerializeField] private float mapPaddingTop = 100f;
     [SerializeField] private float mapPaddingBottom = 100f;
 
     private List<MapRoomNodeUI> _spawnedNodes = new List<MapRoomNodeUI>();
@@ -34,30 +46,29 @@ public class MapSelectionUI : MonoBehaviour
             return;
         }
         Instance = this;
-        
-        // Only auto-deactivate at initial scene load frame to avoid cancelling runtime activation
-        if (mapPanel != null && Time.frameCount == 0)
+        // Awake에서 self-SetActive(false)하면 첫 SetActive(true) 시 Awake 재진입 → 무한 꺼짐 발생
+        // 에디터에서 처음부터 비활성화로 저장하거나, Start()에서 처리
+    }
+
+    private void Start()
+    {
+        if (mapPanel != null && mapPanel != gameObject)
         {
             mapPanel.SetActive(false);
         }
     }
 
     /// <summary>
-    /// Opens the Map UI and centers on the current active floor.
+    /// 지도 UI를 열고 현재 층 기준으로 스크롤합니다.
     /// </summary>
     public void OpenMap()
     {
         if (mapPanel == null || GameManager.Instance == null) return;
 
-        // 1. Lock Player Input
         LockPlayer(true);
-
         mapPanel.SetActive(true);
 
-        // 2. Ensure container layout and links are fully intact before building
-        EnsureContainerLayout();
-
-        // 3. Build or Refresh Map Elements
+        // 지도를 열 때마다 최신 상태로 빌드/갱신
         if (!_isInitialized)
         {
             BuildMapUI();
@@ -68,44 +79,52 @@ public class MapSelectionUI : MonoBehaviour
             RefreshMapNodes();
         }
 
-        // 4. Force immediate layout updates
-        Canvas.ForceUpdateCanvases();
-        if (nodesContainer != null && nodesContainer is RectTransform containerRect)
+        // GO가 active여야 StartCoroutine 사용 가능
+        if (gameObject.activeInHierarchy)
         {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(containerRect);
+            StartCoroutine(SetupLayoutAndScroll());
         }
-
-        // 5. Scroll to Current Floor
-        ScrollToCurrentFloor();
-
-        // 6. Spawn persistent double-frame coroutine to bypass Unity UI internal overrides
-        StartCoroutine(ScrollToCurrentFloorDelayed());
+        else
+        {
+            Invoke(nameof(DelayedSetupLayout), 0.05f);
+        }
     }
 
-    private System.Collections.IEnumerator ScrollToCurrentFloorDelayed()
+    private void DelayedSetupLayout()
     {
-        // Frame 1 check
-        yield return null;
         Canvas.ForceUpdateCanvases();
-        EnsureContainerLayout();
-        if (nodesContainer != null && nodesContainer is RectTransform containerRect1)
-        {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(containerRect1);
-        }
-        ScrollToCurrentFloor();
-
-        // Frame 2 check (Unity UI double frame dirty rendering bug protection)
-        yield return null;
-        EnsureContainerLayout();
+        ApplyContainerLayout();
+        if (nodesContainer is RectTransform r)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(r);
         ScrollToCurrentFloor();
     }
 
-    private void EnsureContainerLayout()
+    private IEnumerator SetupLayoutAndScroll()
+    {
+        yield return null; // 1프레임: mapPanel 활성화 반영
+        Canvas.ForceUpdateCanvases();
+        ApplyContainerLayout();
+
+        yield return null; // 2프레임: 레이아웃 리빌드
+        Canvas.ForceUpdateCanvases();
+        if (scrollRect != null)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.GetComponent<RectTransform>());
+
+        yield return null; // 3프레임: 최종 스크롤 설정
+        Canvas.ForceUpdateCanvases();
+        ScrollToCurrentFloor();
+    }
+
+    /// <summary>
+    /// ScrollRect / Viewport / Content 레이아웃을 런타임에 강제로 맞춥니다.
+    /// </summary>
+    private void ApplyContainerLayout()
     {
         if (scrollRect == null || GameManager.Instance == null) return;
 
-        // 1. Force Scroll View to stretch-fill the entire parent UI panel
-        if (scrollRect.transform is RectTransform scrollRectTR)
+        // ScrollRect → 부모를 꽉 채움
+        RectTransform scrollRectTR = scrollRect.GetComponent<RectTransform>();
+        if (scrollRectTR != null)
         {
             scrollRectTR.anchorMin = Vector2.zero;
             scrollRectTR.anchorMax = Vector2.one;
@@ -114,71 +133,55 @@ public class MapSelectionUI : MonoBehaviour
             scrollRectTR.offsetMax = Vector2.zero;
         }
 
-        // 2. Force Viewport to stretch-fill the Scroll View container
+        // Viewport → ScrollRect를 꽉 채움
         if (scrollRect.viewport != null)
         {
-            RectTransform viewportTR = scrollRect.viewport;
-            viewportTR.anchorMin = Vector2.zero;
-            viewportTR.anchorMax = Vector2.one;
-            viewportTR.pivot = new Vector2(0f, 1f);
-            viewportTR.offsetMin = Vector2.zero;
-            viewportTR.offsetMax = Vector2.zero;
+            RectTransform vp = scrollRect.viewport;
+            vp.anchorMin = Vector2.zero;
+            vp.anchorMax = Vector2.one;
+            vp.pivot = new Vector2(0.5f, 1f);
+            vp.offsetMin = Vector2.zero;
+            vp.offsetMax = Vector2.zero;
         }
 
         var mapFloors = GameManager.Instance.GetMapFloors();
         if (mapFloors == null || mapFloors.Count == 0) return;
 
-        float totalHeight = (mapFloors.Count * verticalSpacing) + mapPaddingBottom * 2f;
+        // Content 전체 높이 계산
+        float totalHeight = mapPaddingBottom + (mapFloors.Count * verticalSpacing) + mapPaddingTop;
 
-        // 3. Force nodesContainer (content) layout parameters with precise safety pivot shift calculation
-        if (nodesContainer != null && nodesContainer is RectTransform containerRect)
+        // Content(NodesContainer): anchor/pivot = (0.5, 0) → 아래를 기준으로 위로 쌓임
+        if (nodesContainer is RectTransform containerRect)
         {
-            float cachedWidth = containerRect.sizeDelta.x;
-            
-            // Set pivot safely without shifting the physical position in Unity Editor space
-            Vector2 targetPivot = new Vector2(0.5f, 1f);
-            Vector2 deltaPivot = containerRect.pivot - targetPivot;
-            Vector2 deltaPosition = new Vector2(
-                deltaPivot.x * containerRect.rect.width * containerRect.localScale.x, 
-                deltaPivot.y * containerRect.rect.height * containerRect.localScale.y
-            );
-            
-            containerRect.pivot = targetPivot;
-            containerRect.anchorMin = targetPivot;
-            containerRect.anchorMax = targetPivot;
-            
-            containerRect.sizeDelta = new Vector2(cachedWidth, totalHeight);
-            containerRect.anchoredPosition -= deltaPosition;
+            containerRect.anchorMin = new Vector2(0.5f, 0f);
+            containerRect.anchorMax = new Vector2(0.5f, 0f);
+            containerRect.pivot = new Vector2(0.5f, 0f);
+            containerRect.sizeDelta = new Vector2(containerRect.sizeDelta.x, totalHeight);
+            containerRect.anchoredPosition = Vector2.zero;
 
-            // Force dynamic link ScrollRect content if missing
             if (scrollRect.content != containerRect)
-            {
                 scrollRect.content = containerRect;
-            }
         }
 
-        // 4. Force lineContainer to perfectly stretch-fill nodesContainer (forces identical 1:1 local coordinate space)
-        if (lineContainer != null && lineContainer is RectTransform lineContainerTR)
+        // LineContainer도 동일하게
+        if (lineContainer is RectTransform lineContainerTR)
         {
-            lineContainerTR.anchorMin = new Vector2(0.5f, 1f);
-            lineContainerTR.anchorMax = new Vector2(0.5f, 1f);
-            lineContainerTR.pivot = new Vector2(0.5f, 1f);
+            lineContainerTR.anchorMin = new Vector2(0.5f, 0f);
+            lineContainerTR.anchorMax = new Vector2(0.5f, 0f);
+            lineContainerTR.pivot = new Vector2(0.5f, 0f);
             lineContainerTR.anchoredPosition = Vector2.zero;
-            
-            if (nodesContainer != null && nodesContainer is RectTransform containerRect2)
-            {
+
+            if (nodesContainer is RectTransform containerRect2)
                 lineContainerTR.sizeDelta = containerRect2.sizeDelta;
-            }
         }
+
+        scrollRect.scrollSensitivity = 30f;
+        scrollRect.movementType = ScrollRect.MovementType.Clamped;
     }
 
-    /// <summary>
-    /// Closes the Map UI and unlocks player input.
-    /// </summary>
     public void CloseMap()
     {
         if (mapPanel == null) return;
-
         mapPanel.SetActive(false);
         LockPlayer(false);
     }
@@ -186,20 +189,15 @@ public class MapSelectionUI : MonoBehaviour
     private void LockPlayer(bool lockInput)
     {
         if (GameManager.Instance == null || GameManager.Instance.playerOBJ == null) return;
-        
+
         PlayerInputController pic = GameManager.Instance.playerOBJ.GetComponent<PlayerInputController>();
         if (pic != null)
         {
             if (lockInput)
             {
                 pic.InputOff();
-                
-                // Also stop velocity to prevent slide during map open
                 Rigidbody2D rb = GameManager.Instance.playerOBJ.GetComponent<Rigidbody2D>();
-                if (rb != null)
-                {
-                    rb.linearVelocity = Vector2.zero;
-                }
+                if (rb != null) rb.linearVelocity = Vector2.zero;
             }
             else
             {
@@ -210,42 +208,31 @@ public class MapSelectionUI : MonoBehaviour
 
     private void BuildMapUI()
     {
-        // Clear old ones
         foreach (var node in _spawnedNodes)
-        {
             if (node != null) Destroy(node.gameObject);
-        }
         _spawnedNodes.Clear();
 
-        // Clear line container
         if (lineContainer != null)
-        {
             foreach (Transform child in lineContainer)
-            {
                 Destroy(child.gameObject);
-            }
-        }
 
         var mapFloors = GameManager.Instance.GetMapFloors();
         if (mapFloors == null || mapFloors.Count == 0) return;
 
         int totalFloors = mapFloors.Count;
-        float totalHeight = (totalFloors * verticalSpacing) + mapPaddingBottom * 2f;
+        ApplyContainerLayout();
 
-        EnsureContainerLayout();
-        if (nodesContainer != null && nodesContainer is RectTransform containerRect)
-        {
-            containerRect.anchoredPosition = new Vector2(0f, 0f);
-        }
-
-        // 1. Spawn Nodes
         Dictionary<string, Vector2> nodePositions = new Dictionary<string, Vector2>();
 
+        // 지도 방향: 아래에서 위로
+        // f=0(1번째 층=보스) → 맨 아래, f=totalFloors-1(마지막 층) → 맨 위
+        // content pivot=(0.5,0) → y=0이 맨 아래, y=totalHeight이 맨 위
         for (int f = 0; f < totalFloors; f++)
         {
             var floor = mapFloors[f];
-            // Standard symmetric Top-Center downward layout
-            float yPos = -mapPaddingBottom - ((totalFloors - 1 - f) * verticalSpacing);
+            // f=0: 맨 아래, y = mapPaddingBottom
+            // f=totalFloors-1: 맨 위
+            float yPos = mapPaddingBottom + (f * verticalSpacing);
 
             for (int n = 0; n < floor.nodes.Count; n++)
             {
@@ -254,7 +241,6 @@ public class MapSelectionUI : MonoBehaviour
 
                 if (!floor.isBossFloor)
                 {
-                    // 3 nodes layout: Left, Center, Right
                     if (n == 0) xPos = -horizontalSpacing;
                     else if (n == 1) xPos = 0f;
                     else if (n == 2) xPos = horizontalSpacing;
@@ -264,41 +250,36 @@ public class MapSelectionUI : MonoBehaviour
                 string key = $"{f}_{n}";
                 nodePositions[key] = anchoredPos;
 
-                // Instantiate Node UI
                 GameObject nodeObj = Instantiate(nodePrefab, nodesContainer, false);
                 if (nodeObj == null) continue;
 
                 RectTransform nodeRect = nodeObj.GetComponent<RectTransform>();
                 if (nodeRect != null)
                 {
+                    nodeRect.anchorMin = new Vector2(0.5f, 0f);
+                    nodeRect.anchorMax = new Vector2(0.5f, 0f);
+                    nodeRect.pivot = new Vector2(0.5f, 0.5f);
                     nodeRect.anchoredPosition = anchoredPos;
                 }
 
                 MapRoomNodeUI nodeUI = nodeObj.GetComponent<MapRoomNodeUI>();
                 if (nodeUI != null)
                 {
-                    // Setup node visual states
                     bool isCurrent = GameManager.Instance.IsNodeCurrent(f, n);
                     bool isVisited = GameManager.Instance.IsNodeVisited(f, n);
                     bool isSelectable = GameManager.Instance.IsNodeSelectable(f, n);
 
-                    nodeUI.Setup(
-                        f, 
-                        n, 
-                        nodeData.isBoss, 
-                        nodeData.roomTheme, 
-                        isCurrent, 
-                        isVisited, 
-                        isSelectable, 
-                        OnNodeSelected
-                    );
+                    Sprite symbolSprite = GetSpriteForTheme(nodeData.isBoss, nodeData.roomTheme);
+
+                    nodeUI.Setup(f, n, nodeData.isBoss, nodeData.roomTheme,
+                        isCurrent, isVisited, isSelectable, symbolSprite, OnNodeSelected);
 
                     _spawnedNodes.Add(nodeUI);
                 }
             }
         }
 
-        // 2. Draw Connection Lines between adjacent floors
+        // 연결선 그리기
         for (int f = 0; f < totalFloors - 1; f++)
         {
             var currentFloor = mapFloors[f];
@@ -308,17 +289,10 @@ public class MapSelectionUI : MonoBehaviour
             {
                 for (int nn = 0; nn < nextFloor.nodes.Count; nn++)
                 {
-                    // We connect current floor's node(n) to next floor's node(nn).
-                    // In our hourglass layout:
-                    // - Even floors (Boss, 1 node) connect to all 3 nodes of Odd floor.
-                    // - Odd floors (3 nodes) connect to the single node of Even floor.
                     string startKey = $"{f}_{n}";
                     string endKey = $"{f + 1}_{nn}";
-
                     if (nodePositions.ContainsKey(startKey) && nodePositions.ContainsKey(endKey))
-                    {
                         DrawLine(nodePositions[startKey], nodePositions[endKey]);
-                    }
                 }
             }
         }
@@ -330,7 +304,6 @@ public class MapSelectionUI : MonoBehaviour
         if (mapFloors == null || mapFloors.Count == 0) return;
 
         int nodeUIIndex = 0;
-
         for (int f = 0; f < mapFloors.Count; f++)
         {
             var floor = mapFloors[f];
@@ -346,16 +319,10 @@ public class MapSelectionUI : MonoBehaviour
                         bool isVisited = GameManager.Instance.IsNodeVisited(f, n);
                         bool isSelectable = GameManager.Instance.IsNodeSelectable(f, n);
 
-                        nodeUI.Setup(
-                            f, 
-                            n, 
-                            nodeData.isBoss, 
-                            nodeData.roomTheme, 
-                            isCurrent, 
-                            isVisited, 
-                            isSelectable, 
-                            OnNodeSelected
-                        );
+                        Sprite symbolSprite = GetSpriteForTheme(nodeData.isBoss, nodeData.roomTheme);
+
+                        nodeUI.Setup(f, n, nodeData.isBoss, nodeData.roomTheme,
+                            isCurrent, isVisited, isSelectable, symbolSprite, OnNodeSelected);
                     }
                     nodeUIIndex++;
                 }
@@ -372,9 +339,7 @@ public class MapSelectionUI : MonoBehaviour
 
         Image img = lineObj.GetComponent<Image>();
         if (img != null)
-        {
-            img.color = new Color(1f, 1f, 1f, 0.2f); // Faint line
-        }
+            img.color = new Color(1f, 1f, 1f, 0.25f);
 
         RectTransform rect = lineObj.GetComponent<RectTransform>();
         if (rect != null)
@@ -387,23 +352,35 @@ public class MapSelectionUI : MonoBehaviour
             float distance = direction.magnitude;
 
             rect.anchoredPosition = fromPos;
-            rect.sizeDelta = new Vector2(6f, distance); // Thick visible line
+            rect.sizeDelta = new Vector2(4f, distance);
 
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             rect.localRotation = Quaternion.Euler(0f, 0f, angle - 90f);
         }
     }
 
+    private Sprite GetSpriteForTheme(bool isBoss, NormalStage.RoomTheme theme)
+    {
+        if (isBoss) return bossSprite;
+
+        switch (theme)
+        {
+            case NormalStage.RoomTheme.Mystery: return mysterySprite;
+            case NormalStage.RoomTheme.Shop: return shopSprite;
+            case NormalStage.RoomTheme.Transfusion: return transfusionSprite;
+            case NormalStage.RoomTheme.DNA: return dnaSprite;
+            case NormalStage.RoomTheme.Coin: return coinSprite;
+            case NormalStage.RoomTheme.Box: return boxSprite;
+            case NormalStage.RoomTheme.Potion: return potionSprite;
+            default: return null;
+        }
+    }
+
     private void OnNodeSelected(int floorIndex, int nodeIndex)
     {
-        Debug.Log($"[MapSelectionUI] Node selected at Floor {floorIndex}, Node {nodeIndex}");
-        
-        // Notify GameManager to process the stage choice transition
+        Debug.Log($"[MapSelectionUI] Node selected: Floor={floorIndex}, Node={nodeIndex}");
         if (GameManager.Instance != null)
-        {
             GameManager.Instance.SelectMapNode(floorIndex, nodeIndex);
-        }
-
         CloseMap();
     }
 
@@ -415,25 +392,27 @@ public class MapSelectionUI : MonoBehaviour
         if (mapFloors == null || mapFloors.Count == 0) return;
 
         int currentFloorIndex = GameManager.Instance.GetCurrentMapFloorIndex();
-        int totalFloors = mapFloors.Count;
-        
-        // Calculate total height of the container
-        float totalHeight = (totalFloors * verticalSpacing) + mapPaddingBottom * 2f;
+
+        float contentHeight = scrollRect.content.rect.height;
         float viewportHeight = scrollRect.viewport != null ? scrollRect.viewport.rect.height : 600f;
 
-        // Use the exact same symmetric downward placement Y coordinate formula
-        float yPos = -mapPaddingBottom - ((totalFloors - 1 - currentFloorIndex) * verticalSpacing);
+        // content pivot=(0.5,0) 기준: currentFloorIndex의 노드 y좌표
+        float nodeY = mapPaddingBottom + (currentFloorIndex * verticalSpacing);
 
-        // Center the node inside the viewport by setting content anchored Y position directly
-        float targetY = -yPos - (viewportHeight * 0.5f);
-        float maxScroll = totalHeight - viewportHeight;
-        targetY = Mathf.Clamp(targetY, 0f, Mathf.Max(0f, maxScroll));
+        // 현재 층이 뷰포트 하단 1/4 지점에 오도록 스크롤 위치 계산
+        // scrollY: content가 viewport 아래로 얼마나 이동했는지 (양수 = 위로 스크롤)
+        // 즉, content.anchoredPosition.y = scrollY (pivot=bottom이므로 양수로 위로 올라감)
+        //
+        // viewport 안에서 nodeY가 viewportHeight * 0.25 지점에 오도록:
+        // nodeY - scrollY = viewportHeight * 0.25
+        // scrollY = nodeY - viewportHeight * 0.25
+        float scrollY = nodeY - viewportHeight * 0.25f;
 
-        Debug.Log($"[MapSelectionUI] ScrollToCurrentFloor -> Floor Index: {currentFloorIndex}, Content Height: {totalHeight}, Viewport Height: {viewportHeight}, TargetY: {targetY}, MaxScroll: {maxScroll}");
+        float maxScrollY = Mathf.Max(0f, contentHeight - viewportHeight);
+        scrollY = Mathf.Clamp(scrollY, 0f, maxScrollY);
 
-        // Direct position assignment to bypass Unity's dirty layout normalizedPosition calculation issues
-        scrollRect.content.anchoredPosition = new Vector2(0f, targetY);
-        
-        Debug.Log($"[MapSelectionUI] Verification -> Content anchoredPosition after setting: {scrollRect.content.anchoredPosition}");
+        scrollRect.content.anchoredPosition = new Vector2(0f, scrollY);
+
+        Debug.Log($"[MapSelectionUI] ScrollToFloor {currentFloorIndex}: nodeY={nodeY}, contentH={contentHeight}, viewportH={viewportHeight}, scrollY={scrollY}");
     }
 }
