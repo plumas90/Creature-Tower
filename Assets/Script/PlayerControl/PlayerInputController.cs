@@ -201,11 +201,25 @@ public class PlayerInputController : TopDownCharacterController
 
     public void InputOff()
     {
+        cantMove = true;
+        ResetSetting();
         playerInput.DeactivateInput();
+
+        // 이동 정지 처리
+        CallMoveEvent(Vector2.zero);
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        // 진행 중인 모든 입력 정지
+        ForceStopAttackInput();
     }
 
     public void InputOn()
     {
+        cantMove = false;
         playerInput.ActivateInput();
         ResetSetting();
     }

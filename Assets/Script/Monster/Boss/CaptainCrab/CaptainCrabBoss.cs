@@ -663,5 +663,109 @@ public class CaptainCrabBoss : BossBase
         else
             rightClawCurrentSwingAngle = targetAngle;
     }
+
+    protected override void OnBeforeIntroStart()
+    {
+        base.OnBeforeIntroStart();
+        StartCoroutine(CoCaptainCrabIntroMotion());
+    }
+
+    private IEnumerator CoCaptainCrabIntroMotion()
+    {
+        float duration = IntroTime > 0.1f ? IntroTime : 2.5f;
+
+        List<Transform> leftBones = new List<Transform>();
+        List<Transform> rightBones = new List<Transform>();
+        
+        FindBonesRecursive(leftClawTransform, leftBones);
+        FindBonesRecursive(rightClawTransform, rightBones);
+
+        Dictionary<Transform, Quaternion> boneOrigRots = new Dictionary<Transform, Quaternion>();
+        Dictionary<Transform, Vector3> boneOrigPos = new Dictionary<Transform, Vector3>();
+
+        foreach (var b in leftBones)
+        {
+            boneOrigRots[b] = b.localRotation;
+            boneOrigPos[b] = b.localPosition;
+        }
+        foreach (var b in rightBones)
+        {
+            boneOrigRots[b] = b.localRotation;
+            boneOrigPos[b] = b.localPosition;
+        }
+
+        Quaternion leftArmOrigRot = leftClawTransform != null ? leftClawTransform.localRotation : Quaternion.identity;
+        Quaternion rightArmOrigRot = rightClawTransform != null ? rightClawTransform.localRotation : Quaternion.identity;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            // 1. bone-n 만큼 z값을 갔다가 돌아오기 (sin 곡선: 0 -> 1 -> 0)
+            float boneFactor = Mathf.Sin(t * Mathf.PI);
+            float targetAngle = 30f * boneFactor;  // Z축 회전 변화
+            float targetZPos = 1.5f * boneFactor;   // Z축 위치 변화
+
+            foreach (var b in leftBones)
+            {
+                if (b == null) continue;
+                b.localRotation = boneOrigRots[b] * Quaternion.Euler(0f, 0f, targetAngle);
+                Vector3 p = boneOrigPos[b];
+                p.z = boneOrigPos[b].z + targetZPos;
+                b.localPosition = p;
+            }
+
+            foreach (var b in rightBones)
+            {
+                if (b == null) continue;
+                b.localRotation = boneOrigRots[b] * Quaternion.Euler(0f, 0f, -targetAngle);
+                Vector3 p = boneOrigPos[b];
+                p.z = boneOrigPos[b].z + targetZPos;
+                b.localPosition = p;
+            }
+
+            // 2. 기존 arm을 살짝 좌우로 2번 흔들기 (sin(t * 4 * PI))
+            float shakeFactor = Mathf.Sin(t * 4f * Mathf.PI);
+            float shakeAngle = 12f * shakeFactor;
+
+            if (leftClawTransform != null)
+            {
+                leftClawTransform.localRotation = leftArmOrigRot * Quaternion.Euler(0f, 0f, shakeAngle);
+            }
+            if (rightClawTransform != null)
+            {
+                rightClawTransform.localRotation = rightArmOrigRot * Quaternion.Euler(0f, 0f, -shakeAngle);
+            }
+
+            yield return null;
+        }
+
+        // 복구
+        foreach (var kvp in boneOrigRots)
+        {
+            if (kvp.Key != null) kvp.Key.localRotation = kvp.Value;
+        }
+        foreach (var kvp in boneOrigPos)
+        {
+            if (kvp.Key != null) kvp.Key.localPosition = kvp.Value;
+        }
+        if (leftClawTransform != null) leftClawTransform.localRotation = leftArmOrigRot;
+        if (rightClawTransform != null) rightClawTransform.localRotation = rightArmOrigRot;
+    }
+
+    private void FindBonesRecursive(Transform parent, List<Transform> list)
+    {
+        if (parent == null) return;
+        foreach (Transform child in parent)
+        {
+            if (child.name.ToLower().Contains("bone"))
+            {
+                list.Add(child);
+            }
+            FindBonesRecursive(child, list);
+        }
+    }
 }
 

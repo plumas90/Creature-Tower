@@ -19,6 +19,8 @@ MonoBehaviour:
   bossCount: 1
   IntroAnimationTime: 3
   bossPatternTime: 0
+  slimeLandRestTime: 1
+  slimeKeepDistance: 4
   btChaseRange: 100
   btStopDistance: 0.6
   btRepathInterval: 0.15
@@ -43,7 +45,7 @@ MonoBehaviour:
   clawSweepRecoverTime: 0.2
   clawSweepWindupAngle: 18
   clawSweepStrikeAngle: 48
-  clawSweepClashInwardDistance: 2
+  clawSweepClashInwardDistance: 1
   clawSweepClashDuration: 0.15
   clawSweepClashHoldTime: 0.08
   clawSweepDamage: 14
