@@ -18,14 +18,14 @@ MonoBehaviour:
   waves:
   - waveName: Test Wave (2 Ranged, 3 Slime)
     spawnList:
-    - monsterPrefab: {fileID: 6964553681987251415, guid: 5a85cfc8468e0564682c020c8b64ad4a, type: 3}
+    - monsterPrefab: {fileID: 1000001, guid: b65c2637a892404e9c1dbf50be4c1002, type: 3}
       spawnOffset: {x: -3, y: 2}
-    - monsterPrefab: {fileID: 6964553681987251415, guid: 5a85cfc8468e0564682c020c8b64ad4a, type: 3}
-      spawnOffset: {x: 3, y: 2}
     - monsterPrefab: {fileID: 1000001, guid: b65c2637a892404e9c1dbf50be4c1002, type: 3}
       spawnOffset: {x: -2.5, y: -1}
     - monsterPrefab: {fileID: 1000001, guid: b65c2637a892404e9c1dbf50be4c1002, type: 3}
       spawnOffset: {x: 2.5, y: -1}
     - monsterPrefab: {fileID: 1000001, guid: b65c2637a892404e9c1dbf50be4c1002, type: 3}
       spawnOffset: {x: 0, y: -1.5}
+    - monsterPrefab: {fileID: 6964553681987251415, guid: 5a85cfc8468e0564682c020c8b64ad4a, type: 3}
+      spawnOffset: {x: 3, y: 2}
     delayBeforeWave: 1

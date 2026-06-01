@@ -5872,6 +5872,7 @@ MonoBehaviour:
   monsterGroup: {fileID: 11400000, guid: c98217e9dbf61904593fb13df12309d4, type: 2}
   availableMonsterGroups:
   - {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f08, type: 2}
+  - {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f08, type: 2}
 --- !u!1 &7409947402209049791
 GameObject:
   m_ObjectHideFlags: 0

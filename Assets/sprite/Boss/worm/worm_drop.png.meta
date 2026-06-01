@@ -1,0 +1,299 @@
+fileFormatVersion: 2
+guid: c0b696ca108ec3b4bb1d6b14b7e383ad
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1925507675522583516
+    second: worm_drop_0
+  - first:
+      213: 396445828803365208
+    second: worm_drop_1
+  - first:
+      213: 4150523821059387270
+    second: worm_drop_2
+  - first:
+      213: -2212048458993415330
+    second: worm_drop_3
+  - first:
+      213: -1418540044817297110
+    second: worm_drop_4
+  - first:
+      213: -5153962565200717845
+    second: worm_drop_5
+  - first:
+      213: 4232042601511655805
+    second: worm_drop_6
+  - first:
+      213: 2467794133998711214
+    second: worm_drop_7
+  - first:
+      213: 2823364514796881460
+    second: worm_drop_8
+  - first:
+      213: 2381212714702031526
+    second: worm_drop_9
+  - first:
+      213: 8661003019855212142
+    second: worm_drop_10
+  - first:
+      213: -8281887426137188764
+    second: worm_drop_11
+  - first:
+      213: 3858591892001891822
+    second: worm_drop_12
+  - first:
+      213: -6638028056694174323
+    second: worm_drop_13
+  - first:
+      213: 2480861546207485870
+    second: worm_drop_14
+  - first:
+      213: 234127447335019396
+    second: worm_drop_15
+  - first:
+      213: -4628415180618151402
+    second: worm_drop_16
+  - first:
+      213: -521077626802667452
+    second: worm_drop_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: worm_drop_0
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 9
+        width: 168
+        height: 157
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdbcfc37707c8ba10800000000000000
+      internalID: 1925507675522583516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worm_drop_2
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 9
+        width: 354
+        height: 99
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68faa02cc6f999930800000000000000
+      internalID: 4150523821059387270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worm_drop_5
+      rect:
+        serializedVersion: 2
+        x: 1621
+        y: 8
+        width: 305
+        height: 95
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be7dc839a527978b0800000000000000
+      internalID: -5153962565200717845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worm_drop_7
+      rect:
+        serializedVersion: 2
+        x: 806
+        y: 0
+        width: 370
+        height: 104
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea139cf90bd5f3220800000000000000
+      internalID: 2467794133998711214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worm_drop_9
+      rect:
+        serializedVersion: 2
+        x: 1231
+        y: 0
+        width: 302
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6aa457a0954cb0120800000000000000
+      internalID: 2381212714702031526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 39856e23d44f76d49b888e747052926e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      worm_drop_0: 1925507675522583516
+      worm_drop_1: 396445828803365208
+      worm_drop_10: 8661003019855212142
+      worm_drop_11: -8281887426137188764
+      worm_drop_12: 3858591892001891822
+      worm_drop_13: -6638028056694174323
+      worm_drop_14: 2480861546207485870
+      worm_drop_15: 234127447335019396
+      worm_drop_16: -4628415180618151402
+      worm_drop_17: -521077626802667452
+      worm_drop_2: 4150523821059387270
+      worm_drop_3: -2212048458993415330
+      worm_drop_4: -1418540044817297110
+      worm_drop_5: -5153962565200717845
+      worm_drop_6: 4232042601511655805
+      worm_drop_7: 2467794133998711214
+      worm_drop_8: 2823364514796881460
+      worm_drop_9: 2381212714702031526
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -55,6 +55,15 @@ public class SlimeEnemy : EnemyBase
     private SpriteRenderer _visualSR;
     private static readonly int AnimIsWalk = Animator.StringToHash("IsWalking");
 
+    // 슬라임 커스텀 스프라이트 애니메이션 변수
+    private Sprite[] _idleSprites = new Sprite[4];
+    private Sprite[] _jumpSprites = new Sprite[4];
+    private Sprite _holdSprite;
+    private Sprite[] _downSprites = new Sprite[3];
+    private Coroutine _idleAnimationCoroutine;
+    private int _currentIdleFrame = 0;
+    private float _idleFrameRate = 0.15f;
+
     protected override void Start()
     {
         base.Start();
@@ -119,6 +128,16 @@ public class SlimeEnemy : EnemyBase
             landDelay = MainSO.slimeLandRestTime;
             _keepDistance = MainSO.slimeKeepDistance;
         }
+
+        // 기존 Animator가 스프라이트를 덮어씌우는 것을 방지하기 위해 비활성화
+        if (_animator != null)
+        {
+            _animator.enabled = false;
+        }
+
+        // 스프라이트 로드 및 Idle 애니메이션 시작
+        LoadSlimeSprites();
+        _idleAnimationCoroutine = StartCoroutine(CoIdleAnimation());
     }
 
     // ─── AI 및 틱 관리 ──────────────────────────────────────────
@@ -179,10 +198,20 @@ public class SlimeEnemy : EnemyBase
 
         // 찌부러지는(Squish) 도약 준비 마이크로 애니메이션 연출 (비주얼 극대화)
         float elapsed = 0f;
+        int lastJumpFrameIndex = -1;
         while (elapsed < jumpDelay)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / jumpDelay;
+
+            // 점프 준비 스프라이트 갱신 (jump1 ~ jump4)
+            int frameIndex = Mathf.Clamp(Mathf.FloorToInt(t * 4f), 0, 3);
+            if (frameIndex != lastJumpFrameIndex && _visualSR != null && _jumpSprites[frameIndex] != null)
+            {
+                _visualSR.sprite = _jumpSprites[frameIndex];
+                lastJumpFrameIndex = frameIndex;
+            }
+
             // 로컬 Y는 누르고, X/Z는 퍼지게 스케일 보정
             if (visualTransform != null)
             {
@@ -201,15 +230,21 @@ public class SlimeEnemy : EnemyBase
             visualTransform.localScale = _initialVisualScale;
         }
 
-        // 2. 점프 도약 (공중 상태 시작)
-        // 벽을 뚫고 맵 밖으로 나가지 않도록 콜리더는 켜둔 채 플레이어와의 물리 충돌만 무시
-        IgnorePlayerCollision(true);
+        // 2. 점프 도약 (공중 상태 시작 - 콜리더 완전히 끄기)
+        if (_myColliders != null)
+        {
+            foreach (var col in _myColliders)
+            {
+                if (col != null) col.enabled = false;
+            }
+        }
         invincibility = true;
 
         Vector2 jumpDir = (Player.transform.position - transform.position).normalized;
 
         // 3. 체공 및 돌진 (포물선 궤적 운동)
         float jumpTime = 0f;
+        int lastDownFrameIndex = -1;
         while (jumpTime < jumpDuration)
         {
             jumpTime += Time.deltaTime;
@@ -220,6 +255,31 @@ public class SlimeEnemy : EnemyBase
 
             // 2.5D 공중 상승 포물선 계산: y = 4 * H * t * (1 - t)
             float currentHeight = 4f * jumpHeight * t * (1f - t);
+
+            if (_visualSR != null)
+            {
+                if (t < 0.3f)
+                {
+                    // 상승 중: 도약 마지막 프레임인 jump4 유지 (30% 할당)
+                    if (_jumpSprites[3] != null) _visualSR.sprite = _jumpSprites[3];
+                }
+                else if (t >= 0.3f && t < 0.85f)
+                {
+                    // 공중 정점: hold 스프라이트 (지속 시간을 55%로 대폭 확대)
+                    if (_holdSprite != null) _visualSR.sprite = _holdSprite;
+                }
+                else
+                {
+                    // 떨어지기 시작: down1 ~ down3 순차 재생 (착지 직전 15% 짧고 강하게 낙하 연출)
+                    float t2 = (t - 0.85f) / 0.15f;
+                    int downIndex = Mathf.Clamp(Mathf.FloorToInt(t2 * 3f), 0, 2);
+                    if (downIndex != lastDownFrameIndex && _downSprites[downIndex] != null)
+                    {
+                        _visualSR.sprite = _downSprites[downIndex];
+                        lastDownFrameIndex = downIndex;
+                    }
+                }
+            }
 
             if (visualTransform != null)
             {
@@ -285,9 +345,15 @@ public class SlimeEnemy : EnemyBase
             visualTransform.localScale = _initialVisualScale;
         }
 
-        // 속도 초기화 및 물리 충돌 / 피격 복원
+        // 속도 초기화 및 물리 충돌 / 피격 복원 (콜리더 다시 켜기)
         _rb2d.linearVelocity = Vector2.zero;
-        IgnorePlayerCollision(false);
+        if (_myColliders != null)
+        {
+            foreach (var col in _myColliders)
+            {
+                if (col != null) col.enabled = true;
+            }
+        }
         invincibility = false;
 
         // 5. 착지 후 딜레이 (착지 후 휴식/멍때리기)
@@ -326,6 +392,10 @@ public class SlimeEnemy : EnemyBase
     // ─── 사망 시 예외 처리 ─────────────────────────────────────────
     protected override void Die()
     {
+        if (_idleAnimationCoroutine != null)
+        {
+            StopCoroutine(_idleAnimationCoroutine);
+        }
         if (_jumpCoroutine != null)
         {
             StopCoroutine(_jumpCoroutine);
@@ -348,5 +418,50 @@ public class SlimeEnemy : EnemyBase
         SetWalk(false);
 
         base.Die();
+    }
+
+    // ─── 커스텀 애니메이션 보조 메서드 ──────────────────────────────────────
+    private void LoadSlimeSprites()
+    {
+        Sprite[] allSprites = Resources.LoadAll<Sprite>("sprite/monster/slime");
+        if (allSprites == null || allSprites.Length == 0)
+        {
+            Debug.LogWarning("[SlimeEnemy] Resources.LoadAll failed to load slime sprites. Make sure slime.png is in Resources/sprite/monster/.");
+            return;
+        }
+
+        foreach (var s in allSprites)
+        {
+            if (s == null) continue;
+            string name = s.name.ToLower();
+            if (name.Contains("idle1")) _idleSprites[0] = s;
+            else if (name.Contains("idle2")) _idleSprites[1] = s;
+            else if (name.Contains("idle3")) _idleSprites[2] = s;
+            else if (name.Contains("idle4")) _idleSprites[3] = s;
+            
+            else if (name.Contains("jump1")) _jumpSprites[0] = s;
+            else if (name.Contains("jump2")) _jumpSprites[1] = s;
+            else if (name.Contains("jump3")) _jumpSprites[2] = s;
+            else if (name.Contains("jump4")) _jumpSprites[3] = s;
+            
+            else if (name.Contains("hold")) _holdSprite = s;
+            
+            else if (name.Contains("down1")) _downSprites[0] = s;
+            else if (name.Contains("down2")) _downSprites[1] = s;
+            else if (name.Contains("down3")) _downSprites[2] = s;
+        }
+    }
+
+    private IEnumerator CoIdleAnimation()
+    {
+        while (!isDead)
+        {
+            if (!_isJumping && _visualSR != null && _idleSprites[0] != null)
+            {
+                _visualSR.sprite = _idleSprites[_currentIdleFrame];
+                _currentIdleFrame = (_currentIdleFrame + 1) % _idleSprites.Length;
+            }
+            yield return new WaitForSeconds(_idleFrameRate);
+        }
     }
 }
