@@ -26,8 +26,8 @@ Transform:
   m_GameObject: {fileID: 1996659528572615120}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.56, z: 0}
-  m_LocalScale: {x: 1, y: 0.2, z: 1}
+  m_LocalPosition: {x: -0.02, y: 0.04, z: 0}
+  m_LocalScale: {x: 2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8656574964021955361}
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 100001
-  m_SortingLayer: 1
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -119,7 +119,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2284359298268054271}
@@ -167,9 +167,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 100001
-  m_SortingLayer: 1
+  m_SortingLayer: 3
   m_SortingOrder: 13
-  m_Sprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
+  m_Sprite: {fileID: 400968723208200501, guid: e2445d927409002429413232d254b3df, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -241,17 +241,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.001855433, y: 0.4567987}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 3.328125, y: 1.453125}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 3.3114877, y: 0.9609776}
   m_EdgeRadius: 0
 --- !u!114 &705006230013536525
 MonoBehaviour:
@@ -270,20 +270,39 @@ MonoBehaviour:
   maxHp: 0
   curHp: 0
   speed: 0
-  bossCount: 0
   live: 0
+  invincibility: 0
   Player: {fileID: 0}
+  useKinematic: 0
+  useYBasedSorting: 1
+  ySortLayerName: World_Dynamic
+  ySortBaseOrder: 1500
+  ySortScale: 10
+  ySortOrderOffset: 0
+  ySortPivot: {fileID: 0}
+  bossCount: 0
+  wait: 1
   StageOwner: {fileID: 0}
   IntroTime: 0
-  wait: 1
-  invincibility: 0
   forceKinematicBody2D: 1
+  useSeparateHurtbox: 0
   enableBTChecklistLog: 0
   wormSO: {fileID: 11400000, guid: ea8109cf7fda8e3468f40243533d1492, type: 2}
   shadowObject: {fileID: 1996659528572615120}
   verboseBTLog: 0
   overrideForceKinematic: 1
   wormShouldBeDynamic: 1
+  wormIdleSprite: {fileID: 400968723208200501, guid: e2445d927409002429413232d254b3df, type: 3}
+  dropInAirSprite: {fileID: 1925507675522583516, guid: c0b696ca108ec3b4bb1d6b14b7e383ad, type: 3}
+  dropEndSprites:
+  - {fileID: 4150523821059387270, guid: c0b696ca108ec3b4bb1d6b14b7e383ad, type: 3}
+  - {fileID: 2467794133998711214, guid: c0b696ca108ec3b4bb1d6b14b7e383ad, type: 3}
+  - {fileID: 2381212714702031526, guid: c0b696ca108ec3b4bb1d6b14b7e383ad, type: 3}
+  - {fileID: -5153962565200717845, guid: c0b696ca108ec3b4bb1d6b14b7e383ad, type: 3}
+  charge1Sprite: {fileID: -8409175201180506196, guid: e2445d927409002429413232d254b3df, type: 3}
+  charge2Sprite: {fileID: 2036221819, guid: e2445d927409002429413232d254b3df, type: 3}
+  charge3Sprite: {fileID: -1609990202, guid: e2445d927409002429413232d254b3df, type: 3}
+  animationFps: 10
 --- !u!114 &3847065595767431164
 MonoBehaviour:
   m_ObjectHideFlags: 0

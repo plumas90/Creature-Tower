@@ -265,7 +265,14 @@ public class BossStage : Stage
         MainCamera mc = Camera.main != null ? Camera.main.GetComponent<MainCamera>() : null;
         if (mc != null && boss.IntroTime > 0f)
         {
-            mc.StartBossIntroTracking(boss.gameObject, boss.IntroTime);
+            if (boss is TheWorm && BossSpawnPoint != null)
+            {
+                mc.StartBossIntroTracking(BossSpawnPoint.gameObject, boss.IntroTime);
+            }
+            else
+            {
+                mc.StartBossIntroTracking(boss.gameObject, boss.IntroTime);
+            }
         }
 
         Debug.Log($"[BossStage] Boss battle started on '{name}' => {boss.name}");

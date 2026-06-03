@@ -8,7 +8,6 @@ public class ResultBox : MonoBehaviour
     public float coinDropChance = 0.5f; // 일반 상자에서 코인이 나올 확률
 
     [Header("Spawns")]
-    public GameObject childDNA; // 자식 오브젝트 (Square)
     public GameObject dnaPrefab; // 동적 스폰할 DNA 프리팹
 
     [Header("Animation (Placeholders)")]
@@ -123,20 +122,14 @@ public class ResultBox : MonoBehaviour
     {
         GameObject targetDnaObj = null;
 
-        if (childDNA != null)
-        {
-            targetDnaObj = childDNA;
-            targetDnaObj.SetActive(true);
-            Debug.Log("[ResultBox] Activated existing childDNA.");
-        }
-        else if (dnaPrefab != null)
+        if (dnaPrefab != null)
         {
             targetDnaObj = Instantiate(dnaPrefab, transform.position, Quaternion.identity);
             Debug.Log($"[ResultBox] Instantiated dnaPrefab successfully at {transform.position}.");
         }
         else
         {
-            Debug.LogError("[ResultBox] SpawnDNA failed: Both childDNA and dnaPrefab are null!");
+            Debug.LogError("[ResultBox] SpawnDNA failed: dnaPrefab is null!");
         }
 
         if (targetDnaObj != null)

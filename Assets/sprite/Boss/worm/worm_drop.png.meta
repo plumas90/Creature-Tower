@@ -151,7 +151,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: worm_drop_0
+      name: worm_drop_inair
       rect:
         serializedVersion: 2
         x: 12
@@ -173,7 +173,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: worm_drop_2
+      name: worm_drop_end1
       rect:
         serializedVersion: 2
         x: 403
@@ -195,11 +195,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: worm_drop_5
+      name: worm_drop_end4
       rect:
         serializedVersion: 2
-        x: 1621
-        y: 8
+        x: 1623
+        y: 7
         width: 305
         height: 95
       alignment: 0
@@ -217,7 +217,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: worm_drop_7
+      name: worm_drop_end2
       rect:
         serializedVersion: 2
         x: 806
@@ -239,7 +239,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: worm_drop_9
+      name: worm_drop_end3
       rect:
         serializedVersion: 2
         x: 1231
@@ -274,7 +274,6 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      worm_drop_0: 1925507675522583516
       worm_drop_1: 396445828803365208
       worm_drop_10: 8661003019855212142
       worm_drop_11: -8281887426137188764
@@ -284,14 +283,15 @@ TextureImporter:
       worm_drop_15: 234127447335019396
       worm_drop_16: -4628415180618151402
       worm_drop_17: -521077626802667452
-      worm_drop_2: 4150523821059387270
       worm_drop_3: -2212048458993415330
       worm_drop_4: -1418540044817297110
-      worm_drop_5: -5153962565200717845
       worm_drop_6: 4232042601511655805
-      worm_drop_7: 2467794133998711214
       worm_drop_8: 2823364514796881460
-      worm_drop_9: 2381212714702031526
+      worm_drop_end1: 4150523821059387270
+      worm_drop_end2: 2467794133998711214
+      worm_drop_end3: 2381212714702031526
+      worm_drop_end4: -5153962565200717845
+      worm_drop_inair: 1925507675522583516
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

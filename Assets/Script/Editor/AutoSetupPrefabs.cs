@@ -94,7 +94,6 @@ public class AutoSetupPrefabs
                         }
 
                         // 4. Setup single-object fields
-                        rb.childDNA = null;
                         rb.dnaPrefab = dnaPrefab;
                         
                         // Set up sprites
@@ -418,6 +417,126 @@ public class AutoSetupPrefabs
             if (modified)
             {
                 Debug.Log("[AutoSetup] Successfully verified and fixed ShopItem components inside ShopRoot.prefab!");
+            }
+        }
+    }
+
+    [InitializeOnLoadMethod]
+    private static void FixTheWormPrefabSprites()
+    {
+        string wormPrefabPath = "Assets/Prefabs/Boss/TheWorm/TheWorm.prefab";
+        GameObject wormPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(wormPrefabPath);
+        if (wormPrefab == null)
+        {
+            Debug.LogWarning("[AutoSetup] TheWorm prefab not found at " + wormPrefabPath);
+            return;
+        }
+
+        string caterpillarTexturePath = "Assets/sprite/Boss/worm/caterpillar_unified_fix.png";
+        string wormDropTexturePath = "Assets/sprite/Boss/worm/worm_drop.png";
+
+        // Load all sprites from caterpillar_unified_fix
+        Object[] caterpillarObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(caterpillarTexturePath);
+        Sprite idleSprite = null;
+        Sprite charge1 = null;
+        Sprite charge2 = null;
+        Sprite charge3 = null;
+
+        foreach (Object obj in caterpillarObjects)
+        {
+            if (obj is Sprite sprite)
+            {
+                if (sprite.name == "worm_idle") idleSprite = sprite;
+                else if (sprite.name == "worm_charge1") charge1 = sprite;
+                else if (sprite.name == "worm_charge2") charge2 = sprite;
+                else if (sprite.name == "worm_charge3") charge3 = sprite;
+            }
+        }
+
+        // Load all sprites from worm_drop
+        Object[] dropObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(wormDropTexturePath);
+        Sprite dropInAir = null;
+        Sprite dropEnd1 = null;
+        Sprite dropEnd2 = null;
+        Sprite dropEnd3 = null;
+        Sprite dropEnd4 = null;
+
+        foreach (Object obj in dropObjects)
+        {
+            if (obj is Sprite sprite)
+            {
+                if (sprite.name == "worm_drop_inair") dropInAir = sprite;
+                else if (sprite.name == "worm_drop_end1") dropEnd1 = sprite;
+                else if (sprite.name == "worm_drop_end2") dropEnd2 = sprite;
+                else if (sprite.name == "worm_drop_end3") dropEnd3 = sprite;
+                else if (sprite.name == "worm_drop_end4") dropEnd4 = sprite;
+            }
+        }
+
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(wormPrefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            TheWorm worm = prefabRoot.GetComponent<TheWorm>();
+            if (worm == null) return;
+
+            bool modified = false;
+
+            System.Type t = typeof(TheWorm);
+
+            var fields = new (string fieldName, Sprite targetSprite)[]
+            {
+                ("wormIdleSprite", idleSprite),
+                ("dropInAirSprite", dropInAir),
+                ("charge1Sprite", charge1),
+                ("charge2Sprite", charge2),
+                ("charge3Sprite", charge3)
+            };
+
+            foreach (var item in fields)
+            {
+                var fieldInfo = t.GetField(item.fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (fieldInfo != null)
+                {
+                    var currentVal = fieldInfo.GetValue(worm) as Sprite;
+                    if (currentVal != item.targetSprite)
+                    {
+                        fieldInfo.SetValue(worm, item.targetSprite);
+                        modified = true;
+                        Debug.Log($"[AutoSetup] Assigned Worm Sprite {item.fieldName} -> {item.targetSprite?.name}");
+                    }
+                }
+            }
+
+            // Set dropEndSprites array
+            var dropEndField = t.GetField("dropEndSprites", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (dropEndField != null)
+            {
+                Sprite[] currentVal = dropEndField.GetValue(worm) as Sprite[];
+                bool arrayNeedsUpdate = false;
+                if (currentVal == null || currentVal.Length != 4)
+                {
+                    arrayNeedsUpdate = true;
+                }
+                else
+                {
+                    if (currentVal[0] != dropEnd1 || currentVal[1] != dropEnd2 || currentVal[2] != dropEnd3 || currentVal[3] != dropEnd4)
+                    {
+                        arrayNeedsUpdate = true;
+                    }
+                }
+
+                if (arrayNeedsUpdate)
+                {
+                    Sprite[] newArray = new Sprite[] { dropEnd1, dropEnd2, dropEnd3, dropEnd4 };
+                    dropEndField.SetValue(worm, newArray);
+                    modified = true;
+                    Debug.Log("[AutoSetup] Assigned dropEndSprites array [worm_drop_end1 ~ end4]");
+                }
+            }
+
+            if (modified)
+            {
+                Debug.Log("[AutoSetup] Successfully verified and updated all Sprite fields inside TheWorm.prefab!");
             }
         }
     }

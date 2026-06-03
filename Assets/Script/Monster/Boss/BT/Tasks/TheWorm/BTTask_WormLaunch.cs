@@ -35,8 +35,13 @@ public class BTTask_WormLaunch : BTTask
 
         // Animator 트리거 (있으면)
         Animator animator = boss.GetComponent<Animator>();
-        if (animator != null)
+        if (animator != null && animator.enabled)
             animator.SetTrigger("Launch");
+
+        if (boss is TheWorm worm)
+        {
+            worm.PlayLaunchAnimation();
+        }
 
         // Blackboard에서 방향 가져오기
         Vector2 direction = GetBlackboardValue<Vector2>("WormLaunchDirection");
@@ -88,6 +93,11 @@ public class BTTask_WormLaunch : BTTask
         
         if (launchComponent != null)
             launchComponent.ResetLaunch();
+
+        if (boss is TheWorm worm)
+        {
+            worm.ResetToIdle();
+        }
 
         // 색상 원래대로 (하양)
         if (spriteRenderer != null)

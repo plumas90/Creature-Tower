@@ -43,8 +43,13 @@ public class BTTask_WormCharge : BTTask
         
         // Animator 트리거 (있으면)
         Animator animator = boss.GetComponent<Animator>();
-        if (animator != null)
+        if (animator != null && animator.enabled)
             animator.SetTrigger("Charge");
+
+        if (boss is TheWorm worm)
+        {
+            worm.PlayChargeStartAnimation();
+        }
 
         Debug.Log($"[WormCharge] OnEnter - Started at {Time.time:F2}. Duration: {chargeDuration}s, RotSpeed: {rotationSpeed}");
     }
@@ -76,17 +81,37 @@ public class BTTask_WormCharge : BTTask
         {
             Vector2 dirToPlayer = playerTargeting.GetDirectionToTarget();
             float targetAngle = Mathf.Atan2(dirToPlayer.y, dirToPlayer.x) * Mathf.Rad2Deg;
-            float currentAngle = boss.transform.eulerAngles.z;
             
-            float newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, rotationSpeed * Time.deltaTime);
+            // 각도를 [-180, 180] 범위로 정규화
+            targetAngle = Mathf.DeltaAngle(0f, targetAngle);
+
+            float localScaleX = 1f;
+            float finalRotationAngle = targetAngle;
+
+            // 플레이어가 왼쪽에 있는 경우 좌우반전(Scale X = -1) 처리하고 회전각 보정하여 거꾸로 뒤집히지 않게 함
+            if (targetAngle > 90f || targetAngle < -90f)
+            {
+                localScaleX = -1f;
+                finalRotationAngle = targetAngle + 180f;
+            }
+            else
+            {
+                localScaleX = 1f;
+                finalRotationAngle = targetAngle;
+            }
+
+            float currentAngle = boss.transform.eulerAngles.z;
+            float newAngle = Mathf.MoveTowardsAngle(currentAngle, finalRotationAngle, rotationSpeed * Time.deltaTime);
+            
             boss.transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
+            boss.transform.localScale = new Vector3(localScaleX, 1f, 1f);
         }
 
         // 차지 완료
         if (elapsed >= chargeDuration)
         {
-            // 최종 방향을 Blackboard에 저장
-            Vector2 finalDirection = boss.transform.right; // 오른쪽 방향 (0도 기준)
+            // 최종 방향을 Blackboard에 저장 (Scale X 좌우반전을 고려하여 실제 바라보는 방향으로 발사)
+            Vector2 finalDirection = (Vector2)boss.transform.right * boss.transform.localScale.x;
             SetBlackboardValue("WormLaunchDirection", finalDirection);
             
             Debug.Log($"[WormCharge] OnTick - SUCCESS at {Time.time:F2}! Elapsed: {elapsed:F2}s, Final direction: {finalDirection}, Final color: {spriteRenderer?.color}");

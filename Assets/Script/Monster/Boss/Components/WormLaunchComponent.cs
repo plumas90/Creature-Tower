@@ -52,16 +52,17 @@ public class WormLaunchComponent : MonoBehaviour
             return;
         }
 
-        // Rigidbody가 Kinematic이면 경고
+        // Rigidbody가 Kinematic이면 Dynamic으로 전환
         if (rb.bodyType == RigidbodyType2D.Kinematic)
         {
-            Debug.LogError("[WormLaunchComponent] Rigidbody2D is Kinematic! AddForce won't work. Change to Dynamic in Inspector.");
-            return;
+            Debug.LogWarning("[WormLaunchComponent] Rigidbody2D was Kinematic. Changing to Dynamic to support AddForce.");
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.useFullKinematicContacts = false;
         }
 
         launchDirection = direction.normalized;
         rb.linearVelocity = Vector2.zero;
-        rb.AddForce(launchDirection * launchForce, ForceMode2D.Impulse);
+        rb.AddForce(launchDirection * (launchForce * rb.mass), ForceMode2D.Impulse);
         isLaunched = true;
 
         if (enableDebugLog)
