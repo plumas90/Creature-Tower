@@ -14,6 +14,20 @@ public class HauntedCrystalBallGhostCircle : MonoBehaviour
     private bool isRotating = false;
     private bool hasHit = false;
 
+    [Header("Sprite Animation")]
+    [SerializeField] private Sprite[] idleSprites;
+    [SerializeField] private float animationFps = 10f;
+    private SpriteRenderer spriteRenderer;
+    private float animTimer;
+    private int currentFrame;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+    }
+
     /// <summary>
     /// 회전구 초기화
     /// </summary>
@@ -42,6 +56,13 @@ public class HauntedCrystalBallGhostCircle : MonoBehaviour
         // 시작 위치 설정
         UpdatePosition();
 
+        if (idleSprites != null && idleSprites.Length > 0 && spriteRenderer != null)
+        {
+            currentFrame = 0;
+            animTimer = 0f;
+            spriteRenderer.sprite = idleSprites[0];
+        }
+
         StartCoroutine(CoWaitAndRotate(waitTime));
     }
 
@@ -53,6 +74,19 @@ public class HauntedCrystalBallGhostCircle : MonoBehaviour
 
     private void Update()
     {
+        // 프레임 애니메이션 재생 (이동/회전 상태와 무관하게 항상 재생)
+        if (idleSprites != null && idleSprites.Length > 0 && spriteRenderer != null)
+        {
+            animTimer += Time.deltaTime;
+            float frameDelay = 1f / animationFps;
+            if (animTimer >= frameDelay)
+            {
+                animTimer -= frameDelay;
+                currentFrame = (currentFrame + 1) % idleSprites.Length;
+                spriteRenderer.sprite = idleSprites[currentFrame];
+            }
+        }
+
         if (!isRotating || hasHit)
             return;
 

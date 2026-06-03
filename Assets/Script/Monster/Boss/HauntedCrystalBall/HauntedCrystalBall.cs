@@ -6,6 +6,14 @@ public class HauntedCrystalBall : BossBase
     [Header("Crystal Ball Settings")]
     public HauntedCrystalBallSO crystalSO;
 
+    [Header("Intro & Visuals")]
+    [SerializeField] private Transform ghostVisual;
+    [SerializeField] private float combatRotationSpeed = 90f;
+
+    private Coroutine introCoroutine;
+    private bool introFinished = false;
+    private float currentRotZ = 0f;
+
     protected override void Awake()
     {
         base.Awake();
@@ -13,6 +21,9 @@ public class HauntedCrystalBall : BossBase
         // crystalSO를 MainSO에 자동 할당
         if (crystalSO != null)
             MainSO = crystalSO;
+
+        if (ghostVisual == null)
+            ghostVisual = transform.Find("ghost");
     }
 
     public override void StatSet()
@@ -28,18 +39,112 @@ public class HauntedCrystalBall : BossBase
         }
 
         bossCount = 1;
-        atk = crystalSO.atk;
-        maxHp = crystalSO.hp;
-        curHp = crystalSO.hp;
-        speed = crystalSO.speed; // 0
-        live = true;
-        invincibility = false;
-        wait = false;
+        
+        base.StatSet(); // Intro 타임 및 Invincibility/Wait 타이밍 활성화를 위해 base.StatSet() 호출
 
         if (GameManager.Instance != null)
             Player = GameManager.Instance.playerOBJ;
 
         Debug.Log($"[HauntedCrystalBall] StatSet complete. HP: {curHp}/{maxHp}");
+    }
+
+    protected override float ResolveIntroTime()
+    {
+        return 5f; // 인트로 5초 고정
+    }
+
+    public override void OnBossActivatedBeforeIntro()
+    {
+        base.OnBossActivatedBeforeIntro();
+
+        if (ghostVisual == null)
+            ghostVisual = transform.Find("ghost");
+
+        if (ghostVisual != null)
+        {
+            ghostVisual.localScale = new Vector3(50f, 50f, 1f);
+            ghostVisual.localRotation = Quaternion.identity;
+        }
+
+        introFinished = false;
+    }
+
+    protected override void OnBeforeIntroStart()
+    {
+        base.OnBeforeIntroStart();
+
+        if (ghostVisual == null)
+            ghostVisual = transform.Find("ghost");
+
+        introFinished = false;
+        if (introCoroutine != null)
+            StopCoroutine(introCoroutine);
+
+        introCoroutine = StartCoroutine(CoIntroAnimation());
+    }
+
+    private IEnumerator CoIntroAnimation()
+    {
+        float duration = ResolveIntroTime();
+        float elapsed = 0f;
+
+        Vector3 startScale = new Vector3(50f, 50f, 1f);
+        Vector3 targetScale = new Vector3(1.8f, 1.8f, 1f);
+
+        if (ghostVisual != null)
+            ghostVisual.localScale = startScale;
+
+        currentRotZ = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            if (ghostVisual != null)
+            {
+                // 스케일을 50,50 에서 1.8, 1.8로 보간
+                ghostVisual.localScale = Vector3.Lerp(startScale, targetScale, t);
+
+                // Z값을 계속 올리면서 회전
+                currentRotZ -= 360f * Time.deltaTime; // 초당 360도 (1바퀴)
+                ghostVisual.localRotation = Quaternion.Euler(0f, 0f, currentRotZ);
+            }
+
+            yield return null;
+        }
+
+        if (ghostVisual != null)
+            ghostVisual.localScale = targetScale;
+
+        introFinished = true;
+        introCoroutine = null;
+    }
+
+    public override void First()
+    {
+        base.First();
+
+        if (introCoroutine != null)
+        {
+            StopCoroutine(introCoroutine);
+            introCoroutine = null;
+        }
+
+        if (ghostVisual != null)
+            ghostVisual.localScale = new Vector3(1.8f, 1.8f, 1f);
+
+        introFinished = true;
+    }
+
+    private void Update()
+    {
+        if (introFinished && ghostVisual != null)
+        {
+            // 보스전 동안 회전 속도 적용
+            currentRotZ -= combatRotationSpeed * Time.deltaTime;
+            ghostVisual.localRotation = Quaternion.Euler(0f, 0f, currentRotZ);
+        }
     }
 
     // BossBase의 데미지 계산 훅을 override하여 항상 1 데미지로 고정
@@ -107,16 +212,26 @@ public class HauntedCrystalBall : BossBase
         yield return null;
     }
 
+    private GameObject GetRandomGhostPrefab()
+    {
+        if (crystalSO.blackGhostPrefab != null && crystalSO.whiteGhostPrefab != null)
+        {
+            return Random.value < 0.5f ? crystalSO.blackGhostPrefab : crystalSO.whiteGhostPrefab;
+        }
+        return crystalSO.ghostPrefab;
+    }
+
     private void ShootCrossPattern()
     {
-        if (crystalSO.ghostPrefab == null) return;
+        GameObject ghostPrefab = GetRandomGhostPrefab();
+        if (ghostPrefab == null) return;
 
         Vector2[] directions = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
         foreach (Vector2 dir in directions)
         {
             float randomOffset = Random.Range(-22.5f, 22.5f);
             Quaternion randomRot = Quaternion.Euler(0f, 0f, randomOffset);
-            GameObject ghost = Instantiate(crystalSO.ghostPrefab, transform.position, Quaternion.identity);
+            GameObject ghost = Instantiate(ghostPrefab, transform.position, Quaternion.identity);
             var ghostScript = ghost.GetComponent<HauntedCrystalBallGhost>();
             if (ghostScript != null)
                 ghostScript.Initialize((randomRot * dir).normalized, crystalSO.pattern1GhostSpeed, crystalSO.pattern1Damage);
@@ -126,7 +241,8 @@ public class HauntedCrystalBall : BossBase
 
     private void ShootXPattern()
     {
-        if (crystalSO.ghostPrefab == null) return;
+        GameObject ghostPrefab = GetRandomGhostPrefab();
+        if (ghostPrefab == null) return;
 
         Vector2[] directions = {
             new Vector2(1, 1).normalized,
@@ -138,7 +254,7 @@ public class HauntedCrystalBall : BossBase
         {
             float randomOffset = Random.Range(-22.5f, 22.5f);
             Quaternion randomRot = Quaternion.Euler(0f, 0f, randomOffset);
-            GameObject ghost = Instantiate(crystalSO.ghostPrefab, transform.position, Quaternion.identity);
+            GameObject ghost = Instantiate(ghostPrefab, transform.position, Quaternion.identity);
             var ghostScript = ghost.GetComponent<HauntedCrystalBallGhost>();
             if (ghostScript != null)
                 ghostScript.Initialize((randomRot * dir).normalized, crystalSO.pattern2GhostSpeed, crystalSO.pattern2Damage);

@@ -540,4 +540,518 @@ public class AutoSetupPrefabs
             }
         }
     }
+
+    [InitializeOnLoadMethod]
+    private static void FixHauntedCrystalBall()
+    {
+        string basePrefabPath = "Assets/Prefabs/Boss/HauntedCrystalBall/HauntedCrystalBallGhost.prefab";
+        string blackPrefabPath = "Assets/Prefabs/Boss/HauntedCrystalBall/HauntedCrystalBallGhostBlack.prefab";
+        string whitePrefabPath = "Assets/Prefabs/Boss/HauntedCrystalBall/HauntedCrystalBallGhostWhite.prefab";
+        string circlePrefabPath = "Assets/Prefabs/Boss/HauntedCrystalBall/HauntedCrystalBallGhostCircle.prefab";
+        string tilePrefabPath = "Assets/Prefabs/Boss/HauntedCrystalBall/HauntedCrystalBallTile.prefab";
+        string crystalBallSOPath = "Assets/SOData/Boss/HauntedCrystalBall/HauntedCrystalBallSO.asset";
+        string spritesheetPath = "Assets/sprite/Boss/crystal_ball/blackGhost-sheet.png";
+
+        // Load all sprites from blackGhost-sheet
+        Object[] sheetObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(spritesheetPath);
+        Sprite[] blackGhostSprites = new Sprite[6];
+        Sprite[] whiteGhostSprites = new Sprite[6];
+        Sprite[] dokkabiSprites = new Sprite[4];
+        Sprite floorSircleSprite = null;
+
+        foreach (Object obj in sheetObjects)
+        {
+            if (obj is Sprite sprite)
+            {
+                string name = sprite.name;
+                if (name.StartsWith("blackghost"))
+                {
+                    int index = int.Parse(name.Substring(10)) - 1;
+                    if (index >= 0 && index < 6) blackGhostSprites[index] = sprite;
+                }
+                else if (name.StartsWith("whiteghost"))
+                {
+                    int index = int.Parse(name.Substring(10)) - 1;
+                    if (index >= 0 && index < 6) whiteGhostSprites[index] = sprite;
+                }
+                else if (name.StartsWith("dokkabi"))
+                {
+                    int index = int.Parse(name.Substring(7)) - 1;
+                    if (index >= 0 && index < 4) dokkabiSprites[index] = sprite;
+                }
+                else if (name == "floor_sircle")
+                {
+                    floorSircleSprite = sprite;
+                }
+            }
+        }
+
+        // 1. Create black/white ghost prefabs by copying base ghost prefab if they don't exist
+        bool prefabsCreatedOrUpdated = false;
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(blackPrefabPath) == null)
+        {
+            AssetDatabase.CopyAsset(basePrefabPath, blackPrefabPath);
+            prefabsCreatedOrUpdated = true;
+        }
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(whitePrefabPath) == null)
+        {
+            AssetDatabase.CopyAsset(basePrefabPath, whitePrefabPath);
+            prefabsCreatedOrUpdated = true;
+        }
+
+        if (prefabsCreatedOrUpdated)
+        {
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
+        // 2. Setup Black Ghost Prefab
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(blackPrefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var ghost = prefabRoot.GetComponent<HauntedCrystalBallGhost>();
+            if (ghost != null)
+            {
+                var field = typeof(HauntedCrystalBallGhost).GetField("idleSprites", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    field.SetValue(ghost, blackGhostSprites);
+                }
+            }
+        }
+
+        // 3. Setup White Ghost Prefab
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(whitePrefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var ghost = prefabRoot.GetComponent<HauntedCrystalBallGhost>();
+            if (ghost != null)
+            {
+                var field = typeof(HauntedCrystalBallGhost).GetField("idleSprites", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    field.SetValue(ghost, whiteGhostSprites);
+                }
+            }
+        }
+
+        // 4. Setup Ghost Circle Prefab (Dokkabi)
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(circlePrefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var circle = prefabRoot.GetComponent<HauntedCrystalBallGhostCircle>();
+            if (circle != null)
+            {
+                var field = typeof(HauntedCrystalBallGhostCircle).GetField("idleSprites", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    field.SetValue(circle, dokkabiSprites);
+                }
+            }
+        }
+
+        // 5. Setup Tile Prefab (Floor Circle)
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(tilePrefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var tile = prefabRoot.GetComponent<HauntedCrystalBallTile>();
+            if (tile != null)
+            {
+                tile.warningSprite = floorSircleSprite;
+                tile.activeSprite = floorSircleSprite;
+            }
+        }
+
+        // 6. Setup HauntedCrystalBallSO Asset
+        var crystalSO = AssetDatabase.LoadAssetAtPath<HauntedCrystalBallSO>(crystalBallSOPath);
+        if (crystalSO != null)
+        {
+            GameObject blackPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(blackPrefabPath);
+            GameObject whitePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(whitePrefabPath);
+
+            bool soModified = false;
+            if (crystalSO.blackGhostPrefab != blackPrefab)
+            {
+                crystalSO.blackGhostPrefab = blackPrefab;
+                soModified = true;
+            }
+            if (crystalSO.whiteGhostPrefab != whitePrefab)
+            {
+                crystalSO.whiteGhostPrefab = whitePrefab;
+                soModified = true;
+            }
+
+            if (soModified)
+            {
+                EditorUtility.SetDirty(crystalSO);
+                AssetDatabase.SaveAssets();
+                Debug.Log("[AutoSetup] Assigned black/white ghost prefabs to HauntedCrystalBallSO");
+            }
+        }
+
+        // 7. Setup HauntedCrystalBallBoss Prefab YSortPivot
+        string bossPrefabPath = "Assets/Prefabs/Boss/HauntedCrystalBall/HauntedCrystalBallBoss.prefab";
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(bossPrefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var boss = prefabRoot.GetComponent<HauntedCrystalBall>();
+            if (boss != null)
+            {
+                Transform ySortPivotTrans = prefabRoot.transform.Find("YSortPivot");
+                if (ySortPivotTrans == null)
+                {
+                    GameObject go = new GameObject("YSortPivot");
+                    ySortPivotTrans = go.transform;
+                    ySortPivotTrans.SetParent(prefabRoot.transform);
+                }
+                
+                ySortPivotTrans.localPosition = new Vector3(0f, -0.8f, 0f);
+                
+                var field = typeof(CreatureBase).GetField("ySortPivot", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    field.SetValue(boss, ySortPivotTrans);
+                }
+
+                // 2D SortingGroup 설정 추가 (자식들의 개별 order인 0, 1, 2가 보존되며 하나의 덩어리로 월드 다이나믹 레이어 소팅을 타도록 함)
+                var sortingGroup = prefabRoot.GetComponent<UnityEngine.Rendering.SortingGroup>();
+                if (sortingGroup == null)
+                {
+                    sortingGroup = prefabRoot.AddComponent<UnityEngine.Rendering.SortingGroup>();
+                }
+                sortingGroup.sortingLayerName = "World_Dynamic";
+
+                Debug.Log("[AutoSetup] Setup HauntedCrystalBallBoss YSortPivot at localPosition y=-0.8 and verified SortingGroup is configured on World_Dynamic.");
+            }
+        }
+    }
+
+    [InitializeOnLoadMethod]
+    private static void FixChestsInStages()
+    {
+        string resultBoxPrefabPath = "Assets/Prefabs/result/ResultBox.prefab";
+        string augmentBoxPrefabPath = "Assets/Prefabs/result/AugmentBox.prefab";
+        string coinBoxPrefabPath = "Assets/Prefabs/result/CoinBox.prefab";
+        string randomBoxPrefabPath = "Assets/Prefabs/result/RandomBox.prefab";
+
+        GameObject resultBoxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(resultBoxPrefabPath);
+        GameObject augmentBoxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(augmentBoxPrefabPath);
+        GameObject coinBoxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(coinBoxPrefabPath);
+        GameObject randomBoxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(randomBoxPrefabPath);
+
+        if (resultBoxPrefab == null || augmentBoxPrefab == null || coinBoxPrefab == null || randomBoxPrefab == null)
+        {
+            Debug.LogWarning("[AutoSetup] One or more ResultBox target prefabs not found. Skipping chest sync.");
+            return;
+        }
+
+        ResultBox resultBoxRef = resultBoxPrefab.GetComponent<ResultBox>();
+        ResultBox augmentBoxRef = augmentBoxPrefab.GetComponent<ResultBox>();
+        ResultBox coinBoxRef = coinBoxPrefab.GetComponent<ResultBox>();
+        ResultBox randomBoxRef = randomBoxPrefab.GetComponent<ResultBox>();
+
+        // 1. Scan and fix all Map prefabs
+        string[] stageGuids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Map" });
+        bool anyModified = false;
+
+        foreach (string guid in stageGuids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (string.IsNullOrEmpty(path)) continue;
+
+            using (var editingScope = new PrefabUtility.EditPrefabContentsScope(path))
+            {
+                var prefabRoot = editingScope.prefabContentsRoot;
+                var childResultBoxes = prefabRoot.GetComponentsInChildren<ResultBox>(true);
+                if (childResultBoxes.Length == 0) continue;
+
+                bool modified = false;
+                foreach (var rb in childResultBoxes)
+                {
+                    ResultBox refBox = null;
+                    string name = rb.gameObject.name.ToLower();
+
+                    if (name.Contains("coinbox")) refBox = coinBoxRef;
+                    else if (name.Contains("augmentbox")) refBox = augmentBoxRef;
+                    else if (name.Contains("randombox")) refBox = randomBoxRef;
+                    else if (name.Contains("resultbox")) refBox = resultBoxRef;
+                    else refBox = rb.isRareBox ? augmentBoxRef : resultBoxRef;
+
+                    if (refBox == null) continue;
+
+                    rb.closedSprite = refBox.closedSprite;
+                    rb.openedSprite = refBox.openedSprite;
+                    
+                    if (refBox.openingSprites != null)
+                    {
+                        rb.openingSprites = new Sprite[refBox.openingSprites.Length];
+                        System.Array.Copy(refBox.openingSprites, rb.openingSprites, refBox.openingSprites.Length);
+                    }
+                    else
+                    {
+                        rb.openingSprites = null;
+                    }
+
+                    rb.isRareBox = refBox.isRareBox;
+                    rb.coinDropChance = refBox.coinDropChance;
+                    rb.dnaPrefab = refBox.dnaPrefab;
+                    rb.animationFps = refBox.animationFps;
+                    rb.pushForce = refBox.pushForce;
+
+                    SpriteRenderer sr = rb.GetComponent<SpriteRenderer>();
+                    if (sr == null)
+                    {
+                        sr = rb.gameObject.AddComponent<SpriteRenderer>();
+                    }
+
+                    sr.sprite = refBox.closedSprite;
+                    
+                    SpriteRenderer refSr = refBox.GetComponent<SpriteRenderer>();
+                    if (refSr != null)
+                    {
+                        sr.sortingLayerID = refSr.sortingLayerID;
+                        sr.sortingOrder = refSr.sortingOrder;
+                    }
+
+                    rb.boxSpriteRenderer = sr;
+
+                    // 프리팹 설정대로 localScale 및 BoxCollider2D size/offset 동기화
+                    rb.transform.localScale = refBox.transform.localScale;
+
+                    BoxCollider2D col = rb.GetComponent<BoxCollider2D>();
+                    BoxCollider2D refCol = refBox.GetComponent<BoxCollider2D>();
+                    if (col != null && refCol != null)
+                    {
+                        col.size = refCol.size;
+                        col.offset = refCol.offset;
+                        col.isTrigger = true;
+                    }
+                    else if (col == null && refCol != null)
+                    {
+                        col = rb.gameObject.AddComponent<BoxCollider2D>();
+                        col.size = refCol.size;
+                        col.offset = refCol.offset;
+                        col.isTrigger = true;
+                    }
+
+                    modified = true;
+                }
+
+                if (modified)
+                {
+                    anyModified = true;
+                    Debug.Log($"[AutoSetup] Automatically re-applied chest prefab settings to ResultBox in stage prefab: {path}");
+                }
+            }
+        }
+
+        // 2. Scan and fix Active Scene instances
+        var sceneResultBoxes = Object.FindObjectsByType<ResultBox>(FindObjectsSortMode.None);
+        if (sceneResultBoxes.Length > 0)
+        {
+            bool sceneModified = false;
+            foreach (var rb in sceneResultBoxes)
+            {
+                ResultBox refBox = null;
+                string name = rb.gameObject.name.ToLower();
+
+                if (name.Contains("coinbox")) refBox = coinBoxRef;
+                else if (name.Contains("augmentbox")) refBox = augmentBoxRef;
+                else if (name.Contains("randombox")) refBox = randomBoxRef;
+                else if (name.Contains("resultbox")) refBox = resultBoxRef;
+                else refBox = rb.isRareBox ? augmentBoxRef : resultBoxRef;
+
+                if (refBox == null) continue;
+
+                Undo.RecordObject(rb, "Update ResultBox settings");
+                
+                rb.closedSprite = refBox.closedSprite;
+                rb.openedSprite = refBox.openedSprite;
+                
+                if (refBox.openingSprites != null)
+                {
+                    rb.openingSprites = new Sprite[refBox.openingSprites.Length];
+                    System.Array.Copy(refBox.openingSprites, rb.openingSprites, refBox.openingSprites.Length);
+                }
+                else
+                {
+                    rb.openingSprites = null;
+                }
+
+                rb.isRareBox = refBox.isRareBox;
+                rb.coinDropChance = refBox.coinDropChance;
+                rb.dnaPrefab = refBox.dnaPrefab;
+                rb.animationFps = refBox.animationFps;
+                rb.pushForce = refBox.pushForce;
+
+                SpriteRenderer sr = rb.GetComponent<SpriteRenderer>();
+                if (sr == null)
+                {
+                    sr = rb.gameObject.AddComponent<SpriteRenderer>();
+                }
+                Undo.RecordObject(sr, "Update ResultBox SpriteRenderer");
+                sr.sprite = refBox.closedSprite;
+                
+                SpriteRenderer refSr = refBox.GetComponent<SpriteRenderer>();
+                if (refSr != null)
+                {
+                    sr.sortingLayerID = refSr.sortingLayerID;
+                    sr.sortingOrder = refSr.sortingOrder;
+                }
+
+                rb.boxSpriteRenderer = sr;
+
+                // 씬 오브젝트의 localScale & BoxCollider2D size/offset 동기화
+                Undo.RecordObject(rb.transform, "Update ResultBox Transform Scale");
+                rb.transform.localScale = refBox.transform.localScale;
+
+                BoxCollider2D col = rb.GetComponent<BoxCollider2D>();
+                BoxCollider2D refCol = refBox.GetComponent<BoxCollider2D>();
+                if (col != null && refCol != null)
+                {
+                    Undo.RecordObject(col, "Update ResultBox Collider");
+                    col.size = refCol.size;
+                    col.offset = refCol.offset;
+                    col.isTrigger = true;
+                }
+                else if (col == null && refCol != null)
+                {
+                    col = rb.gameObject.AddComponent<BoxCollider2D>();
+                    Undo.RegisterCreatedObjectUndo(col, "Create ResultBox Collider");
+                    col.size = refCol.size;
+                    col.offset = refCol.offset;
+                    col.isTrigger = true;
+                }
+
+                sceneModified = true;
+            }
+
+            if (sceneModified)
+            {
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+                Debug.Log("[AutoSetup] Successfully synchronized ResultBox objects in the active scene!");
+            }
+        }
+    }
+
+    [InitializeOnLoadMethod]
+    private static void FixPeaPodBoss()
+    {
+        string bossPrefabPath = "Assets/Prefabs/Boss/PeaPod/PeaPodBoss.prefab";
+        string spritesheetPath = "Assets/sprite/Boss/pea/peapod_shell_case 1.png";
+
+        GameObject bossPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(bossPrefabPath);
+        if (bossPrefab == null)
+        {
+            Debug.LogWarning("[AutoSetup] PeaPodBoss prefab not found.");
+            return;
+        }
+
+        // Load all sprites from sheet
+        Object[] sheetObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(spritesheetPath);
+        Sprite[] angryHeadSprites = new Sprite[4];
+        Sprite[] sadHeadSprites = new Sprite[4];
+        Sprite[] normalHeadSprites = new Sprite[3];
+        Sprite[] caseInSprites = new Sprite[8];
+        Sprite[] caseOutSprites = new Sprite[8];
+
+        foreach (Object obj in sheetObjects)
+        {
+            if (obj is Sprite sprite)
+            {
+                string name = sprite.name;
+                if (name.StartsWith("pea_angry_head"))
+                {
+                    int index = int.Parse(name.Substring(14)) - 1;
+                    if (index >= 0 && index < 4) angryHeadSprites[index] = sprite;
+                }
+                else if (name.StartsWith("pea_sad_head"))
+                {
+                    int index = int.Parse(name.Substring(12)) - 1;
+                    if (index >= 0 && index < 4) sadHeadSprites[index] = sprite;
+                }
+                else if (name.StartsWith("pea_normal_head"))
+                {
+                    int index = int.Parse(name.Substring(15)) - 1;
+                    if (index >= 0 && index < 3) normalHeadSprites[index] = sprite;
+                }
+                else if (name.StartsWith("peapod_case_in"))
+                {
+                    int index = int.Parse(name.Substring(14)) - 1;
+                    if (index >= 0 && index < 8) caseInSprites[index] = sprite;
+                }
+                else if (name.StartsWith("peapod_case_out"))
+                {
+                    int index = int.Parse(name.Substring(15)) - 1;
+                    if (index >= 0 && index < 8) caseOutSprites[index] = sprite;
+                }
+            }
+        }
+
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(bossPrefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var boss = prefabRoot.GetComponent<PeaPodBoss>();
+            if (boss != null)
+            {
+                System.Type t = typeof(PeaPodBoss);
+                
+                // Find child GameObjects and get SpriteRenderers
+                Transform angryHeadTrans = prefabRoot.transform.Find("angry_head");
+                Transform sadHeadTrans = prefabRoot.transform.Find("sad_head");
+                Transform normalHeadTrans = prefabRoot.transform.Find("normal_head");
+                Transform hitboxInTrans = prefabRoot.transform.Find("hitbox(in)");
+                Transform outTrans = prefabRoot.transform.Find("out");
+
+                var setField = new System.Action<string, object>((fieldName, value) => {
+                    var fieldInfo = t.GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (fieldInfo != null)
+                    {
+                        fieldInfo.SetValue(boss, value);
+                    }
+                });
+
+                if (angryHeadTrans != null) setField("angryHeadSr", angryHeadTrans.GetComponent<SpriteRenderer>());
+                if (sadHeadTrans != null) setField("sadHeadSr", sadHeadTrans.GetComponent<SpriteRenderer>());
+                if (normalHeadTrans != null) setField("normalHeadSr", normalHeadTrans.GetComponent<SpriteRenderer>());
+                if (hitboxInTrans != null) setField("hitboxInSr", hitboxInTrans.GetComponent<SpriteRenderer>());
+                if (outTrans != null) setField("outSr", outTrans.GetComponent<SpriteRenderer>());
+
+                setField("angryHeadSprites", angryHeadSprites);
+                setField("sadHeadSprites", sadHeadSprites);
+                setField("normalHeadSprites", normalHeadSprites);
+                setField("caseInSprites", caseInSprites);
+                setField("caseOutSprites", caseOutSprites);
+
+                Debug.Log("[AutoSetup] Successfully set up PeaPodBoss prefab sprite components and animation arrays.");
+            }
+        }
+
+        // Setup PeaPodDeathPea bomb visual (assigned pea_normal_head1 sprite)
+        string peaPrefabPath = "Assets/Prefabs/Boss/PeaPod/PeaPodDeathPea.prefab";
+        GameObject peaPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(peaPrefabPath);
+        if (peaPrefab != null)
+        {
+            using (var editingScope = new PrefabUtility.EditPrefabContentsScope(peaPrefabPath))
+            {
+                var prefabRoot = editingScope.prefabContentsRoot;
+                var deathPea = prefabRoot.GetComponent<PeaPodDeathPea>();
+                if (deathPea != null && normalHeadSprites.Length > 0 && normalHeadSprites[0] != null)
+                {
+                    var field = typeof(PeaPodDeathPea).GetField("peaSprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (field != null)
+                    {
+                        field.SetValue(deathPea, normalHeadSprites[0]);
+                    }
+
+                    var sr = prefabRoot.GetComponent<SpriteRenderer>();
+                    if (sr != null)
+                    {
+                        sr.sprite = normalHeadSprites[0];
+                    }
+                    Debug.Log("[AutoSetup] Successfully assigned pea_normal_head1 to PeaPodDeathPea prefab and component.");
+                }
+            }
+        }
+    }
 }

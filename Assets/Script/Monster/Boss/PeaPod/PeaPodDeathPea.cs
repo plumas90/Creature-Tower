@@ -8,6 +8,7 @@ public class PeaPodDeathPea : MonoBehaviour
     [SerializeField] private Transform shadowTransform;
     [SerializeField] private SpriteRenderer shadowRenderer;
     [SerializeField] private SpriteRenderer groundFxRenderer;
+    [SerializeField] private Sprite peaSprite;
 
     [Header("Ground FX Sorting")]
     [SerializeField] private string groundFxSortingLayer = "World_GroundFX";
@@ -56,7 +57,8 @@ public class PeaPodDeathPea : MonoBehaviour
         float inRedWarningDuration,
         float inExplosionDamage,
         float inExplosionRadius,
-        float inGroundFxRadiusMultiplier)
+        float inGroundFxRadiusMultiplier,
+        Sprite customSprite = null)
     {
         startPos = transform.position;
         targetPos = destination;
@@ -78,6 +80,12 @@ public class PeaPodDeathPea : MonoBehaviour
         peaRenderer = GetComponent<SpriteRenderer>();
         if (peaRenderer != null)
         {
+            if (customSprite != null)
+                peaSprite = customSprite;
+
+            if (peaSprite != null)
+                peaRenderer.sprite = peaSprite;
+
             originalColor = peaRenderer.color;
             float spriteHeight = peaRenderer.sprite != null ? peaRenderer.sprite.bounds.size.y : 1f;
             peaBottomOffset = Mathf.Abs(spriteHeight * transform.lossyScale.y * 0.5f);
@@ -95,6 +103,9 @@ public class PeaPodDeathPea : MonoBehaviour
         peaRenderer = GetComponent<SpriteRenderer>();
         if (peaRenderer != null)
         {
+            if (peaSprite != null)
+                peaRenderer.sprite = peaSprite;
+
             originalColor = peaRenderer.color;
             float spriteHeight = peaRenderer.sprite != null ? peaRenderer.sprite.bounds.size.y : 1f;
             peaBottomOffset = Mathf.Abs(spriteHeight * transform.lossyScale.y * 0.5f);
@@ -199,6 +210,12 @@ public class PeaPodDeathPea : MonoBehaviour
 
     private void Explode()
     {
+        // 폭발 쉐이더 이펙트 스폰
+        GameObject fxObj = new GameObject("PeaPodExplosionFX");
+        fxObj.transform.position = transform.position;
+        PeaPodExplosionEffect effect = fxObj.AddComponent<PeaPodExplosionEffect>();
+        effect.Play(explosionRadius, dynamicSortingLayer, peaRenderer != null ? peaRenderer.sortingOrder + 1 : 1600);
+
         PlayerStatControl[] victims = new PlayerStatControl[trackedPlayers.Count];
         trackedPlayers.CopyTo(victims);
         for (int i = 0; i < victims.Length; i++)

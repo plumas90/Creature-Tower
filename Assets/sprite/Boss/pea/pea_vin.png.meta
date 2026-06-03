@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: 55ea768d4c60aeb99b2453a4f3a78a55
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -11914727306793036
+    second: pea_vin_0
+  - first:
+      213: 4163392313267564703
+    second: pea_vin_1
+  - first:
+      213: -3195313695428965647
+    second: pea_vin_2
+  - first:
+      213: -5313170766609664186
+    second: pea_vin_3
+  - first:
+      213: 1198141158321207104
+    second: pea_vin_4
+  - first:
+      213: -3289043993489487516
+    second: pea_vin_5
+  - first:
+      213: 6475664402052891799
+    second: pea_vin_6
+  - first:
+      213: -6114001737998715110
+    second: pea_vin_7
+  - first:
+      213: -4787677209520254668
+    second: pea_vin_8
+  - first:
+      213: 9145274679443728602
+    second: pea_vin_9
+  - first:
+      213: -6953985212323093877
+    second: pea_vin_10
+  - first:
+      213: 1212858645270565506
+    second: pea_vin_11
+  - first:
+      213: 8939486304094665068
+    second: pea_vin_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: pea_vin_0
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 856
+        width: 85
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bf684f5e9ba5dff0800000000000000
+      internalID: -11914727306793036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_grow2
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 853
+        width: 132
+        height: 88
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f90b7e4104757c930800000000000000
+      internalID: 4163392313267564703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_grow3
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 842
+        width: 207
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fa040e9f17f7a3d0800000000000000
+      internalID: -3195313695428965647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_grow4
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 821
+        width: 213
+        height: 119
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 647bd319653d346b0800000000000000
+      internalID: -5313170766609664186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_grow_end
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 375
+        width: 242
+        height: 158
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 047b2841907a0a010800000000000000
+      internalID: 1198141158321207104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_grow5
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 586
+        width: 245
+        height: 140
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4694d6df9e7fa52d0800000000000000
+      internalID: -3289043993489487516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_grow6
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 600
+        width: 246
+        height: 138
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7944101d67e2ed950800000000000000
+      internalID: 6475664402052891799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_grow7
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 592
+        width: 252
+        height: 148
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a17377a00d3b62ba0800000000000000
+      internalID: -6114001737998715110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_die1
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 201
+        width: 225
+        height: 117
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 431df43b1f0ce8db0800000000000000
+      internalID: -4787677209520254668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_die2
+      rect:
+        serializedVersion: 2
+        x: 317
+        y: 232
+        width: 177
+        height: 53
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad82e910eda8aee70800000000000000
+      internalID: 9145274679443728602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_die3
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 233
+        width: 132
+        height: 53
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b82a92e0b4b7e7f90800000000000000
+      internalID: -6953985212323093877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_die4
+      rect:
+        serializedVersion: 2
+        x: 878
+        y: 239
+        width: 80
+        height: 41
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2821d1a0380f4d010800000000000000
+      internalID: 1212858645270565506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_die5
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 29
+        width: 53
+        height: 53
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c69380e1e6f6f0c70800000000000000
+      internalID: 8939486304094665068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: db52f9eaa5a225e7e8f5f06aea2f76b8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      pea_vin_0: -11914727306793036
+      pea_vine_die1: -4787677209520254668
+      pea_vine_die2: 9145274679443728602
+      pea_vine_die3: -6953985212323093877
+      pea_vine_die4: 1212858645270565506
+      pea_vine_die5: 8939486304094665068
+      pea_vine_grow2: 4163392313267564703
+      pea_vine_grow3: -3195313695428965647
+      pea_vine_grow4: -5313170766609664186
+      pea_vine_grow5: -3289043993489487516
+      pea_vine_grow6: 6475664402052891799
+      pea_vine_grow7: -6114001737998715110
+      pea_vine_grow_end: 1198141158321207104
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

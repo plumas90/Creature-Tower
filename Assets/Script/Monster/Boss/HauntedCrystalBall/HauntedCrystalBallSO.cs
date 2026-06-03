@@ -54,6 +54,12 @@ public class HauntedCrystalBallSO : EnemySO
     [Tooltip("유령 발사체 프리팹 (패턴 1, 2)")]
     public GameObject ghostPrefab;
 
+    [Tooltip("블랙 유령 프리팹")]
+    public GameObject blackGhostPrefab;
+
+    [Tooltip("화이트 유령 프리팹")]
+    public GameObject whiteGhostPrefab;
+
     [Tooltip("회전 유령구 프리팹 (패턴 3)")]
     public GameObject ghostCirclePrefab;
 
