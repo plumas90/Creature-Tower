@@ -1,43 +1,61 @@
 fileFormatVersion: 2
-guid: 67ab44c6ce31bc943a24ad3a4cadd63c
+guid: 414cc7add9f55f1ccaf18be90f072d6a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 368543389579951487
-    second: slime_0
+      213: -132174564033353900
+    second: crap base_ver2_0
   - first:
-      213: -458641133534639524
-    second: slime_1
+      213: 9206593284102046324
+    second: crap base_ver2_1
   - first:
-      213: 2542698315722941828
-    second: slime_2
+      213: -6522078513849831749
+    second: crap base_ver2_2
   - first:
-      213: -3711818451352614709
-    second: slime_3
+      213: -5981320496883523023
+    second: crap base_ver2_3
   - first:
-      213: -6875693984060724655
-    second: slime_4
+      213: 2830653807097492274
+    second: crap base_ver2_4
   - first:
-      213: 8065215198520230363
-    second: slime_5
+      213: -8155770130874651656
+    second: crap base_ver2_5
   - first:
-      213: 292511346337569837
-    second: slime_6
+      213: -5332518397059742094
+    second: crap base_ver2_6
   - first:
-      213: -6776676135277293862
-    second: slime_7
+      213: -4561190514291380565
+    second: crap base_ver2_7
   - first:
-      213: 5879532933249936704
-    second: slime_8
+      213: -6449806908765075246
+    second: crap base_ver2_8
   - first:
-      213: 1702944112137351692
-    second: slime_9
+      213: -1429945847467335874
+    second: crap base_ver2_9
   - first:
-      213: 574139385759250185
-    second: slime_10
+      213: -2771207732613116502
+    second: crap base_ver2_10
   - first:
-      213: -1071876908328471809
-    second: slime_11
+      213: 3233877728497521441
+    second: crap base_ver2_11
+  - first:
+      213: -8153240232795708137
+    second: crap base_ver2_12
+  - first:
+      213: 3406896594671642274
+    second: crap base_ver2_13
+  - first:
+      213: 996232483482459308
+    second: crap base_ver2_14
+  - first:
+      213: -5703588504507233729
+    second: crap base_ver2_15
+  - first:
+      213: 3563800356710583741
+    second: crap base_ver2_16
+  - first:
+      213: 7551908414996754708
+    second: crap base_ver2_17
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -84,7 +102,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -133,79 +151,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: jump1_slime
+      name: crap_face_hoo1
       rect:
         serializedVersion: 2
-        x: 5
-        y: 219
-        width: 55
-        height: 46
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f7d3b3c92445d1500800000000000000
-      internalID: 368543389579951487
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: jump2_silme
-      rect:
-        serializedVersion: 2
-        x: 70
-        y: 224
-        width: 53
-        height: 37
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c5a094ca15492a9f0800000000000000
-      internalID: -458641133534639524
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: jump3_silme
-      rect:
-        serializedVersion: 2
-        x: 133
-        y: 226
-        width: 55
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 48566a775aa794320800000000000000
-      internalID: 2542698315722941828
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: jump4_silme
-      rect:
-        serializedVersion: 2
-        x: 201
-        y: 207
+        x: 0
+        y: 44
         width: 46
-        height: 70
+        height: 43
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -214,108 +166,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bc80368d8c8fc7cc0800000000000000
-      internalID: -3711818451352614709
+      spriteID: baee7cab46563b0c0800000000000000
+      internalID: -4561190514291380565
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hold_slime
+      name: crap_face_hoo2
       rect:
         serializedVersion: 2
-        x: 9
-        y: 124
-        width: 47
-        height: 46
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 15a25cf10c0a490a0800000000000000
-      internalID: -6875693984060724655
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: down1_silme
-      rect:
-        serializedVersion: 2
-        x: 76
-        y: 107
-        width: 41
-        height: 80
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bd141e0ed766def60800000000000000
-      internalID: 8065215198520230363
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: down2_silme
-      rect:
-        serializedVersion: 2
-        x: 132
-        y: 128
-        width: 57
-        height: 39
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d2cd83b05853f0400800000000000000
-      internalID: 292511346337569837
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: down3_silme
-      rect:
-        serializedVersion: 2
-        x: 198
-        y: 124
-        width: 52
-        height: 46
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ade0ee695f864f1a0800000000000000
-      internalID: -6776676135277293862
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle1_silme
-      rect:
-        serializedVersion: 2
-        x: 5
+        x: 48
         y: 44
-        width: 53
-        height: 47
+        width: 46
+        height: 43
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -324,20 +188,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 04da29b3d0c489150800000000000000
-      internalID: 5879532933249936704
+      spriteID: 2d8823df9cead76a0800000000000000
+      internalID: -6449806908765075246
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle2_silme
+      name: crap_face_hoo3
       rect:
         serializedVersion: 2
-        x: 65
+        x: 96
         y: 44
-        width: 52
-        height: 47
+        width: 46
+        height: 43
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -346,20 +210,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c023a4cb5a212a710800000000000000
-      internalID: 1702944112137351692
+      spriteID: e3f1aa1f3dfc72ce0800000000000000
+      internalID: -1429945847467335874
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle3_silme
+      name: crap_face_hoo4
       rect:
         serializedVersion: 2
-        x: 127
+        x: 143
         y: 44
-        width: 53
-        height: 47
+        width: 46
+        height: 43
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -368,20 +232,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 907bdbbbab0c7f700800000000000000
-      internalID: 574139385759250185
+      spriteID: aad87caef31ba89d0800000000000000
+      internalID: -2771207732613116502
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle4_silme
+      name: crap_face_wait1
       rect:
         serializedVersion: 2
-        x: 193
-        y: 43
-        width: 53
-        height: 48
+        x: 0
+        y: 0
+        width: 46
+        height: 43
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -390,8 +254,118 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ff2332481adef11f0800000000000000
-      internalID: -1071876908328471809
+      spriteID: 715e9cbb43fd9de80800000000000000
+      internalID: -8153240232795708137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crap_face_wait2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 46
+        height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a624eff66ab74f20800000000000000
+      internalID: 3406896594671642274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crap_face_wait3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 46
+        height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cac5dab5a2453dd00800000000000000
+      internalID: 996232483482459308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crap_face_wait4
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 0
+        width: 46
+        height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3a48db5978c8d0b0800000000000000
+      internalID: -5703588504507233729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crap_face_dep1
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 46
+        height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbd0528ea89257130800000000000000
+      internalID: 3563800356710583741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crap_face_dep2
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 46
+        height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4113a2411b4cdc860800000000000000
+      internalID: 7551908414996754708
       vertices: []
       indices: 
       edges: []
@@ -400,7 +374,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a4b74284af4a931419b1998446b39dbc
+    spriteID: 19a20b290eb8ac81e8a66ea00a769361
     internalID: 0
     vertices: []
     indices: 
@@ -410,18 +384,24 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      down1_silme: 8065215198520230363
-      down2_silme: 292511346337569837
-      down3_silme: -6776676135277293862
-      hold_slime: -6875693984060724655
-      idle1_silme: 5879532933249936704
-      idle2_silme: 1702944112137351692
-      idle3_silme: 574139385759250185
-      idle4_silme: -1071876908328471809
-      jump1_slime: 368543389579951487
-      jump2_silme: -458641133534639524
-      jump3_silme: 2542698315722941828
-      jump4_silme: -3711818451352614709
+      crap base_ver2_0: -132174564033353900
+      crap base_ver2_1: 9206593284102046324
+      crap base_ver2_11: 3233877728497521441
+      crap base_ver2_2: -6522078513849831749
+      crap base_ver2_3: -5981320496883523023
+      crap base_ver2_4: 2830653807097492274
+      crap base_ver2_5: -8155770130874651656
+      crap base_ver2_6: -5332518397059742094
+      crap_face_dep1: 3563800356710583741
+      crap_face_dep2: 7551908414996754708
+      crap_face_hoo1: -4561190514291380565
+      crap_face_hoo2: -6449806908765075246
+      crap_face_hoo3: -1429945847467335874
+      crap_face_hoo4: -2771207732613116502
+      crap_face_wait1: -8153240232795708137
+      crap_face_wait2: 3406896594671642274
+      crap_face_wait3: 996232483482459308
+      crap_face_wait4: -5703588504507233729
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

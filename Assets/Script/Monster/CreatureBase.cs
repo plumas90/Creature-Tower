@@ -19,6 +19,7 @@ public abstract class CreatureBase : MonoBehaviour
 
     public bool live;
     public bool invincibility;
+    public bool IsPassThroughBullets { get; protected set; } = false;
 
     [HideInInspector] public GameObject Player;
 
@@ -30,7 +31,7 @@ public abstract class CreatureBase : MonoBehaviour
     [Header("Y Sorting")]
     [SerializeField] private bool useYBasedSorting = true;
     [SerializeField] private string ySortLayerName = "World_Dynamic";
-    [SerializeField] protected int ySortBaseOrder = 1000;
+    [SerializeField] protected int ySortBaseOrder = 1500;
     [SerializeField] private int ySortScale = 10;
     [SerializeField] protected int ySortOrderOffset = 0;
     [SerializeField] private Transform ySortPivot;
@@ -47,6 +48,12 @@ public abstract class CreatureBase : MonoBehaviour
 
     protected virtual void Awake()
     {
+        // 플레이어 및 다른 동적 오브젝트(1500)와의 일관된 Y 소팅을 유지하기 위해 보정합니다.
+        if (ySortBaseOrder == 1000)
+        {
+            ySortBaseOrder = 1500;
+        }
+
         ConfigurePhysics();
         CacheSortingTargets();
     }
@@ -72,6 +79,12 @@ public abstract class CreatureBase : MonoBehaviour
         _rb2d.linearVelocity = Vector2.zero;
         _rb2d.angularVelocity = 0f;
         _rb2d.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // 플레이어에 의해 밀리는 현상을 방지하기 위해 기본 질량(Mass)을 크게 설정합니다.
+        if (_rb2d.mass == 1f)
+        {
+            _rb2d.mass = 10000f;
+        }
 
         if (useKinematic)
         {
@@ -211,9 +224,17 @@ public abstract class CreatureBase : MonoBehaviour
         // 관통 탄이 아니면 다중 히트 방지
         if (!bullet.TryMarkBossHit(gameObject.GetInstanceID())) return;
 
-        if (isDead || !live || invincibility)
+        if (isDead || !live)
         {
-            // if (!bullet.Penetrate) bullet.Destroy();
+            bullet.Destroy();
+            return;
+        }
+
+        if (invincibility)
+        {
+            // 총알이 통과해야 하는 상태라면 파괴하지 않고 그냥 통과시킵니다.
+            if (IsPassThroughBullets) return;
+
             bullet.Destroy();
             return;
         }

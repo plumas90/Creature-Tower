@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -8,6 +9,11 @@ public class CaptainCrabBubbleProjectile : MonoBehaviour
     [SerializeField] private int ySortScale = 10;
     [SerializeField] private int ySortOrderOffset = 2;
 
+    [Header("Bubble Animation Sprites")]
+    [SerializeField] private Sprite[] idleSprites;
+    [SerializeField] private Sprite[] boomSprites;
+    [SerializeField] private float animationFps = 10f;
+
     private Vector2 direction;
     private float speed;
     private float lifetime;
@@ -15,6 +21,9 @@ public class CaptainCrabBubbleProjectile : MonoBehaviour
     private float spawnedAt;
     private bool initialized;
     private SpriteRenderer spriteRenderer;
+
+    private Coroutine animCoroutine;
+    private bool isExploding = false;
 
     public void Initialize(Vector2 moveDirection, float moveSpeed, float life, float hitDamage)
     {
@@ -29,6 +38,13 @@ public class CaptainCrabBubbleProjectile : MonoBehaviour
             spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
+
+        isExploding = false;
+        
+        // Start idle animation
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+        animCoroutine = StartCoroutine(CoPlayIdleAnimation());
     }
 
     private void Awake()
@@ -46,8 +62,11 @@ public class CaptainCrabBubbleProjectile : MonoBehaviour
         transform.position += (Vector3)(direction * speed * Time.deltaTime);
         ApplyYSort();
 
-        if (Time.time - spawnedAt >= lifetime)
-            Destroy(gameObject);
+        // If not exploding, check if lifetime has expired
+        if (!isExploding && Time.time - spawnedAt >= lifetime)
+        {
+            TriggerExplosion();
+        }
     }
 
     private void ApplyYSort()
@@ -64,7 +83,7 @@ public class CaptainCrabBubbleProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!initialized || collision == null)
+        if (!initialized || collision == null || isExploding)
             return;
 
         PlayerStatControl playerStat = collision.GetComponent<PlayerStatControl>();
@@ -73,12 +92,69 @@ public class CaptainCrabBubbleProjectile : MonoBehaviour
         if (playerStat != null)
         {
             playerStat.TryApplyContactDamage(damage, gameObject.GetInstanceID());
-            Destroy(gameObject);
+            TriggerExplosion();
             return;
         }
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
-            Destroy(gameObject);
+        {
+            TriggerExplosion();
+        }
+    }
+
+    private void TriggerExplosion()
+    {
+        if (isExploding) return;
+        isExploding = true;
+
+        speed = 0f;
+
+        // Disable collider so it doesn't collide with anything else
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+        {
+            col.enabled = false;
+        }
+
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+        animCoroutine = StartCoroutine(CoPlayBoomAnimation());
+    }
+
+    private IEnumerator CoPlayIdleAnimation()
+    {
+        int index = 0;
+        float delay = 1f / animationFps;
+        while (!isExploding)
+        {
+            if (idleSprites != null && idleSprites.Length > 0)
+            {
+                if (idleSprites[index] != null)
+                {
+                    spriteRenderer.sprite = idleSprites[index];
+                }
+                index = (index + 1) % idleSprites.Length;
+            }
+            yield return new WaitForSeconds(delay);
+        }
+    }
+
+    private IEnumerator CoPlayBoomAnimation()
+    {
+        if (boomSprites != null && boomSprites.Length > 0)
+        {
+            float delay = 1f / animationFps;
+            for (int i = 0; i < boomSprites.Length; i++)
+            {
+                if (boomSprites[i] != null)
+                {
+                    spriteRenderer.sprite = boomSprites[i];
+                }
+                yield return new WaitForSeconds(delay);
+            }
+        }
+        Destroy(gameObject);
     }
 }
+
 

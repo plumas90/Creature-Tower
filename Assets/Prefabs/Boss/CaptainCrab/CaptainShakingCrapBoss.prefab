@@ -1022,7 +1022,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.73, y: 15.09, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.95, y: 0.95, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6270793621931113252}
@@ -1081,6 +1081,20 @@ MonoBehaviour:
   rightClawSweepHitbox: {fileID: 3848998911065235882}
   projectileBlockers: []
   beamWarningRenderers: []
+  faceSpriteRenderer: {fileID: 0}
+  defaultFaceSprite: {fileID: 0}
+  waitSprites:
+  - {fileID: -8153240232795708137, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  - {fileID: 3406896594671642274, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  - {fileID: 996232483482459308, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  - {fileID: -5703588504507233729, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  hooSprites:
+  - {fileID: -4561190514291380565, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  - {fileID: -6449806908765075246, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  - {fileID: -1429945847467335874, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  - {fileID: -2771207732613116502, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  dep1Sprite: {fileID: 3563800356710583741, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
+  dep2Sprite: {fileID: 7551908414996754708, guid: 414cc7add9f55f1ccaf18be90f072d6a, type: 3}
 --- !u!114 &3940948467754841654
 MonoBehaviour:
   m_ObjectHideFlags: 0

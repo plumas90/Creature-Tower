@@ -40,6 +40,16 @@ public class CaptainCrabBoss : BossBase
     [Header("Beam Warning")]
     [SerializeField] private SpriteRenderer[] beamWarningRenderers;
 
+    [Header("Face Sprite Customization")]
+    [SerializeField] private SpriteRenderer faceSpriteRenderer;
+    [SerializeField] private Sprite defaultFaceSprite;
+    [SerializeField] private Sprite[] waitSprites; // wait1 ~ wait4
+    [SerializeField] private Sprite[] hooSprites;  // hoo1 ~ hoo4
+    [SerializeField] private Sprite dep1Sprite;
+    [SerializeField] private Sprite dep2Sprite;
+
+    private Coroutine faceAnimCoroutine;
+
     private bool patternRunning;
     private float nextPatternAllowedAt;
     private float nextBombSpawnAt;
@@ -68,6 +78,20 @@ public class CaptainCrabBoss : BossBase
             faceHurtbox = GetComponentInChildren<BossHurtbox>(true);
         if (faceHurtbox != null && faceHurtboxCollider == null)
             faceHurtboxCollider = faceHurtbox.GetComponent<Collider2D>();
+
+        if (faceSpriteRenderer == null)
+        {
+            if (faceHurtbox != null)
+                faceSpriteRenderer = faceHurtbox.GetComponent<SpriteRenderer>();
+            if (faceSpriteRenderer == null)
+            {
+                Transform head = transform.Find("Head");
+                if (head != null)
+                    faceSpriteRenderer = head.GetComponent<SpriteRenderer>();
+            }
+        }
+        if (defaultFaceSprite == null && faceSpriteRenderer != null)
+            defaultFaceSprite = faceSpriteRenderer.sprite;
 
         ResolveClawReferences();
         CacheClawDefaultPose();
@@ -155,6 +179,15 @@ public class CaptainCrabBoss : BossBase
 
     private CaptainCrabPattern SelectNextPattern()
     {
+        if (Player != null)
+        {
+            Bounds zone = StageOwner != null ? StageOwner.GetZoneBounds() : new Bounds(transform.position, new Vector3(12f, 8f, 0f));
+            if (Player.transform.position.y > zone.center.y)
+            {
+                return CaptainCrabPattern.BubbleBeam;
+            }
+        }
+
         float guardW = Mathf.Max(0f, captainCrabSO.guardWeight);
         float sweepW = Mathf.Max(0f, captainCrabSO.clawSweepWeight);
         float beamW = Mathf.Max(0f, captainCrabSO.bubbleBeamWeight);
@@ -213,22 +246,33 @@ public class CaptainCrabBoss : BossBase
     private IEnumerator CoGuardPattern()
     {
         SetFaceExposed(false);
+        StopFaceAnimation();
+        SetFaceSprite(dep1Sprite);
+
         yield return MoveClawsToGuardPose();
         yield return new WaitForSeconds(Mathf.Max(0.05f, captainCrabSO.guardDuration));
         SetFaceExposed(true);
         yield return MoveClawsToDefaultPose();
+
+        SetFaceSprite(defaultFaceSprite);
+
         yield return new WaitForSeconds(Mathf.Max(0.05f, captainCrabSO.faceExposeDuration));
         EndPattern();
     }
 
     private IEnumerator CoClawSweepPattern()
     {
+        StopFaceAnimation();
+        SetFaceSprite(dep1Sprite); // Windup / extending face
+
         yield return MoveClawsToDefaultPose();
         yield return MoveClawsToAbsoluteY(-2f, 0.5f);
         yield return RotateClaws(
             captainCrabSO.clawSweepWindupAngle,
             Mathf.Max(0f, captainCrabSO.clawSweepTelegraphTime)
         );
+
+        SetFaceSprite(dep2Sprite); // Swiping / swinging face
 
         SetSweepHitboxesDamage(captainCrabSO.clawSweepDamage);
         SetSweepHitboxesActive(true);
@@ -237,15 +281,23 @@ public class CaptainCrabBoss : BossBase
             Mathf.Max(0.05f, captainCrabSO.clawSweepActiveTime)
         );
         SetSweepHitboxesActive(false);
+
         yield return RotateClaws(0f, Mathf.Max(0.01f, captainCrabSO.clawSweepRecoverTime));
         yield return MoveClawsInwardForClash();
         yield return MoveClawsToDefaultPose();
+
+        SetFaceSprite(defaultFaceSprite); // Back to normal face after claws are fully returned
+
         EndPattern();
     }
 
     private IEnumerator CoBubbleBeamPattern()
     {
         float telegraph = Mathf.Max(0f, captainCrabSO.beamTelegraphTime);
+        
+        // Play wait1~4 warning face loop during warning phase
+        StartFaceAnimation(waitSprites, 8f, true);
+
         float redWarningDuration = 0.5f;
         float preWarning = Mathf.Max(0f, telegraph - redWarningDuration);
         if (preWarning > 0f)
@@ -255,6 +307,9 @@ public class CaptainCrabBoss : BossBase
         yield return new WaitForSeconds(redWarningDuration);
         SetBeamWarningActive(false);
 
+        // Play hoo1~4, holding hoo4 while shooting
+        StartFaceAnimation(hooSprites, 8f, false, holdLastFrame: true);
+
         int shotCount = Mathf.Max(1, captainCrabSO.beamShotCount);
         for (int i = 0; i < shotCount; i++)
         {
@@ -262,6 +317,9 @@ public class CaptainCrabBoss : BossBase
             if (i < shotCount - 1)
                 yield return new WaitForSeconds(Mathf.Max(0.01f, captainCrabSO.beamShotInterval));
         }
+
+        StopFaceAnimation();
+        SetFaceSprite(defaultFaceSprite);
 
         EndPattern();
     }
@@ -295,6 +353,69 @@ public class CaptainCrabBoss : BossBase
             Mathf.Max(0.05f, captainCrabSO.beamProjectileLifetime),
             Mathf.Max(0f, captainCrabSO.beamProjectileDamage)
         );
+    }
+
+    private void SetFaceSprite(Sprite sprite)
+    {
+        if (faceSpriteRenderer != null && sprite != null)
+        {
+            faceSpriteRenderer.sprite = sprite;
+        }
+    }
+
+    private void StartFaceAnimation(Sprite[] sprites, float fps, bool loop, bool holdLastFrame = false)
+    {
+        if (faceAnimCoroutine != null)
+        {
+            StopCoroutine(faceAnimCoroutine);
+        }
+        if (sprites != null && sprites.Length > 0)
+        {
+            faceAnimCoroutine = StartCoroutine(CoPlayFaceAnimation(sprites, fps, loop, holdLastFrame));
+        }
+    }
+
+    private void StopFaceAnimation()
+    {
+        if (faceAnimCoroutine != null)
+        {
+            StopCoroutine(faceAnimCoroutine);
+            faceAnimCoroutine = null;
+        }
+    }
+
+    private IEnumerator CoPlayFaceAnimation(Sprite[] sprites, float fps, bool loop, bool holdLastFrame)
+    {
+        float delay = 1f / fps;
+        int index = 0;
+        while (true)
+        {
+            SetFaceSprite(sprites[index]);
+
+            if (!loop && index == sprites.Length - 1)
+            {
+                if (holdLastFrame)
+                {
+                    yield break;
+                }
+                else
+                {
+                    yield break;
+                }
+            }
+
+            index = index + 1;
+            if (loop)
+            {
+                index %= sprites.Length;
+            }
+            else if (index >= sprites.Length)
+            {
+                yield break;
+            }
+
+            yield return new WaitForSeconds(delay);
+        }
     }
 
     private IEnumerator CoAmbientBombLoop()
@@ -412,6 +533,9 @@ public class CaptainCrabBoss : BossBase
         ResetClawPoseImmediate();
         SetBeamWarningActive(false);
         SetFaceExposed(true);
+
+        StopFaceAnimation();
+        SetFaceSprite(defaultFaceSprite);
     }
 
     public override void BossDie()
@@ -664,6 +788,11 @@ public class CaptainCrabBoss : BossBase
             rightClawCurrentSwingAngle = targetAngle;
     }
 
+    protected override float ResolvePostIntroDelay()
+    {
+        return 2f;
+    }
+
     protected override void OnBeforeIntroStart()
     {
         base.OnBeforeIntroStart();
@@ -705,13 +834,13 @@ public class CaptainCrabBoss : BossBase
 
             // 1. bone-n 만큼 z값을 갔다가 돌아오기 (sin 곡선: 0 -> 1 -> 0)
             float boneFactor = Mathf.Sin(t * Mathf.PI);
-            float targetAngle = 30f * boneFactor;  // Z축 회전 변화
             float targetZPos = 1.5f * boneFactor;   // Z축 위치 변화
 
             foreach (var b in leftBones)
             {
                 if (b == null) continue;
-                b.localRotation = boneOrigRots[b] * Quaternion.Euler(0f, 0f, targetAngle);
+                float angle = -GetBoneAngle(b.name) * boneFactor;
+                b.localRotation = boneOrigRots[b] * Quaternion.Euler(0f, 0f, angle);
                 Vector3 p = boneOrigPos[b];
                 p.z = boneOrigPos[b].z + targetZPos;
                 b.localPosition = p;
@@ -720,7 +849,8 @@ public class CaptainCrabBoss : BossBase
             foreach (var b in rightBones)
             {
                 if (b == null) continue;
-                b.localRotation = boneOrigRots[b] * Quaternion.Euler(0f, 0f, -targetAngle);
+                float angle = -GetBoneAngle(b.name) * boneFactor;
+                b.localRotation = boneOrigRots[b] * Quaternion.Euler(0f, 0f, angle);
                 Vector3 p = boneOrigPos[b];
                 p.z = boneOrigPos[b].z + targetZPos;
                 b.localPosition = p;
@@ -753,6 +883,25 @@ public class CaptainCrabBoss : BossBase
         }
         if (leftClawTransform != null) leftClawTransform.localRotation = leftArmOrigRot;
         if (rightClawTransform != null) rightClawTransform.localRotation = rightArmOrigRot;
+    }
+
+    private float GetBoneAngle(string boneName)
+    {
+        if (string.IsNullOrEmpty(boneName))
+            return 30f;
+
+        string nameLower = boneName.ToLower();
+        int boneIdx = nameLower.IndexOf("bone");
+        if (boneIdx != -1)
+        {
+            string numberPart = nameLower.Substring(boneIdx + 4);
+            numberPart = numberPart.Replace("-", "").Replace("_", "").Trim();
+            if (float.TryParse(numberPart, out float parsedVal))
+            {
+                return parsedVal;
+            }
+        }
+        return 30f;
     }
 
     private void FindBonesRecursive(Transform parent, List<Transform> list)

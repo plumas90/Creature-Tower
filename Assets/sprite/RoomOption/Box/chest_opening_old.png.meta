@@ -1,43 +1,34 @@
 fileFormatVersion: 2
-guid: 3e420503cb272be4e8093567efa9e9a6
+guid: 180ba744459d68c908b702cd5074ac29
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 368543389579951487
-    second: slime_0
+      213: 3293191984190381418
+    second: chest_opening_old_0
   - first:
-      213: -458641133534639524
-    second: slime_1
+      213: 8945935964221854151
+    second: chest_opening_old_1
   - first:
-      213: 2542698315722941828
-    second: slime_2
+      213: 4569756280029287051
+    second: chest_opening_old_2
   - first:
-      213: -3711818451352614709
-    second: slime_3
+      213: -4606893200466392344
+    second: chest_opening_old_3
   - first:
-      213: -6875693984060724655
-    second: slime_4
+      213: -7878911801638009879
+    second: chest_opening_old_4
   - first:
-      213: 8065215198520230363
-    second: slime_5
+      213: 6292523528514077744
+    second: chest_opening_old_5
   - first:
-      213: 292511346337569837
-    second: slime_6
+      213: 3564584803748008555
+    second: chest_opening_old_6
   - first:
-      213: -6776676135277293862
-    second: slime_7
+      213: 4662789991513717789
+    second: chest_opening_old_7
   - first:
-      213: 5879532933249936704
-    second: slime_8
-  - first:
-      213: 1702944112137351692
-    second: slime_9
-  - first:
-      213: 574139385759250185
-    second: slime_10
-  - first:
-      213: -1071876908328471809
-    second: slime_11
+      213: 7303948099301513097
+    second: chest_opening_old_8
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -84,7 +75,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 256
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -133,13 +124,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: jump1_slime
+      name: oldchest_close
       rect:
         serializedVersion: 2
-        x: 5
-        y: 219
-        width: 55
-        height: 46
+        x: 57
+        y: 766
+        width: 233
+        height: 176
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -148,20 +139,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f7d3b3c92445d1500800000000000000
-      internalID: 368543389579951487
+      spriteID: a6dd4da59a4c3bd20800000000000000
+      internalID: 3293191984190381418
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump2_silme
+      name: oldchest_opening1
       rect:
         serializedVersion: 2
-        x: 70
-        y: 224
-        width: 53
-        height: 37
+        x: 396
+        y: 767
+        width: 233
+        height: 176
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -170,20 +161,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c5a094ca15492a9f0800000000000000
-      internalID: -458641133534639524
+      spriteID: 7c1d5d2ac59562c70800000000000000
+      internalID: 8945935964221854151
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump3_silme
+      name: oldchest_opening2
       rect:
         serializedVersion: 2
-        x: 133
-        y: 226
-        width: 55
-        height: 32
+        x: 738
+        y: 766
+        width: 234
+        height: 181
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -192,20 +183,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 48566a775aa794320800000000000000
-      internalID: 2542698315722941828
+      spriteID: b82914500290b6f30800000000000000
+      internalID: 4569756280029287051
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump4_silme
+      name: oldchest_opening3
       rect:
         serializedVersion: 2
-        x: 201
-        y: 207
-        width: 46
-        height: 70
+        x: 55
+        y: 408
+        width: 233
+        height: 197
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -214,20 +205,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bc80368d8c8fc7cc0800000000000000
-      internalID: -3711818451352614709
+      spriteID: 8eac904ea070110c0800000000000000
+      internalID: -4606893200466392344
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hold_slime
+      name: oldchest_opening4
       rect:
         serializedVersion: 2
-        x: 9
-        y: 124
-        width: 47
-        height: 46
+        x: 394
+        y: 408
+        width: 234
+        height: 192
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -236,20 +227,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 15a25cf10c0a490a0800000000000000
-      internalID: -6875693984060724655
+      spriteID: 9e3cbbee57b78a290800000000000000
+      internalID: -7878911801638009879
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: down1_silme
+      name: oldchest_opening5
       rect:
         serializedVersion: 2
-        x: 76
-        y: 107
-        width: 41
-        height: 80
+        x: 736
+        y: 408
+        width: 234
+        height: 212
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -258,20 +249,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bd141e0ed766def60800000000000000
-      internalID: 8065215198520230363
+      spriteID: 0348ed95fc8835750800000000000000
+      internalID: 6292523528514077744
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: down2_silme
+      name: oldchest_opening6
       rect:
         serializedVersion: 2
-        x: 132
-        y: 128
-        width: 57
-        height: 39
+        x: 55
+        y: 55
+        width: 233
+        height: 248
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -280,20 +271,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d2cd83b05853f0400800000000000000
-      internalID: 292511346337569837
+      spriteID: b62d7273ef2f77130800000000000000
+      internalID: 3564584803748008555
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: down3_silme
+      name: oldchest_opening7
       rect:
         serializedVersion: 2
-        x: 198
-        y: 124
-        width: 52
-        height: 46
+        x: 392
+        y: 55
+        width: 238
+        height: 274
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -302,20 +293,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ade0ee695f864f1a0800000000000000
-      internalID: -6776676135277293862
+      spriteID: d1cfb62face85b040800000000000000
+      internalID: 4662789991513717789
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle1_silme
+      name: oldchest_opening
       rect:
         serializedVersion: 2
-        x: 5
-        y: 44
-        width: 53
-        height: 47
+        x: 736
+        y: 55
+        width: 233
+        height: 294
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -324,74 +315,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 04da29b3d0c489150800000000000000
-      internalID: 5879532933249936704
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle2_silme
-      rect:
-        serializedVersion: 2
-        x: 65
-        y: 44
-        width: 52
-        height: 47
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c023a4cb5a212a710800000000000000
-      internalID: 1702944112137351692
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle3_silme
-      rect:
-        serializedVersion: 2
-        x: 127
-        y: 44
-        width: 53
-        height: 47
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 907bdbbbab0c7f700800000000000000
-      internalID: 574139385759250185
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle4_silme
-      rect:
-        serializedVersion: 2
-        x: 193
-        y: 43
-        width: 53
-        height: 48
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ff2332481adef11f0800000000000000
-      internalID: -1071876908328471809
+      spriteID: 98791cc2916dc5560800000000000000
+      internalID: 7303948099301513097
       vertices: []
       indices: 
       edges: []
@@ -400,7 +325,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a4b74284af4a931419b1998446b39dbc
+    spriteID: a861d914037407f94bf5582295c68927
     internalID: 0
     vertices: []
     indices: 
@@ -410,18 +335,15 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      down1_silme: 8065215198520230363
-      down2_silme: 292511346337569837
-      down3_silme: -6776676135277293862
-      hold_slime: -6875693984060724655
-      idle1_silme: 5879532933249936704
-      idle2_silme: 1702944112137351692
-      idle3_silme: 574139385759250185
-      idle4_silme: -1071876908328471809
-      jump1_slime: 368543389579951487
-      jump2_silme: -458641133534639524
-      jump3_silme: 2542698315722941828
-      jump4_silme: -3711818451352614709
+      oldchest_close: 3293191984190381418
+      oldchest_opening: 7303948099301513097
+      oldchest_opening1: 8945935964221854151
+      oldchest_opening2: 4569756280029287051
+      oldchest_opening3: -4606893200466392344
+      oldchest_opening4: -7878911801638009879
+      oldchest_opening5: 6292523528514077744
+      oldchest_opening6: 3564584803748008555
+      oldchest_opening7: 4662789991513717789
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

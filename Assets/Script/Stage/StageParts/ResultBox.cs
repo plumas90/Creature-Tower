@@ -14,6 +14,8 @@ public class ResultBox : MonoBehaviour
     [Header("Animation (Placeholders)")]
     public Sprite closedSprite;
     public Sprite openedSprite;
+    public Sprite[] openingSprites; // The opening animation sequence (e.g. chest_opening_1 to 7)
+    public float animationFps = 12f;
     public SpriteRenderer boxSpriteRenderer; // 자식 오브젝트 (Box)의 SpriteRenderer
 
     [Header("Push Back")]
@@ -63,7 +65,29 @@ public class ResultBox : MonoBehaviour
         Vector2 pushDir = (player.transform.position - transform.position).normalized;
         player.StartKnockback(pushDir, pushForce);
 
+        StartCoroutine(CoPlayOpeningAnimation());
         StartCoroutine(SpawnRewardRoutine());
+    }
+
+    private IEnumerator CoPlayOpeningAnimation()
+    {
+        if (openingSprites != null && openingSprites.Length > 0 && boxSpriteRenderer != null)
+        {
+            float delay = 1f / animationFps;
+            for (int i = 0; i < openingSprites.Length; i++)
+            {
+                if (openingSprites[i] != null)
+                {
+                    boxSpriteRenderer.sprite = openingSprites[i];
+                }
+                yield return new WaitForSeconds(delay);
+            }
+        }
+
+        if (boxSpriteRenderer != null && openedSprite != null)
+        {
+            boxSpriteRenderer.sprite = openedSprite;
+        }
     }
 
     private IEnumerator SpawnRewardRoutine()

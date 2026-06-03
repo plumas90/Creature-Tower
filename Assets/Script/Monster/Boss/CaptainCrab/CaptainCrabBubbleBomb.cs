@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -23,6 +24,11 @@ public class CaptainCrabBubbleBomb : MonoBehaviour
     [SerializeField] private int ySortOrderOffset = 0;
     [SerializeField] private int shadowSortingOrder = 0;
 
+    [Header("Bubble Bomb Animation Sprites")]
+    [SerializeField] private Sprite[] idleSprites;
+    [SerializeField] private Sprite[] boomSprites;
+    [SerializeField] private float animationFps = 10f;
+
     private CaptainCrabBossSO so;
     private Bounds zoneBounds;
     private BombState state;
@@ -36,6 +42,9 @@ public class CaptainCrabBubbleBomb : MonoBehaviour
     private float bottomOffset;
     private float turnToRightAtY;
     private SpriteRenderer bodyRenderer;
+
+    private Coroutine animCoroutine;
+    private bool isExploding = false;
 
     public void Initialize(CaptainCrabBossSO soData, Bounds zone)
     {
@@ -82,7 +91,14 @@ public class CaptainCrabBubbleBomb : MonoBehaviour
         {
             shadowRenderer.sortingLayerName = groundFxSortingLayer;
             shadowRenderer.sortingOrder = shadowSortingOrder;
+            shadowRenderer.enabled = true;
         }
+
+        isExploding = false;
+
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+        animCoroutine = StartCoroutine(CoPlayIdleAnimation());
     }
 
     private void Awake()
@@ -97,13 +113,16 @@ public class CaptainCrabBubbleBomb : MonoBehaviour
         if (so == null)
             return;
 
-        if (Time.time - spawnedAt >= Mathf.Max(0.1f, so.bombLifetime))
+        if (!isExploding && Time.time - spawnedAt >= Mathf.Max(0.1f, so.bombLifetime))
         {
-            Destroy(gameObject);
+            TriggerExplosion();
             return;
         }
 
-        StepState();
+        if (!isExploding)
+        {
+            StepState();
+        }
         ApplyYSort();
     }
 
@@ -162,7 +181,7 @@ public class CaptainCrabBubbleBomb : MonoBehaviour
             shadowPos.x = pos.x;
             if (pos.x >= maxX)
             {
-                Destroy(gameObject);
+                TriggerExplosion();
                 return;
             }
         }
@@ -197,7 +216,7 @@ public class CaptainCrabBubbleBomb : MonoBehaviour
 
     private void TryDamagePlayer(Collider2D collision)
     {
-        if (collision == null || damage <= 0f)
+        if (collision == null || isExploding)
             return;
 
         PlayerStatControl playerStat = collision.GetComponent<PlayerStatControl>();
@@ -205,7 +224,69 @@ public class CaptainCrabBubbleBomb : MonoBehaviour
             playerStat = collision.GetComponentInParent<PlayerStatControl>();
 
         if (playerStat != null)
-            playerStat.TryApplyContactDamage(damage, gameObject.GetInstanceID());
+        {
+            if (damage > 0f)
+            {
+                playerStat.TryApplyContactDamage(damage, gameObject.GetInstanceID());
+            }
+            TriggerExplosion();
+        }
+    }
+
+    private void TriggerExplosion()
+    {
+        if (isExploding) return;
+        isExploding = true;
+
+        if (shadowRenderer != null)
+        {
+            shadowRenderer.enabled = false;
+        }
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+        {
+            col.enabled = false;
+        }
+
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+        animCoroutine = StartCoroutine(CoPlayBoomAnimation());
+    }
+
+    private IEnumerator CoPlayIdleAnimation()
+    {
+        int index = 0;
+        float delay = 1f / animationFps;
+        while (!isExploding)
+        {
+            if (idleSprites != null && idleSprites.Length > 0)
+            {
+                if (idleSprites[index] != null && bodyRenderer != null)
+                {
+                    bodyRenderer.sprite = idleSprites[index];
+                }
+                index = (index + 1) % idleSprites.Length;
+            }
+            yield return new WaitForSeconds(delay);
+        }
+    }
+
+    private IEnumerator CoPlayBoomAnimation()
+    {
+        if (boomSprites != null && boomSprites.Length > 0)
+        {
+            float delay = 1f / animationFps;
+            for (int i = 0; i < boomSprites.Length; i++)
+            {
+                if (boomSprites[i] != null && bodyRenderer != null)
+                {
+                    bodyRenderer.sprite = boomSprites[i];
+                }
+                yield return new WaitForSeconds(delay);
+            }
+        }
+        Destroy(gameObject);
     }
 }
 

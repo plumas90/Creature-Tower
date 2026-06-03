@@ -1,0 +1,434 @@
+fileFormatVersion: 2
+guid: 11b176e766f950b08929ea0f666558c6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7075056247769958192
+    second: my_crab_bubble_0
+  - first:
+      213: 1950364602543741331
+    second: my_crab_bubble_1
+  - first:
+      213: 7879434240212985519
+    second: my_crab_bubble_2
+  - first:
+      213: 5251151399875524418
+    second: my_crab_bubble_3
+  - first:
+      213: -6799242825058220254
+    second: my_crab_bubble_4
+  - first:
+      213: 388296494359164867
+    second: my_crab_bubble_5
+  - first:
+      213: -7590685596861375504
+    second: my_crab_bubble_6
+  - first:
+      213: 8095463455815356973
+    second: my_crab_bubble_7
+  - first:
+      213: -7252360570568538988
+    second: my_crab_bubble_8
+  - first:
+      213: 1994300116085110473
+    second: my_crab_bubble_9
+  - first:
+      213: 5028907314293292477
+    second: my_crab_bubble_10
+  - first:
+      213: -5678484161739797457
+    second: my_crab_bubble_11
+  - first:
+      213: 2050173213383521578
+    second: my_crab_bubble_12
+  - first:
+      213: 6460606872948923707
+    second: my_crab_bubble_13
+  - first:
+      213: 4693635899259216869
+    second: my_crab_bubble_14
+  - first:
+      213: 3330446731736953434
+    second: my_crab_bubble_15
+  - first:
+      213: 965001109664148805
+    second: my_crab_bubble_16
+  - first:
+      213: 5933765403611007975
+    second: my_crab_bubble_17
+  - first:
+      213: -2392854811755913012
+    second: my_crab_bubble_18
+  - first:
+      213: -4195898273900977478
+    second: my_crab_bubble_19
+  - first:
+      213: -485470247289983886
+    second: my_crab_bubble_20
+  - first:
+      213: -5657768958178334233
+    second: my_crab_bubble_21
+  - first:
+      213: 3943250707240945356
+    second: my_crab_bubble_22
+  - first:
+      213: -5679915789181867313
+    second: my_crab_bubble_23
+  - first:
+      213: 8637198579376115040
+    second: my_crab_bubble_24
+  - first:
+      213: 1774992352860479844
+    second: my_crab_bubble_25
+  - first:
+      213: -7277973824652570904
+    second: my_crab_bubble_26
+  - first:
+      213: 248923039555317841
+    second: my_crab_bubble_27
+  - first:
+      213: -5152303399579260264
+    second: my_crab_bubble_28
+  - first:
+      213: -5844335117505958259
+    second: my_crab_bubble_29
+  - first:
+      213: 6345723471861813612
+    second: my_crab_bubble_30
+  - first:
+      213: 3987568462880648558
+    second: my_crab_bubble_31
+  - first:
+      213: -574692358301813550
+    second: my_crab_bubble_32
+  - first:
+      213: 6208819370197999369
+    second: my_crab_bubble_33
+  - first:
+      213: -642571222527022198
+    second: my_crab_bubble_34
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 16
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: crab_bubble_idel1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 126
+        width: 51
+        height: 51
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d873c1f3d950dd90800000000000000
+      internalID: -7075056247769958192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_bubble_idel2
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 126
+        width: 51
+        height: 51
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3999d15c546111b10800000000000000
+      internalID: 1950364602543741331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_bubble_idel3
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 126
+        width: 51
+        height: 51
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa6e1f6c1bf595d60800000000000000
+      internalID: 7879434240212985519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_bubble_idel4
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 127
+        width: 49
+        height: 50
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 247306b5066dfd840800000000000000
+      internalID: 5251151399875524418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_bubble_boom1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 23
+        width: 49
+        height: 49
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22708ceacac34a1a0800000000000000
+      internalID: -6799242825058220254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_bubble_boom3
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 20
+        width: 57
+        height: 56
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e3ed508bf4232140800000000000000
+      internalID: 4693635899259216869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_bubble_boom2
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 24
+        width: 46
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ee0ef8ed517ffa90800000000000000
+      internalID: -7277973824652570904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_bubble_boom4
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 23
+        width: 50
+        height: 50
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 150fa158f2a547300800000000000000
+      internalID: 248923039555317841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 9bb219e82f25df7efae40d6b2a97b8f4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      2: -7277973824652570904
+      crab_bubble_boom1: -6799242825058220254
+      crab_bubble_boom2: -7277973824652570904
+      crab_bubble_boom3: 4693635899259216869
+      crab_bubble_boom4: 248923039555317841
+      crab_bubble_idel1: -7075056247769958192
+      crab_bubble_idel2: 1950364602543741331
+      crab_bubble_idel3: 7879434240212985519
+      crab_bubble_idel4: 5251151399875524418
+      my_crab_bubble_10: 5028907314293292477
+      my_crab_bubble_11: -5678484161739797457
+      my_crab_bubble_12: 2050173213383521578
+      my_crab_bubble_13: 6460606872948923707
+      my_crab_bubble_15: 3330446731736953434
+      my_crab_bubble_16: 965001109664148805
+      my_crab_bubble_17: 5933765403611007975
+      my_crab_bubble_18: -2392854811755913012
+      my_crab_bubble_19: -4195898273900977478
+      my_crab_bubble_20: -485470247289983886
+      my_crab_bubble_21: -5657768958178334233
+      my_crab_bubble_22: 3943250707240945356
+      my_crab_bubble_23: -5679915789181867313
+      my_crab_bubble_24: 8637198579376115040
+      my_crab_bubble_25: 1774992352860479844
+      my_crab_bubble_28: -5152303399579260264
+      my_crab_bubble_29: -5844335117505958259
+      my_crab_bubble_30: 6345723471861813612
+      my_crab_bubble_31: 3987568462880648558
+      my_crab_bubble_32: -574692358301813550
+      my_crab_bubble_33: 6208819370197999369
+      my_crab_bubble_34: -642571222527022198
+      my_crab_bubble_5: 388296494359164867
+      my_crab_bubble_6: -7590685596861375504
+      my_crab_bubble_7: 8095463455815356973
+      my_crab_bubble_8: -7252360570568538988
+      my_crab_bubble_9: 1994300116085110473
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

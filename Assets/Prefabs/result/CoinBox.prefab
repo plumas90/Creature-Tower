@@ -78,8 +78,8 @@ SpriteRenderer:
   m_SortingLayerID: 100001
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
-  m_Color: {r: 1, g: 0.8106513, b: 0, a: 1}
+  m_Sprite: {fileID: 3293191984190381418, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -123,17 +123,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0030962229, y: -0.0878292}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 0.91015625, y: 0.6875}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9261575, y: 0.5245096}
   m_EdgeRadius: 0
 --- !u!114 &7686363578970690690
 MonoBehaviour:
@@ -149,10 +149,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isRareBox: 0
   forceDNA: 0
-  coinDropChance: 0.5
+  coinDropChance: 1
   childDNA: {fileID: 0}
   dnaPrefab: {fileID: 8639842615049523772, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
-  closedSprite: {fileID: 0}
-  openedSprite: {fileID: 0}
+  closedSprite: {fileID: 3293191984190381418, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  openedSprite: {fileID: 7303948099301513097, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  openingSprites:
+  - {fileID: 8945935964221854151, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  - {fileID: 4569756280029287051, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  - {fileID: -4606893200466392344, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  - {fileID: -7878911801638009879, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  - {fileID: 6292523528514077744, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  - {fileID: 3564584803748008555, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  - {fileID: 4662789991513717789, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
+  animationFps: 12
   boxSpriteRenderer: {fileID: 2271506146400865569}
   pushForce: 1
