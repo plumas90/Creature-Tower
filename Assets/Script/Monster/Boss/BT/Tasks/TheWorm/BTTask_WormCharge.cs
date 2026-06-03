@@ -12,6 +12,8 @@ public class BTTask_WormCharge : BTTask
     private SpriteRenderer spriteRenderer;
     private float chargeStartTime;
     private Color originalColor;
+    private Vector2 currentDir;
+    private float currentScaleX = 1f;
 
     public BTTask_WormCharge(BossBase boss, float duration = 2.0f, float rotSpeed = 720f, Color? chargeColor = null) 
         : base(boss)
@@ -51,6 +53,11 @@ public class BTTask_WormCharge : BTTask
             worm.PlayChargeStartAnimation();
         }
 
+        currentScaleX = Mathf.Sign(boss.transform.localScale.x);
+        currentDir = (Vector2)boss.transform.right * currentScaleX;
+        if (currentDir.sqrMagnitude < 0.001f)
+            currentDir = Vector2.right;
+
         Debug.Log($"[WormCharge] OnEnter - Started at {Time.time:F2}. Duration: {chargeDuration}s, RotSpeed: {rotationSpeed}");
     }
 
@@ -80,31 +87,39 @@ public class BTTask_WormCharge : BTTask
         if (playerTargeting != null && playerTargeting.IsTargetValid)
         {
             Vector2 dirToPlayer = playerTargeting.GetDirectionToTarget();
-            float targetAngle = Mathf.Atan2(dirToPlayer.y, dirToPlayer.x) * Mathf.Rad2Deg;
             
-            // 각도를 [-180, 180] 범위로 정규화
+            // 1. 방향 벡터를 부드럽게 회전시킴 (180도 Lerp 갭에 의한 버그 및 지연 방지)
+            float step = rotationSpeed * Time.deltaTime * Mathf.Deg2Rad;
+            currentDir = Vector3.RotateTowards(currentDir, dirToPlayer, step, 0f);
+            currentDir.Normalize();
+
+            float targetAngle = Mathf.Atan2(currentDir.y, currentDir.x) * Mathf.Rad2Deg;
             targetAngle = Mathf.DeltaAngle(0f, targetAngle);
 
-            float localScaleX = 1f;
-            float finalRotationAngle = targetAngle;
-
-            // 플레이어가 왼쪽에 있는 경우 좌우반전(Scale X = -1) 처리하고 회전각 보정하여 거꾸로 뒤집히지 않게 함
-            if (targetAngle > 90f || targetAngle < -90f)
+            // 2. 방향 전환 기준에 10도 가량의 불감대(Hysteresis)를 두어 경계선(90도 근처) 잦은 wiggling/뒤집힘 방지
+            if (currentScaleX > 0f) // 현재 우측 조준 중
             {
-                localScaleX = -1f;
+                if (targetAngle > 100f || targetAngle < -100f)
+                {
+                    currentScaleX = -1f;
+                }
+            }
+            else // 현재 좌측 조준 중
+            {
+                if (targetAngle < 80f && targetAngle > -80f)
+                {
+                    currentScaleX = 1f;
+                }
+            }
+
+            float finalRotationAngle = targetAngle;
+            if (currentScaleX < 0f)
+            {
                 finalRotationAngle = targetAngle + 180f;
             }
-            else
-            {
-                localScaleX = 1f;
-                finalRotationAngle = targetAngle;
-            }
 
-            float currentAngle = boss.transform.eulerAngles.z;
-            float newAngle = Mathf.MoveTowardsAngle(currentAngle, finalRotationAngle, rotationSpeed * Time.deltaTime);
-            
-            boss.transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
-            boss.transform.localScale = new Vector3(localScaleX, 1f, 1f);
+            boss.transform.rotation = Quaternion.Euler(0f, 0f, finalRotationAngle);
+            boss.transform.localScale = new Vector3(currentScaleX, 1f, 1f);
         }
 
         // 차지 완료
