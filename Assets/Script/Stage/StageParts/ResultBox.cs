@@ -124,8 +124,9 @@ public class ResultBox : MonoBehaviour
 
         if (dnaPrefab != null)
         {
-            targetDnaObj = Instantiate(dnaPrefab, transform.position, Quaternion.identity);
-            Debug.Log($"[ResultBox] Instantiated dnaPrefab successfully at {transform.position}.");
+            Vector3 spawnPos = transform.TransformPoint(new Vector3(0f, 0.5f, 0f));
+            targetDnaObj = Instantiate(dnaPrefab, spawnPos, Quaternion.identity);
+            Debug.Log($"[ResultBox] Instantiated dnaPrefab successfully at {spawnPos}.");
         }
         else
         {

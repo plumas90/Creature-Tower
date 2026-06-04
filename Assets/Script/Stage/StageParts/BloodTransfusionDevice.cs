@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // 플레이어가 접촉하면 체력 10% 소모로 스탯 구매 UI를 연다.
@@ -17,9 +18,15 @@ public class BloodTransfusionDevice : MonoBehaviour
     [SerializeField] private int baseMaxCost = 10;
     [SerializeField] private int increasePerPurchase = 1;
 
+    [Header("Animation")]
+    [SerializeField] private SpriteRenderer sr;
+    [SerializeField] private Sprite[] animSprites;
+    [SerializeField] private float animationFps = 12.5f;
+
     private bool interactionLocked;
     private string cacheKey;
     private int confirmedPurchaseCount;
+    private Coroutine activeAnimCoroutine;
 
     public System.Action OnInteracted;
 
@@ -76,7 +83,43 @@ public class BloodTransfusionDevice : MonoBehaviour
     private void OnTransfusionClosed(bool confirmed, int selectedCode)
     {
         if (confirmed)
+        {
             confirmedPurchaseCount++;
+            PlayAnimation();
+        }
         interactionLocked = false;
     }
+
+    private void PlayAnimation()
+    {
+        if (activeAnimCoroutine != null)
+        {
+            StopCoroutine(activeAnimCoroutine);
+        }
+        activeAnimCoroutine = StartCoroutine(CoPlayTransfusionAnimation());
+    }
+
+    private IEnumerator CoPlayTransfusionAnimation()
+    {
+        if (sr != null && animSprites != null && animSprites.Length >= 5)
+        {
+            int[] frameIndices = { 1, 2, 3, 4, 3, 2, 1 };
+            float delay = 1f / animationFps;
+            for (int i = 0; i < frameIndices.Length; i++)
+            {
+                int idx = frameIndices[i];
+                if (idx < animSprites.Length && animSprites[idx] != null)
+                {
+                    sr.sprite = animSprites[idx];
+                }
+                yield return new WaitForSeconds(delay);
+            }
+
+            if (animSprites[0] != null)
+            {
+                sr.sprite = animSprites[0];
+            }
+        }
+    }
 }
+

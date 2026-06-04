@@ -1141,4 +1141,235 @@ public class AutoSetupPrefabs
             }
         }
     }
+
+    [InitializeOnLoadMethod]
+    private static void FixBloodTransfusionDevice()
+    {
+        string basePrefabPath = "Assets/Prefabs/result/BloodTransfusionDevice.prefab";
+        string pumpTexturePath = "Assets/sprite/RoomOption/pump128.png";
+
+        // Load all sprites from sheet
+        Object[] pumpObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(pumpTexturePath);
+        Sprite[] pumpSprites = new Sprite[5];
+        foreach (Object obj in pumpObjects)
+        {
+            if (obj is Sprite sprite)
+            {
+                if (sprite.name == "pump128_0") pumpSprites[0] = sprite;
+                else if (sprite.name == "pump128_1") pumpSprites[1] = sprite;
+                else if (sprite.name == "pump128_2") pumpSprites[2] = sprite;
+                else if (sprite.name == "pump128_3") pumpSprites[3] = sprite;
+                else if (sprite.name == "pump128_4") pumpSprites[4] = sprite;
+            }
+        }
+
+        GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(basePrefabPath);
+        if (basePrefab == null)
+        {
+            Debug.LogWarning("[AutoSetup] BloodTransfusionDevice prefab not found at " + basePrefabPath);
+            return;
+        }
+
+        // 1. Setup the base prefab
+        bool prefabModified = false;
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(basePrefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var device = prefabRoot.GetComponent<BloodTransfusionDevice>();
+            if (device != null)
+            {
+                // Ensure SpriteRenderer exists on the root
+                SpriteRenderer sr = prefabRoot.GetComponent<SpriteRenderer>();
+                if (sr == null)
+                {
+                    sr = prefabRoot.AddComponent<SpriteRenderer>();
+                    prefabModified = true;
+                }
+
+                // Set default sprite to pump128_0
+                if (sr.sprite != pumpSprites[0])
+                {
+                    sr.sprite = pumpSprites[0];
+                    prefabModified = true;
+                }
+
+                // Reset color to default (white)
+                if (sr.color != Color.white)
+                {
+                    sr.color = Color.white;
+                    prefabModified = true;
+                }
+
+                // Ensure sorting layer / order is set to match other devices
+                sr.sortingLayerName = "World_Dynamic";
+                sr.sortingOrder = 2;
+
+                // Ensure localScale is (1.5f, 1.5f, 1.0f) as requested
+                if (prefabRoot.transform.localScale != new Vector3(1.5f, 1.5f, 1f))
+                {
+                    prefabRoot.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+                    prefabModified = true;
+                }
+
+                // Set the serialized fields via reflection
+                System.Type t = typeof(BloodTransfusionDevice);
+                
+                var srField = t.GetField("sr", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (srField != null && (SpriteRenderer)srField.GetValue(device) != sr)
+                {
+                    srField.SetValue(device, sr);
+                    prefabModified = true;
+                }
+
+                var animSpritesField = t.GetField("animSprites", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (animSpritesField != null)
+                {
+                    Sprite[] currentVal = animSpritesField.GetValue(device) as Sprite[];
+                    bool arrayNeedsUpdate = false;
+                    if (currentVal == null || currentVal.Length != 5)
+                    {
+                        arrayNeedsUpdate = true;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (currentVal[i] != pumpSprites[i])
+                            {
+                                arrayNeedsUpdate = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (arrayNeedsUpdate)
+                    {
+                        animSpritesField.SetValue(device, pumpSprites);
+                        prefabModified = true;
+                    }
+                }
+            }
+        }
+
+        if (prefabModified)
+        {
+            Debug.Log("[AutoSetup] Successfully verified and updated base BloodTransfusionDevice prefab!");
+        }
+
+        // 2. Scan and fix all Map prefabs for pre-placed pumps
+        string[] stageGuids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Map" });
+        bool anyStageModified = false;
+
+        foreach (string guid in stageGuids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (string.IsNullOrEmpty(path)) continue;
+
+            using (var editingScope = new PrefabUtility.EditPrefabContentsScope(path))
+            {
+                var prefabRoot = editingScope.prefabContentsRoot;
+                var devicesInStage = prefabRoot.GetComponentsInChildren<BloodTransfusionDevice>(true);
+                if (devicesInStage.Length == 0) continue;
+
+                bool modified = false;
+                foreach (var device in devicesInStage)
+                {
+                    // Ensure SpriteRenderer exists
+                    SpriteRenderer sr = device.GetComponent<SpriteRenderer>();
+                    if (sr == null)
+                    {
+                        sr = device.gameObject.AddComponent<SpriteRenderer>();
+                    }
+
+                    // Set default sprite to pump128_0 and color to white
+                    sr.sprite = pumpSprites[0];
+                    sr.color = Color.white;
+                    sr.sortingLayerName = "World_Dynamic";
+                    sr.sortingOrder = 2;
+
+                    // Ensure scale is (1.5f, 1.5f, 1.0f)
+                    device.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+
+                    // Assign references to the device component
+                    System.Type t = typeof(BloodTransfusionDevice);
+                    var srField = t.GetField("sr", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (srField != null)
+                    {
+                        srField.SetValue(device, sr);
+                    }
+
+                    var animSpritesField = t.GetField("animSprites", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (animSpritesField != null)
+                    {
+                        animSpritesField.SetValue(device, pumpSprites);
+                    }
+
+                    modified = true;
+                }
+
+                if (modified)
+                {
+                    anyStageModified = true;
+                    Debug.Log($"[AutoSetup] Automatically applied pump settings to BloodTransfusionDevice in stage prefab: {path}");
+                }
+            }
+        }
+
+        // 3. Scan and fix Active Scene instances
+        var sceneDevices = Object.FindObjectsByType<BloodTransfusionDevice>(FindObjectsSortMode.None);
+        if (sceneDevices.Length > 0)
+        {
+            bool sceneModified = false;
+            foreach (var device in sceneDevices)
+            {
+                Undo.RecordObject(device, "Update BloodTransfusionDevice settings");
+
+                SpriteRenderer sr = device.GetComponent<SpriteRenderer>();
+                if (sr == null)
+                {
+                    sr = device.gameObject.AddComponent<SpriteRenderer>();
+                    Undo.RegisterCreatedObjectUndo(sr, "Create BloodTransfusionDevice SpriteRenderer");
+                }
+                else
+                {
+                    Undo.RecordObject(sr, "Update BloodTransfusionDevice SpriteRenderer");
+                }
+
+                sr.sprite = pumpSprites[0];
+                sr.color = Color.white;
+                sr.sortingLayerName = "World_Dynamic";
+                sr.sortingOrder = 2;
+
+                Undo.RecordObject(device.transform, "Update BloodTransfusionDevice Scale");
+                device.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+
+                System.Type t = typeof(BloodTransfusionDevice);
+                var srField = t.GetField("sr", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (srField != null)
+                {
+                    srField.SetValue(device, sr);
+                }
+
+                var animSpritesField = t.GetField("animSprites", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (animSpritesField != null)
+                {
+                    animSpritesField.SetValue(device, pumpSprites);
+                }
+
+                sceneModified = true;
+            }
+
+            if (sceneModified)
+            {
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+                Debug.Log("[AutoSetup] Successfully synchronized BloodTransfusionDevice objects in the active scene!");
+            }
+        }
+
+        if (prefabModified || anyStageModified)
+        {
+            AssetDatabase.SaveAssets();
+        }
+    }
 }
+
