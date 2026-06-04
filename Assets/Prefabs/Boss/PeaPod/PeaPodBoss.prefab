@@ -76,12 +76,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 4
-  m_Sprite: {fileID: 4746488878561953144, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
+  m_Sprite: {fileID: 626862592, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.78125, y: 0.8125}
+  m_Size: {x: 0.734375, y: 0.75}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -190,7 +190,7 @@ MonoBehaviour:
   peaPodSO: {fileID: 11400000, guid: 8ae7acf25152059489ef3caff9341c7a, type: 2}
   angryHeadSr: {fileID: 391174421978778338}
   sadHeadSr: {fileID: 2644903000913472384}
-  normalHeadSr: {fileID: 8741674512838643417}
+  happyHeadSr: {fileID: 8741674512838643417}
   hitboxInSr: {fileID: 5312083625189986852}
   outSr: {fileID: 27907250582004677}
   angryHeadSprites:
@@ -203,10 +203,11 @@ MonoBehaviour:
   - {fileID: 928396816685319161, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
   - {fileID: -3016424684798547124, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
   - {fileID: 4801220046734516847, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
-  normalHeadSprites:
-  - {fileID: 4746488878561953144, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
-  - {fileID: 9124082212985984605, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
-  - {fileID: 8843300434195451166, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
+  happyHeadSprites:
+  - {fileID: 626862592, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
+  - {fileID: -1002585150, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
+  - {fileID: -1472049974, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
+  - {fileID: -1407823399, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
   caseInSprites:
   - {fileID: 2140570765881064872, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
   - {fileID: 774199987657824103, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}

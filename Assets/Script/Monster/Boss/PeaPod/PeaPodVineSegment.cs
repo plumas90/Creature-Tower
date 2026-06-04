@@ -4,6 +4,12 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class PeaPodVineSegment : MonoBehaviour
 {
+    [Header("Vine Sprites")]
+    [SerializeField] private Sprite[] growSprites; // size 7 (grow1~7)
+    [SerializeField] private Sprite growEndSprite; // grow_end
+    [SerializeField] private Sprite[] dieSprites;   // size 5 (die1~5)
+    [SerializeField] private float vineScale = 0.5f; // Scale multiplier (default 0.5)
+
     private float damage;
     private float growthSpeed;
     private float maxLength;
@@ -18,29 +24,48 @@ public class PeaPodVineSegment : MonoBehaviour
     private float spriteBaseHeight = 1f;
     private bool despawnScheduled;
     private float despawnAt;
-    private float despawnDelaySeconds = 0.5f;
+    private float despawnDelaySeconds = 0f; // Start die animation immediately on hit
     private LayerMask wallMask;
+
+    private bool isDying;
+    private float dyingStartedAt;
+    private float dieFrameDuration = 0.08f; // 0.08s per frame * 5 frames = 0.4s total
 
     private SpriteRenderer sr;
     private BoxCollider2D hitbox;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
     private ContactFilter2D overlapFilter;
 
-    public bool IsFullyGrown => completed;
-    public Vector2 TipWorldPosition => anchorWorldPosition + transform.right * currentLength;
+    public bool IsFullyGrown => completed && !isDying;
+    
+    public Vector2 TipWorldPosition
+    {
+        get
+        {
+            float width = 0f;
+            if (sr != null && sr.sprite != null)
+                width = sr.sprite.bounds.size.x;
+            else
+                width = spriteBaseWidth;
+
+            return anchorWorldPosition + transform.right * (width * Mathf.Abs(transform.localScale.x));
+        }
+    }
 
     public void Initialize(float finalDamage, float speed, float targetLength, float lifetimeAfterGrow, float hitboxHeightRatio)
     {
         damage = Mathf.Max(0f, finalDamage);
         growthSpeed = Mathf.Max(0.01f, speed);
-        maxLength = Mathf.Max(0.05f, targetLength);
         lifeAfterGrowth = Mathf.Max(0.05f, lifetimeAfterGrow);
         colliderHeightRatio = Mathf.Clamp(hitboxHeightRatio, 0.1f, 1f);
-        currentLength = 0.01f;
         completed = false;
         anchorWorldPosition = transform.position;
         despawnScheduled = false;
         despawnAt = 0f;
+        despawnDelaySeconds = 0f; // Start die animation immediately on hit
+        isDying = false;
+        dyingStartedAt = 0f;
+
         int wallLayer = LayerMask.NameToLayer("Wall");
         wallMask = wallLayer >= 0 ? (1 << wallLayer) : 0;
 
@@ -54,6 +79,11 @@ public class PeaPodVineSegment : MonoBehaviour
             spriteBaseHeight = Mathf.Max(0.01f, sr.sprite.bounds.size.y);
         }
 
+        // Set maxLength to the native width of the grow_end sprite to ensure scaled size
+        float baseWidth = (growEndSprite != null) ? growEndSprite.bounds.size.x : spriteBaseWidth;
+        maxLength = baseWidth * vineScale;
+        currentLength = 0.01f;
+
         if (hitbox != null)
             hitbox.isTrigger = false;
         overlapFilter = new ContactFilter2D
@@ -62,21 +92,52 @@ public class PeaPodVineSegment : MonoBehaviour
             useTriggers = true
         };
 
+        // Determine if we need to flip Y axis to keep the vine upright when it grows left
+        float targetAngle = Mathf.DeltaAngle(0f, transform.eulerAngles.z);
+        float flipY = 1f;
+        if (targetAngle > 90f || targetAngle < -90f)
+        {
+            flipY = -1f;
+        }
+
+        transform.localScale = new Vector3(initialLocalScale.x * vineScale, initialLocalScale.y * vineScale * flipY, initialLocalScale.z);
+
         ApplyVisualAndCollider();
     }
 
     private void Update()
     {
+        if (isDying)
+        {
+            float elapsed = Time.time - dyingStartedAt;
+            float totalDuration = dieFrameDuration * 5f;
+            if (elapsed >= totalDuration)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            int frameIndex = Mathf.Clamp(Mathf.FloorToInt(elapsed / dieFrameDuration), 0, 4);
+            if (dieSprites != null && frameIndex < dieSprites.Length)
+            {
+                if (sr != null && dieSprites[frameIndex] != null)
+                {
+                    sr.sprite = dieSprites[frameIndex];
+                    transform.position = anchorWorldPosition - transform.right * (sr.sprite.bounds.min.x * transform.localScale.x);
+                }
+            }
+            return;
+        }
+
         if (despawnScheduled && Time.time >= despawnAt)
         {
-            Destroy(gameObject);
+            StartDying();
             return;
         }
 
         if (!completed)
         {
             currentLength = Mathf.Min(maxLength, currentLength + growthSpeed * Time.deltaTime);
-            ApplyVisualAndCollider();
 
             if (currentLength >= maxLength - 0.0001f)
             {
@@ -84,22 +145,25 @@ public class PeaPodVineSegment : MonoBehaviour
                 completedAt = Time.time;
             }
 
+            ApplyVisualAndCollider();
             return;
         }
 
         if (Time.time - completedAt >= lifeAfterGrowth)
-            Destroy(gameObject);
+        {
+            StartDying();
+        }
     }
 
     private void FixedUpdate()
     {
-        if (hitbox == null || damage <= 0f)
+        if (hitbox == null || damage <= 0f || isDying)
             return;
 
         // 벽 접촉 시는 즉시 제거를 유지한다.
         if (IsVineTouchingWall())
         {
-            Destroy(gameObject);
+            StartDying();
             return;
         }
 
@@ -112,35 +176,45 @@ public class PeaPodVineSegment : MonoBehaviour
 
     private void ApplyVisualAndCollider()
     {
-        // 세그먼트 시작점(anchor)은 고정하고, 중심만 오른쪽으로 이동시켜
-        // "중앙에서 피는" 느낌이 아니라 "앞으로 뻗는" 느낌을 만든다.
-        transform.position = anchorWorldPosition + transform.right * (currentLength * 0.5f);
+        if (isDying)
+            return;
 
         if (sr != null)
         {
-            // 스프라이트 월드 길이를 currentLength와 일치시키기 위해
-            // 로컬 x 스케일은 "목표 길이 / 원본 스프라이트 길이"로 맞춘다.
-            Vector3 localScale = initialLocalScale;
-            float xSign = Mathf.Sign(localScale.x == 0f ? 1f : localScale.x);
-            localScale.x = xSign * (currentLength / spriteBaseWidth);
-            transform.localScale = localScale;
+            if (!completed)
+            {
+                float progress = currentLength / maxLength;
+                if (growSprites != null && growSprites.Length > 0)
+                {
+                    int frameIndex = Mathf.Clamp(Mathf.FloorToInt(progress * growSprites.Length), 0, growSprites.Length - 1);
+                    sr.sprite = growSprites[frameIndex];
+                }
+            }
+            else
+            {
+                if (growEndSprite != null)
+                    sr.sprite = growEndSprite;
+            }
+
+            // Align left edge of the sprite to anchorWorldPosition based on current pivot bounds
+            if (sr.sprite != null)
+            {
+                transform.position = anchorWorldPosition - transform.right * (sr.sprite.bounds.min.x * transform.localScale.x);
+            }
         }
 
-        if (hitbox != null)
+        if (hitbox != null && sr != null && sr.sprite != null)
         {
-            Vector2 size = hitbox.size;
-            // 콜라이더 로컬 크기는 원본 스프라이트 기준으로 유지하고,
-            // transform 스케일에 의해 함께 커지게 해서 스프라이트와 정확히 동기화한다.
-            size.x = spriteBaseWidth;
-            size.y = Mathf.Max(0.05f, spriteBaseHeight * colliderHeightRatio);
-            hitbox.size = size;
-            hitbox.offset = Vector2.zero;
+            Vector3 spriteSize = sr.sprite.bounds.size;
+            Vector3 spriteCenter = sr.sprite.bounds.center;
+            hitbox.size = new Vector2(spriteSize.x, spriteSize.y * colliderHeightRatio);
+            hitbox.offset = new Vector2(spriteCenter.x, spriteCenter.y);
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision == null)
+        if (collision == null || isDying)
             return;
 
         TryApplyDamage(collision.collider);
@@ -148,7 +222,7 @@ public class PeaPodVineSegment : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision == null)
+        if (collision == null || isDying)
             return;
 
         TryApplyDamage(collision.collider);
@@ -156,7 +230,7 @@ public class PeaPodVineSegment : MonoBehaviour
 
     private void TryApplyDamage(Collider2D targetCollider)
     {
-        if (targetCollider == null)
+        if (targetCollider == null || isDying)
             return;
 
         PlayerStatControl playerStat = targetCollider.GetComponent<PlayerStatControl>();
@@ -166,7 +240,7 @@ public class PeaPodVineSegment : MonoBehaviour
         if (playerStat != null)
         {
             bool applied = playerStat.TryApplyContactDamage(damage, gameObject.GetInstanceID());
-            // 플레이어 히트 성공 시 해당 줄기는 0.5초 후 제거한다.
+            // 플레이어 히트 성공 시 줄기는 즉시/딜레이 후 소멸 단계를 시작한다.
             if (applied)
                 ScheduleDespawn();
         }
@@ -187,5 +261,17 @@ public class PeaPodVineSegment : MonoBehaviour
 
         despawnScheduled = true;
         despawnAt = Time.time + Mathf.Max(0f, despawnDelaySeconds);
+    }
+
+    private void StartDying()
+    {
+        if (isDying)
+            return;
+
+        isDying = true;
+        dyingStartedAt = Time.time;
+
+        if (hitbox != null)
+            hitbox.enabled = false;
     }
 }

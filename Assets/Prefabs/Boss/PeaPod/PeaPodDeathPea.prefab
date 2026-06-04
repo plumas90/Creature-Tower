@@ -204,12 +204,12 @@ SpriteRenderer:
   m_SortingLayerID: 100001
   m_SortingLayer: 3
   m_SortingOrder: 1
-  m_Sprite: {fileID: 4746488878561953144, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
+  m_Sprite: {fileID: 626862592, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 0.734375, y: 0.75}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -230,7 +230,7 @@ MonoBehaviour:
   shadowTransform: {fileID: 5199568457198041776}
   shadowRenderer: {fileID: 7648877820175986718}
   groundFxRenderer: {fileID: 7631126400828177594}
-  peaSprite: {fileID: 4746488878561953144, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
+  peaSprite: {fileID: 626862592, guid: e37ec2e5e5fe72ef394b68b9df9fde5e, type: 3}
   groundFxSortingLayer: World_GroundFX
   groundFxSortingOrder: 0
   dynamicSortingLayer: World_Dynamic

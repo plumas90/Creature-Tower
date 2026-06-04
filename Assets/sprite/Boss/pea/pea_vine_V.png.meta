@@ -1,46 +1,46 @@
 fileFormatVersion: 2
-guid: 55ea768d4c60aeb99b2453a4f3a78a55
+guid: a4ab4221900e6b17eb549049f0691f70
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -11914727306793036
-    second: pea_vin_0
+      213: 4701395536639996196
+    second: pea_vine_V_0
   - first:
-      213: 4163392313267564703
-    second: pea_vin_1
+      213: -2548981707885871959
+    second: pea_vine_V_1
   - first:
-      213: -3195313695428965647
-    second: pea_vin_2
+      213: 5085916354258118549
+    second: pea_vine_V_2
   - first:
-      213: -5313170766609664186
-    second: pea_vin_3
+      213: -2016271667067485717
+    second: pea_vine_V_3
   - first:
-      213: 1198141158321207104
-    second: pea_vin_4
+      213: 7227838203814467584
+    second: pea_vine_V_4
   - first:
-      213: -3289043993489487516
-    second: pea_vin_5
+      213: 7825553538152555292
+    second: pea_vine_V_5
   - first:
-      213: 6475664402052891799
-    second: pea_vin_6
+      213: -8373804086969511190
+    second: pea_vine_V_6
   - first:
-      213: -6114001737998715110
-    second: pea_vin_7
+      213: 5259854864366197359
+    second: pea_vine_V_7
   - first:
-      213: -4787677209520254668
-    second: pea_vin_8
+      213: -1044222928160235747
+    second: pea_vine_V_8
   - first:
-      213: 9145274679443728602
-    second: pea_vin_9
+      213: 7322214365384828797
+    second: pea_vine_V_9
   - first:
-      213: -6953985212323093877
-    second: pea_vin_10
+      213: -138504052177994148
+    second: pea_vine_V_10
   - first:
-      213: 1212858645270565506
-    second: pea_vin_11
+      213: 534922721630865893
+    second: pea_vine_V_11
   - first:
-      213: 8939486304094665068
-    second: pea_vin_12
+      213: -8173573464447439319
+    second: pea_vine_V_12
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -73,7 +73,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -87,7 +87,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -111,7 +111,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -136,210 +136,254 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pea_vine_grow1
+      name: pea_vine_V_0
       rect:
         serializedVersion: 2
-        x: 62
-        y: 583
-        width: 83
-        height: 63
+        x: 61
+        y: 856
+        width: 85
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: bb92ca6567afe4b1e91a897ebff61d32
-      internalID: -11914727306793036
+      spriteID: 421b80ed456be3140800000000000000
+      internalID: 4701395536639996196
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_vine_grow2
+      name: pea_vine_V_1
       rect:
         serializedVersion: 2
-        x: 215
-        y: 579
-        width: 132
-        height: 69
+        x: 214
+        y: 805
+        width: 134
+        height: 135
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 24092bdd5981af01ab936c95485b4f88
-      internalID: 4163392313267564703
+      spriteID: 9ac7e7a44a230acd0800000000000000
+      internalID: -2548981707885871959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_vine_grow3
+      name: pea_vine_V_2
       rect:
         serializedVersion: 2
-        x: 428
-        y: 570
-        width: 205
-        height: 72
+        x: 427
+        y: 842
+        width: 207
+        height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 8541d81cc42837101b464196284a1644
-      internalID: -3195313695428965647
+      spriteID: 597a7e45afdc49640800000000000000
+      internalID: 5085916354258118549
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_vine_grow4
+      name: pea_vine_V_3
       rect:
         serializedVersion: 2
-        x: 707
-        y: 554
-        width: 211
-        height: 95
+        x: 706
+        y: 821
+        width: 213
+        height: 199
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 28757ede099cb107e8a10eab4acfce3f
-      internalID: -5313170766609664186
+      spriteID: be102c9f993c404e0800000000000000
+      internalID: -2016271667067485717
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_vine_grow5
+      name: pea_vine_V_4
       rect:
         serializedVersion: 2
-        x: 62
-        y: 385
-        width: 242
-        height: 93
+        x: 60
+        y: 586
+        width: 245
+        height: 140
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: c1ef0642944e99a8eb9a51034ca7884a
-      internalID: -3289043993489487516
+      spriteID: 008db583d807e4460800000000000000
+      internalID: 7227838203814467584
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_vine_grow6
+      name: pea_vine_V_5
       rect:
         serializedVersion: 2
-        x: 374
-        y: 394
-        width: 244
-        height: 91
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 750eb378557e5c2caaef00f5491f9b8b
-      internalID: 6475664402052891799
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pea_vine_grow7
-      rect:
-        serializedVersion: 2
-        x: 653
-        y: 390
-        width: 250
-        height: 99
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c8788d0ed8b2acd00b37565591d17222
-      internalID: -6114001737998715110
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pea_vine_grow_end
-      rect:
-        serializedVersion: 2
-        x: 54
-        y: 200
+        x: 372
+        y: 602
         width: 232
-        height: 106
+        height: 136
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 63a17e6042fcd2a52a9cda42bb7d87e3
-      internalID: 1198141158321207104
+      spriteID: c13626c3b73f99c60800000000000000
+      internalID: 7825553538152555292
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_vine_die1
+      name: pea_vine_V_6
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 549
+        width: 245
+        height: 192
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae2d7799c854acb80800000000000000
+      internalID: -8373804086969511190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_V_7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 375
+        width: 229
+        height: 132
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6a58a89122cef840800000000000000
+      internalID: 5259854864366197359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_V_8
       rect:
         serializedVersion: 2
         x: 37
-        y: 48
-        width: 223
-        height: 94
+        y: 201
+        width: 225
+        height: 117
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 3c4001403f23a07bca2ae5f074eea01a
-      internalID: -4787677209520254668
+      spriteID: d1fd0b487cc2281f0800000000000000
+      internalID: -1044222928160235747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_vine_die2
+      name: pea_vine_V_9
       rect:
         serializedVersion: 2
-        x: 319
-        y: 75
-        width: 175
+        x: 318
+        y: 232
+        width: 177
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d77660aab2bbd9560800000000000000
+      internalID: 7322214365384828797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_V_10
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 233
+        width: 132
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5e7af16c4fe31ef0800000000000000
+      internalID: -138504052177994148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_vine_V_11
+      rect:
+        serializedVersion: 2
+        x: 878
+        y: 239
+        width: 80
         height: 41
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -347,54 +391,32 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 9b0d8b52753e3c3c18070793eb9deffc
-      internalID: 9145274679443728602
+      spriteID: 5e9c715916d6c6700800000000000000
+      internalID: 534922721630865893
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_vine_die3
+      name: pea_vine_V_12
       rect:
         serializedVersion: 2
-        x: 598
-        y: 74
-        width: 130
-        height: 42
+        x: 30
+        y: 29
+        width: 53
+        height: 53
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 0e5e02c28626520f594ff6a4fc7e5637
-      internalID: -6953985212323093877
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pea_vine_die4
-      rect:
-        serializedVersion: 2
-        x: 879
-        y: 81
-        width: 78
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6a3014854ec1ca3889f9656b24d415ae
-      internalID: 1212858645270565506
+      spriteID: 92e2d025d32a19e80800000000000000
+      internalID: -8173573464447439319
       vertices: []
       indices: 
       edges: []
@@ -403,7 +425,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: db52f9eaa5a225e7e8f5f06aea2f76b8
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -413,19 +435,19 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      pea_vin_8: 882019910
-      pea_vine_die1: -4787677209520254668
-      pea_vine_die2: 9145274679443728602
-      pea_vine_die3: -6953985212323093877
-      pea_vine_die4: 1212858645270565506
-      pea_vine_grow1: -11914727306793036
-      pea_vine_grow2: 4163392313267564703
-      pea_vine_grow3: -3195313695428965647
-      pea_vine_grow4: -5313170766609664186
-      pea_vine_grow5: -3289043993489487516
-      pea_vine_grow6: 6475664402052891799
-      pea_vine_grow7: -6114001737998715110
-      pea_vine_grow_end: 1198141158321207104
+      pea_vine_V_0: 4701395536639996196
+      pea_vine_V_1: -2548981707885871959
+      pea_vine_V_10: -138504052177994148
+      pea_vine_V_11: 534922721630865893
+      pea_vine_V_12: -8173573464447439319
+      pea_vine_V_2: 5085916354258118549
+      pea_vine_V_3: -2016271667067485717
+      pea_vine_V_4: 7227838203814467584
+      pea_vine_V_5: 7825553538152555292
+      pea_vine_V_6: -8373804086969511190
+      pea_vine_V_7: 5259854864366197359
+      pea_vine_V_8: -1044222928160235747
+      pea_vine_V_9: 7322214365384828797
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

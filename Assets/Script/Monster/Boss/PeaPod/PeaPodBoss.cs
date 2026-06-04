@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Serialization;
 
 public class PeaPodBoss : BossBase
 {
@@ -9,19 +10,19 @@ public class PeaPodBoss : BossBase
     [Header("Visuals & Sprites")]
     [SerializeField] private SpriteRenderer angryHeadSr;
     [SerializeField] private SpriteRenderer sadHeadSr;
-    [SerializeField] private SpriteRenderer normalHeadSr;
+    [SerializeField] [FormerlySerializedAs("normalHeadSr")] private SpriteRenderer happyHeadSr;
     [SerializeField] private SpriteRenderer hitboxInSr;
     [SerializeField] private SpriteRenderer outSr;
 
     [Header("Animation Frames")]
     [SerializeField] private Sprite[] angryHeadSprites; // size 4
     [SerializeField] private Sprite[] sadHeadSprites;   // size 4
-    [SerializeField] private Sprite[] normalHeadSprites; // size 3
+    [SerializeField] [FormerlySerializedAs("normalHeadSprites")] private Sprite[] happyHeadSprites; // size 4
     [SerializeField] private Sprite[] caseInSprites;     // size 8
     [SerializeField] private Sprite[] caseOutSprites;    // size 8
 
     private Coroutine headAnimCoroutine;
-    private int currentHeadState = 0; // 0: angry, 1: sad, 2: normal
+    private int currentHeadState = 0; // 0: angry, 1: sad, 2: happy
 
     protected override void Awake()
     {
@@ -104,15 +105,15 @@ public class PeaPodBoss : BossBase
             if (pea == null)
                 pea = peaObj.AddComponent<PeaPodDeathPea>();
 
-            // 스프라이트를 순서대로 지정 (angry, sad, normal)
+            // 스프라이트를 순서대로 지정 (angry, sad, happy)
             Sprite bombSprite = null;
             int type = i % 3;
             if (type == 0 && angryHeadSprites != null && angryHeadSprites.Length > 0)
                 bombSprite = angryHeadSprites[0];
             else if (type == 1 && sadHeadSprites != null && sadHeadSprites.Length > 0)
                 bombSprite = sadHeadSprites[0];
-            else if (type == 2 && normalHeadSprites != null && normalHeadSprites.Length > 0)
-                bombSprite = normalHeadSprites[0];
+            else if (type == 2 && happyHeadSprites != null && happyHeadSprites.Length > 0)
+                bombSprite = happyHeadSprites[0];
 
             pea.Initialize(
                 target,
@@ -197,7 +198,7 @@ public class PeaPodBoss : BossBase
     private IEnumerator CoHeadAnimationRoutine()
     {
         ResetHeadsToDefault();
-        currentHeadState = 0; // 0: angry, 1: sad, 2: normal
+        currentHeadState = 0; // 0: angry, 1: sad, 2: happy
 
         while (live && !isDead)
         {
@@ -215,7 +216,7 @@ public class PeaPodBoss : BossBase
             }
             else if (currentHeadState == 2)
             {
-                yield return StartCoroutine(CoPlayNormalHead());
+                yield return StartCoroutine(CoPlayHappyHead());
                 currentHeadState = 0;
             }
         }
@@ -227,8 +228,8 @@ public class PeaPodBoss : BossBase
             angryHeadSr.sprite = angryHeadSprites[0];
         if (sadHeadSr != null && sadHeadSprites != null && sadHeadSprites.Length > 0)
             sadHeadSr.sprite = sadHeadSprites[0];
-        if (normalHeadSr != null && normalHeadSprites != null && normalHeadSprites.Length > 0)
-            normalHeadSr.sprite = normalHeadSprites[0];
+        if (happyHeadSr != null && happyHeadSprites != null && happyHeadSprites.Length > 0)
+            happyHeadSr.sprite = happyHeadSprites[0];
     }
 
     private IEnumerator CoPlayAngryHead()
@@ -257,17 +258,16 @@ public class PeaPodBoss : BossBase
         sadHeadSr.sprite = sadHeadSprites[0];
     }
 
-    private IEnumerator CoPlayNormalHead()
+    private IEnumerator CoPlayHappyHead()
     {
-        if (normalHeadSr == null || normalHeadSprites == null || normalHeadSprites.Length < 3) yield break;
+        if (happyHeadSr == null || happyHeadSprites == null || happyHeadSprites.Length < 4) yield break;
 
         float delay = 1f / 10f; // 10fps
-        int[] frames = { 0, 1, 2, 1, 0 };
-        for (int i = 0; i < frames.Length; i++)
+        for (int i = 0; i < 4; i++)
         {
-            normalHeadSr.sprite = normalHeadSprites[frames[i]];
+            happyHeadSr.sprite = happyHeadSprites[i];
             yield return new WaitForSeconds(delay);
         }
-        normalHeadSr.sprite = normalHeadSprites[0];
+        happyHeadSr.sprite = happyHeadSprites[0];
     }
 }

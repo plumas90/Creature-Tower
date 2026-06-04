@@ -354,72 +354,6 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pea_normal_head1
-      rect:
-        serializedVersion: 2
-        x: 276
-        y: 392
-        width: 50
-        height: 52
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8750701bc7aeed140800000000000000
-      internalID: 4746488878561953144
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pea_normal_head2
-      rect:
-        serializedVersion: 2
-        x: 335
-        y: 389
-        width: 50
-        height: 52
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d565d766e604f9e70800000000000000
-      internalID: 9124082212985984605
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pea_normal_head3
-      rect:
-        serializedVersion: 2
-        x: 388
-        y: 390
-        width: 50
-        height: 52
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e1d074e14e6b9ba70800000000000000
-      internalID: 8843300434195451166
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: peapod_case_in1
       rect:
         serializedVersion: 2
@@ -771,6 +705,94 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: pea_happy_head1
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 455
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f7ab204056fa61158f501dc946aa298
+      internalID: 626862592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_happy_head2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 455
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f4c32491587db2d4b9fe1d90fc1ad14
+      internalID: -1002585150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_happy_head3
+      rect:
+        serializedVersion: 2
+        x: 374
+        y: 455
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46c445bcfaad212f08c49a8993ef5090
+      internalID: -1472049974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pea_happy_head4
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 455
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 114ab50671dc8f4048a41e6d7529330f
+      internalID: -1407823399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -789,6 +811,10 @@ TextureImporter:
       pea_angry_head2: -6093519277847178891
       pea_angry_head3: 3934000052610446891
       pea_angry_head4: -4817135156863863146
+      pea_happy_head1: 626862592
+      pea_happy_head2: -1002585150
+      pea_happy_head3: -1472049974
+      pea_happy_head4: -1407823399
       pea_normal_head1: 4746488878561953144
       pea_normal_head2: 9124082212985984605
       pea_normal_head3: 8843300434195451166

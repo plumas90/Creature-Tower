@@ -951,7 +951,7 @@ public class AutoSetupPrefabs
         Object[] sheetObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(spritesheetPath);
         Sprite[] angryHeadSprites = new Sprite[4];
         Sprite[] sadHeadSprites = new Sprite[4];
-        Sprite[] normalHeadSprites = new Sprite[3];
+        Sprite[] happyHeadSprites = new Sprite[4];
         Sprite[] caseInSprites = new Sprite[8];
         Sprite[] caseOutSprites = new Sprite[8];
 
@@ -970,10 +970,10 @@ public class AutoSetupPrefabs
                     int index = int.Parse(name.Substring(12)) - 1;
                     if (index >= 0 && index < 4) sadHeadSprites[index] = sprite;
                 }
-                else if (name.StartsWith("pea_normal_head"))
+                else if (name.StartsWith("pea_happy_head"))
                 {
-                    int index = int.Parse(name.Substring(15)) - 1;
-                    if (index >= 0 && index < 3) normalHeadSprites[index] = sprite;
+                    int index = int.Parse(name.Substring(14)) - 1;
+                    if (index >= 0 && index < 4) happyHeadSprites[index] = sprite;
                 }
                 else if (name.StartsWith("peapod_case_in"))
                 {
@@ -1000,6 +1000,8 @@ public class AutoSetupPrefabs
                 Transform angryHeadTrans = prefabRoot.transform.Find("angry_head");
                 Transform sadHeadTrans = prefabRoot.transform.Find("sad_head");
                 Transform normalHeadTrans = prefabRoot.transform.Find("normal_head");
+                if (normalHeadTrans == null)
+                    normalHeadTrans = prefabRoot.transform.Find("happy_head");
                 Transform hitboxInTrans = prefabRoot.transform.Find("hitbox(in)");
                 Transform outTrans = prefabRoot.transform.Find("out");
 
@@ -1013,13 +1015,13 @@ public class AutoSetupPrefabs
 
                 if (angryHeadTrans != null) setField("angryHeadSr", angryHeadTrans.GetComponent<SpriteRenderer>());
                 if (sadHeadTrans != null) setField("sadHeadSr", sadHeadTrans.GetComponent<SpriteRenderer>());
-                if (normalHeadTrans != null) setField("normalHeadSr", normalHeadTrans.GetComponent<SpriteRenderer>());
+                if (normalHeadTrans != null) setField("happyHeadSr", normalHeadTrans.GetComponent<SpriteRenderer>());
                 if (hitboxInTrans != null) setField("hitboxInSr", hitboxInTrans.GetComponent<SpriteRenderer>());
                 if (outTrans != null) setField("outSr", outTrans.GetComponent<SpriteRenderer>());
 
                 setField("angryHeadSprites", angryHeadSprites);
                 setField("sadHeadSprites", sadHeadSprites);
-                setField("normalHeadSprites", normalHeadSprites);
+                setField("happyHeadSprites", happyHeadSprites);
                 setField("caseInSprites", caseInSprites);
                 setField("caseOutSprites", caseOutSprites);
 
@@ -1027,7 +1029,7 @@ public class AutoSetupPrefabs
             }
         }
 
-        // Setup PeaPodDeathPea bomb visual (assigned pea_normal_head1 sprite)
+        // Setup PeaPodDeathPea bomb visual (assigned pea_happy_head1 sprite)
         string peaPrefabPath = "Assets/Prefabs/Boss/PeaPod/PeaPodDeathPea.prefab";
         GameObject peaPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(peaPrefabPath);
         if (peaPrefab != null)
@@ -1036,21 +1038,106 @@ public class AutoSetupPrefabs
             {
                 var prefabRoot = editingScope.prefabContentsRoot;
                 var deathPea = prefabRoot.GetComponent<PeaPodDeathPea>();
-                if (deathPea != null && normalHeadSprites.Length > 0 && normalHeadSprites[0] != null)
+                if (deathPea != null && happyHeadSprites.Length > 0 && happyHeadSprites[0] != null)
                 {
                     var field = typeof(PeaPodDeathPea).GetField("peaSprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     if (field != null)
                     {
-                        field.SetValue(deathPea, normalHeadSprites[0]);
+                        field.SetValue(deathPea, happyHeadSprites[0]);
                     }
 
                     var sr = prefabRoot.GetComponent<SpriteRenderer>();
                     if (sr != null)
                     {
-                        sr.sprite = normalHeadSprites[0];
+                        sr.sprite = happyHeadSprites[0];
                     }
-                    Debug.Log("[AutoSetup] Successfully assigned pea_normal_head1 to PeaPodDeathPea prefab and component.");
+                    Debug.Log("[AutoSetup] Successfully assigned pea_happy_head1 to PeaPodDeathPea prefab and component.");
                 }
+            }
+        }
+    }
+
+    [InitializeOnLoadMethod]
+    private static void FixPeaPodVineSegment()
+    {
+        string prefabPath = "Assets/Prefabs/Boss/PeaPod/PeaPodVineSegment.prefab";
+        string spritesheetPath = "Assets/sprite/Boss/pea/pea_vin.png";
+
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (prefab == null)
+        {
+            Debug.LogWarning("[AutoSetup] PeaPodVineSegment prefab not found.");
+            return;
+        }
+
+        // Load all sprites from sheet
+        Object[] sheetObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(spritesheetPath);
+        Sprite[] growSprites = new Sprite[7];
+        Sprite growEndSprite = null;
+        Sprite[] dieSprites = new Sprite[5];
+
+        foreach (Object obj in sheetObjects)
+        {
+            if (obj is Sprite sprite)
+            {
+                string name = sprite.name;
+                if (name.StartsWith("pea_vine_grow"))
+                {
+                    if (name == "pea_vine_grow_end")
+                    {
+                        growEndSprite = sprite;
+                    }
+                    else
+                    {
+                        // parse frame index
+                        string numPart = name.Substring(13);
+                        if (int.TryParse(numPart, out int frameNum))
+                        {
+                            int index = frameNum - 1;
+                            if (index >= 0 && index < 7)
+                                growSprites[index] = sprite;
+                        }
+                    }
+                }
+                else if (name.StartsWith("pea_vine_die"))
+                {
+                    string numPart = name.Substring(12);
+                    if (int.TryParse(numPart, out int frameNum))
+                    {
+                        int index = frameNum - 1;
+                        if (index >= 0 && index < 5)
+                            dieSprites[index] = sprite;
+                    }
+                }
+            }
+        }
+
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(prefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var segment = prefabRoot.GetComponent<PeaPodVineSegment>();
+            if (segment != null)
+            {
+                System.Type t = typeof(PeaPodVineSegment);
+                var setField = new System.Action<string, object>((fieldName, value) => {
+                    var fieldInfo = t.GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (fieldInfo != null)
+                    {
+                        fieldInfo.SetValue(segment, value);
+                    }
+                });
+
+                setField("growSprites", growSprites);
+                setField("growEndSprite", growEndSprite);
+                setField("dieSprites", dieSprites);
+
+                var sr = prefabRoot.GetComponent<SpriteRenderer>();
+                if (sr != null && growSprites.Length > 0 && growSprites[0] != null)
+                {
+                    sr.sprite = growSprites[0];
+                }
+
+                Debug.Log("[AutoSetup] Successfully set up PeaPodVineSegment prefab sprite arrays.");
             }
         }
     }

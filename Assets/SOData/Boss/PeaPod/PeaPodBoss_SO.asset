@@ -19,6 +19,8 @@ MonoBehaviour:
   bossCount: 1
   IntroAnimationTime: 0
   bossPatternTime: 0
+  slimeLandRestTime: 1
+  slimeKeepDistance: 4
   btChaseRange: 100
   btStopDistance: 0.6
   btRepathInterval: 0.15
@@ -46,7 +48,7 @@ MonoBehaviour:
   deathPeaRiseDuration: 1.5
   deathPeaFallDuration: 1.5
   deathPeaArcHeight: 1.6
-  deathPeaLandedWaitDuration: 3
+  deathPeaLandedWaitDuration: 1
   deathPeaRedWarningDuration: 1
   deathPeaExplosionDamage: 25
   deathPeaExplosionRadius: 1.8
