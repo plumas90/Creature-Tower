@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -48,6 +49,9 @@ public class PeaPodDeathPea : MonoBehaviour
     private PeaPodGroundFxTrigger groundFxTrigger;
     private CapsuleCollider2D groundFxCapsule;
 
+    private Sprite[] animFrames;
+    private Coroutine animCoroutine;
+
     public void Initialize(
         Vector2 destination,
         float inRiseDuration,
@@ -58,7 +62,8 @@ public class PeaPodDeathPea : MonoBehaviour
         float inExplosionDamage,
         float inExplosionRadius,
         float inGroundFxRadiusMultiplier,
-        Sprite customSprite = null)
+        Sprite customSprite = null,
+        Sprite[] animationFrames = null)
     {
         startPos = transform.position;
         targetPos = destination;
@@ -77,11 +82,15 @@ public class PeaPodDeathPea : MonoBehaviour
         redWarningStartedAt = 0f;
         trackedPlayers.Clear();
 
+        animFrames = animationFrames;
+
         peaRenderer = GetComponent<SpriteRenderer>();
         if (peaRenderer != null)
         {
             if (customSprite != null)
                 peaSprite = customSprite;
+            else if (animFrames != null && animFrames.Length > 0)
+                peaSprite = animFrames[0];
 
             if (peaSprite != null)
                 peaRenderer.sprite = peaSprite;
@@ -96,6 +105,12 @@ public class PeaPodDeathPea : MonoBehaviour
         }
 
         SetupGroundFxVisual();
+
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+
+        if (animFrames != null && animFrames.Length > 0)
+            animCoroutine = StartCoroutine(CoBlinkAnimation());
     }
 
     private void Awake()
@@ -216,14 +231,24 @@ public class PeaPodDeathPea : MonoBehaviour
         PeaPodExplosionEffect effect = fxObj.AddComponent<PeaPodExplosionEffect>();
         effect.Play(explosionRadius, dynamicSortingLayer, peaRenderer != null ? peaRenderer.sortingOrder + 1 : 1600);
 
-        PlayerStatControl[] victims = new PlayerStatControl[trackedPlayers.Count];
-        trackedPlayers.CopyTo(victims);
-        for (int i = 0; i < victims.Length; i++)
-        {
-            PlayerStatControl playerStat = victims[i];
-            if (playerStat == null)
-                continue;
+        // Physics2D.OverlapCircleAll을 이용해 폭발 범위 내 모든 플레이어 정밀 감지 (쉐이더 및 Gizmos 범위와 1:1 일치)
+        Vector2 explosionCenter = shadowTransform != null ? (Vector2)shadowTransform.position : (Vector2)transform.position;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(explosionCenter, explosionRadius);
+        HashSet<PlayerStatControl> uniquePlayers = new HashSet<PlayerStatControl>();
 
+        foreach (Collider2D hit in hits)
+        {
+            if (hit == null) continue;
+            PlayerStatControl player = hit.GetComponent<PlayerStatControl>();
+            if (player == null)
+                player = hit.GetComponentInParent<PlayerStatControl>();
+
+            if (player != null)
+                uniquePlayers.Add(player);
+        }
+
+        foreach (PlayerStatControl playerStat in uniquePlayers)
+        {
             playerStat.TryApplyContactDamage(explosionDamage, gameObject.GetInstanceID());
         }
 
@@ -338,6 +363,30 @@ public class PeaPodDeathPea : MonoBehaviour
 
         if (player != null)
             trackedPlayers.Remove(player);
+    }
+
+    private IEnumerator CoBlinkAnimation()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(2f);
+
+            if (peaRenderer != null && animFrames != null && animFrames.Length > 0)
+            {
+                float frameDelay = 1f / 10f; // 10fps
+                for (int i = 0; i < animFrames.Length; i++)
+                {
+                    if (animFrames[i] != null)
+                    {
+                        peaRenderer.sprite = animFrames[i];
+                    }
+                    yield return new WaitForSeconds(frameDelay);
+                }
+                // Reset to first frame (default face)
+                if (animFrames[0] != null)
+                    peaRenderer.sprite = animFrames[0];
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()

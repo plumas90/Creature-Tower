@@ -79,8 +79,8 @@ SpriteRenderer:
   m_SortingLayerID: 100005
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: da8489138c2529a4fa35606cc1a64e76, type: 3}
-  m_Color: {r: 0.9980351, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: 6045232602294736795, guid: 244b883d0ac8707aa891d522e0a8272a, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -152,7 +152,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.9
+  m_Radius: 0.5
 --- !u!114 &7688066682821962182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,9 +165,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed2d845be62d41f429413be092660606, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coin1Sprite: {fileID: 0}
-  coin5Sprite: {fileID: 0}
-  coin10Sprite: {fileID: 0}
+  coin1Sprite: {fileID: 6045232602294736795, guid: 244b883d0ac8707aa891d522e0a8272a, type: 3}
+  coin5Sprite: {fileID: 441074247460727258, guid: 244b883d0ac8707aa891d522e0a8272a, type: 3}
+  coin10Sprite: {fileID: 7993335479848155638, guid: 244b883d0ac8707aa891d522e0a8272a, type: 3}
   coinType: 1
   scatterForce: 3
   magnetRadius: 2

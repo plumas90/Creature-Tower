@@ -105,15 +105,34 @@ public class PeaPodBoss : BossBase
             if (pea == null)
                 pea = peaObj.AddComponent<PeaPodDeathPea>();
 
-            // 스프라이트를 순서대로 지정 (angry, sad, happy)
+            // 스프라이트를 순서대로 지정 (angry, sad, happy) 및 전체 프레임 배열 전달
             Sprite bombSprite = null;
+            Sprite[] frames = null;
             int type = i % 3;
-            if (type == 0 && angryHeadSprites != null && angryHeadSprites.Length > 0)
-                bombSprite = angryHeadSprites[0];
-            else if (type == 1 && sadHeadSprites != null && sadHeadSprites.Length > 0)
-                bombSprite = sadHeadSprites[0];
-            else if (type == 2 && happyHeadSprites != null && happyHeadSprites.Length > 0)
-                bombSprite = happyHeadSprites[0];
+            if (type == 0)
+            {
+                if (angryHeadSprites != null && angryHeadSprites.Length > 0)
+                {
+                    bombSprite = angryHeadSprites[0];
+                    frames = angryHeadSprites;
+                }
+            }
+            else if (type == 1)
+            {
+                if (sadHeadSprites != null && sadHeadSprites.Length > 0)
+                {
+                    bombSprite = sadHeadSprites[0];
+                    frames = sadHeadSprites;
+                }
+            }
+            else if (type == 2)
+            {
+                if (happyHeadSprites != null && happyHeadSprites.Length > 0)
+                {
+                    bombSprite = happyHeadSprites[0];
+                    frames = happyHeadSprites;
+                }
+            }
 
             pea.Initialize(
                 target,
@@ -125,7 +144,8 @@ public class PeaPodBoss : BossBase
                 peaPodSO.deathPeaExplosionDamage,
                 peaPodSO.deathPeaExplosionRadius,
                 peaPodSO.deathPeaGroundFxRadiusMultiplier,
-                bombSprite
+                bombSprite,
+                frames
             );
         }
     }
