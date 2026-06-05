@@ -17,7 +17,7 @@ public class NormalStage : Stage
         Transfusion,   // 수혈기 방 - 확정적으로 수혈기 스폰
         DNA,           // DNA 방 - 확정적으로 DNA 상자(AugmentBox) 스폰
         Coin,          // 코인 방 - 확정적으로 코인 상자(CoinBox) 스폰
-        Box,           // 일반 상자 방 - 확정적으로 골드 또는 증강 상자(CoinBox 또는 AugmentBox) 중 스폰
+        Box,           // 일반 상자 방 - 확정적으로 골드 또는 일반 상자(CoinBox 또는 RandomBox) 중 스폰
         Potion         // 포션 방 - 확정적으로 포션(50% 회복) 스폰
     }
 
@@ -42,12 +42,31 @@ public class NormalStage : Stage
     public RoomTheme GetRoomTheme() => roomTheme;
     public void SetRoomTheme(RoomTheme value) => roomTheme = value;
 
-    // 인스펙터 상태를 리셋하거나 런타임에 동적으로 스테이지를 초기화하는 용도
     public void InitStage(int roomNo, NormalStageCase newCase, RoomTheme newTheme)
     {
         roomNumber = roomNo;
         stageCase = newCase;
         roomTheme = newTheme;
+
+        // my_tved 및 순수 전투방 특수 판정
+        isMyTvedRoom = false;
+        isPureCombatRoom = false;
+        if (roomTheme == RoomTheme.Mystery)
+        {
+            float r = Random.value;
+            if (myTvedPrefab != null && r < myTvedChance)
+            {
+                isMyTvedRoom = true;
+                stageCase = NormalStageCase.ChoiceResult; // 전투 없이 보상 지급
+                Debug.Log("[NormalStage] ? 방 my_tved 특수 방 당첨! 전투 없이 보상이 생성됩니다.");
+            }
+            else if (r < myTvedChance + pureCombatChance)
+            {
+                isPureCombatRoom = true;
+                stageCase = NormalStageCase.MonsterNoReward; // 보상 없는 전투 방
+                Debug.Log("[NormalStage] ? 방 보상 없는 순수 전투 방 당첨! 보상 없이 전투만 진행됩니다.");
+            }
+        }
 
         // 동적 도어 및 게이트 상태 초기화
         SetupMonsterGate();
@@ -107,8 +126,14 @@ public class NormalStage : Stage
     [SerializeField] private GameObject bloodTransfusionPrefab;
     [SerializeField] private GameObject balanceScalePrefab;
     [SerializeField] private GameObject potionPrefab;
+    [SerializeField] private GameObject myTvedPrefab;
+    [SerializeField] [Range(0f, 1f)] private float myTvedChance = 0.05f;
+    [SerializeField] [Range(0f, 1f)] private float pureCombatChance = 0.05f;
     [SerializeField] private int maxRewardOverride = 0; // 0이면 Act 제한 적용, 1~4면 고정 제한
     [SerializeField] private float balanceScaleGimmickChance = 0f; // 저울 양자택일방 스폰 확률 (우선 비활성화) // 저울 양자택일방 스폰 확률
+
+    private bool isMyTvedRoom = false;
+    private bool isPureCombatRoom = false;
 
     [Header("Monster Wave Spawner")]
     [SerializeField] private MonsterGroupSO monsterGroup;
@@ -256,6 +281,25 @@ public class NormalStage : Stage
             spawnedBalanceScale = null;
         }
 
+        // my_tved 특수방 스폰 처리
+        if (isMyTvedRoom && myTvedPrefab != null)
+        {
+            GameObject obj = Instantiate(myTvedPrefab, transform);
+            ResultDNA rd = obj.GetComponentInChildren<ResultDNA>(true);
+            if (rd != null)
+            {
+                rd.Init(true); // Rare DNA 확정
+            }
+            spawnedRewards.Add(obj);
+
+            Vector2 myTvedCenter = battleZone != null ? (Vector2)battleZone.bounds.center : (Vector2)transform.position;
+            obj.transform.position = new Vector3(myTvedCenter.x, myTvedCenter.y, 0f);
+
+            Debug.Log($"[NormalStage] my_tved spawned successfully at {obj.transform.position}");
+            StartCoroutine(FadeInAndActivateRewards(spawnedRewards, spawnedBalanceScale));
+            return;
+        }
+
         // 2. 테마에 따른 보상 구성 및 스폰 갯수 결정
         List<RewardType> chosenTypes = new List<RewardType>();
         bool allowBalanceScale = false;
@@ -278,8 +322,8 @@ public class NormalStage : Stage
         }
         else if (roomTheme == RoomTheme.Box)
         {
-            // 골드(CoinBox) 또는 증강(AugmentBox) 중 무작위 선택
-            RewardType[] chestTypes = { RewardType.CoinBox, RewardType.AugmentBox };
+            // 골드(CoinBox) 또는 일반 상자(RandomBox) 중 무작위 선택
+            RewardType[] chestTypes = { RewardType.CoinBox, RewardType.RandomBox };
             chosenTypes.Add(chestTypes[Random.Range(0, chestTypes.Length)]);
         }
         else if (roomTheme == RoomTheme.Potion)
@@ -295,7 +339,6 @@ public class NormalStage : Stage
             {
                 RewardType.RandomBox,
                 RewardType.CoinBox,
-                RewardType.AugmentBox,
                 RewardType.Shop,
                 RewardType.Transfuser,
                 RewardType.Potion

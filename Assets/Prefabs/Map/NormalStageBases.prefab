@@ -3813,6 +3813,9 @@ MonoBehaviour:
   bloodTransfusionPrefab: {fileID: 2940201012657520279, guid: 81860f323dfa23b4b962b71cb0584c51, type: 3}
   balanceScalePrefab: {fileID: 0}
   potionPrefab: {fileID: 9214839351058136826, guid: c29cfb4b7c1a9ed4598d596b62ead94c, type: 3}
+  myTvedPrefab: {fileID: 1122504575042605405, guid: b2d3c38928c2ffe409869b67d65bcc73, type: 3}
+  myTvedChance: 0.05
+  pureCombatChance: 0.05
   maxRewardOverride: 0
   balanceScaleGimmickChance: 0.5
   monsterGroup: {fileID: 0}

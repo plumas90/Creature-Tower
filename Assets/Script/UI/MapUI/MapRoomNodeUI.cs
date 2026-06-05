@@ -47,7 +47,36 @@ public class MapRoomNodeUI : MonoBehaviour, IPointerClickHandler
 
         // 오버레이
         if (activeHighlight != null)
+        {
             activeHighlight.SetActive(isCurrent);
+            if (isCurrent)
+            {
+                Image highlightImage = activeHighlight.GetComponent<Image>();
+                if (highlightImage != null)
+                {
+                    if (symbolSprite != null)
+                    {
+                        highlightImage.enabled = true;
+                        highlightImage.type = Image.Type.Simple;
+                        highlightImage.sprite = symbolSprite;
+                        highlightImage.preserveAspect = true;
+                        highlightImage.color = new Color(1f, 0.9f, 0.1f, 0.5f); // Bright yellow highlight with alpha
+                        activeHighlight.transform.localScale = new Vector3(1.15f, 1.15f, 1f);
+                    }
+                    else
+                    {
+                        highlightImage.sprite = null;
+                        highlightImage.enabled = true;
+                        highlightImage.color = new Color(1f, 0.9f, 0.1f, 0.35f);
+                        activeHighlight.transform.localScale = Vector3.one;
+                    }
+                }
+            }
+            else
+            {
+                activeHighlight.transform.localScale = Vector3.one;
+            }
+        }
         if (visitedCheckmark != null)
             visitedCheckmark.SetActive(isVisited && !isCurrent);
 
@@ -106,34 +135,53 @@ public class MapRoomNodeUI : MonoBehaviour, IPointerClickHandler
 
         if (bgImage != null)
         {
-            nodeColor.a = (isSelectable || isCurrent || isVisited) ? 1f : 0.4f;
-            bgImage.color = nodeColor;
+            if (symbolSprite != null)
+            {
+                // Hide background color for symbol nodes
+                bgImage.color = Color.clear;
+            }
+            else
+            {
+                // Fallback text node keeps background color
+                nodeColor.a = (isSelectable || isCurrent || isVisited) ? 1f : 0.4f;
+                bgImage.color = nodeColor;
+            }
         }
 
-        if (symbolImage != null && symbolSprite != null)
+        if (symbolText != null)
         {
-            symbolImage.sprite = symbolSprite;
-            symbolImage.gameObject.SetActive(true);
-            if (symbolText != null)
+            if (symbolSprite != null)
+            {
                 symbolText.gameObject.SetActive(false);
-        }
-        else
-        {
-            if (symbolImage != null)
-                symbolImage.gameObject.SetActive(false);
-            if (symbolText != null)
+            }
+            else
             {
                 symbolText.gameObject.SetActive(true);
                 symbolText.text = symbol;
             }
         }
 
+        if (symbolImage != null)
+        {
+            if (symbolSprite != null)
+            {
+                symbolImage.enabled = true;
+                symbolImage.type = Image.Type.Simple;
+                symbolImage.sprite = symbolSprite;
+                symbolImage.preserveAspect = true;
+                float alpha = (isSelectable || isCurrent || isVisited) ? 1f : 0.4f;
+                symbolImage.color = new Color(1f, 1f, 1f, alpha);
+            }
+            else
+            {
+                symbolImage.enabled = false;
+                symbolImage.sprite = null;
+            }
+        }
+
         if (nameText != null)
         {
-            nameText.text = roomName;
-            nameText.color = (isSelectable || isCurrent || isVisited)
-                ? Color.white
-                : new Color(1f, 1f, 1f, 0.4f);
+            nameText.gameObject.SetActive(false);
         }
 
         // Raycast 수신을 위해 bgImage의 raycastTarget 보장

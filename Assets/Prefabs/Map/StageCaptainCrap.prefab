@@ -2757,7 +2757,7 @@ MonoBehaviour:
   isRareBox: 0
   forceDNA: 0
   coinDropChance: 0.3
-  dnaPrefab: {fileID: 2110673503317202791, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
+  dnaPrefab: {fileID: 262557969461933222, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
   closedSprite: {fileID: 67960899086109811, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   openedSprite: {fileID: -5092357024114813943, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   openingSprites:

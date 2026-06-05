@@ -41,7 +41,7 @@ MonoBehaviour:
   pattern4WarningTime: 1
   pattern4ActiveTime: 0.5
   ghostPrefab: {fileID: 9156394777497399164, guid: 8e082b60d49cc7f4eacf96551fdebe1f, type: 3}
-  blackGhostPrefab: {fileID: 7886505121924232885, guid: 4623a90a36bf88c48ab5af495f73208e, type: 3}
-  whiteGhostPrefab: {fileID: 1766108524892792276, guid: 3813a799c2292229b9cb344d934870d2, type: 3}
+  blackGhostPrefab: {fileID: 2502800162220390168, guid: 4623a90a36bf88c48ab5af495f73208e, type: 3}
+  whiteGhostPrefab: {fileID: 5281050648050559170, guid: 3813a799c2292229b9cb344d934870d2, type: 3}
   ghostCirclePrefab: {fileID: 5720366735655195783, guid: 4ecc886b752920d4fa831a33267d83fb, type: 3}
   tilePrefab: {fileID: 6969234556376560335, guid: 4e9c357d9fba09148bc5269be6b465cc, type: 3}

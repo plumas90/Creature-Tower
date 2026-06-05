@@ -123,42 +123,107 @@ public class AutoSetupPrefabs
     }
 
     [InitializeOnLoadMethod]
-    private static void CreateResultDNAPrefab()
+    private static void FixResultDNAPrefab()
     {
         string prefabPath = "Assets/Prefabs/result/ResultDNA.prefab";
-        if (AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath) != null) return;
-
-        // Create folder if it doesn't exist
-        string folder = "Assets/Prefabs/result";
-        if (!AssetDatabase.IsValidFolder(folder))
+        Sprite normalDnaSprite = null;
+        Object[] normalAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath("Assets/sprite/RoomOption/RoomOption.png");
+        foreach (Object obj in normalAssets)
         {
-            AssetDatabase.CreateFolder("Assets/Prefabs", "result");
+            if (obj is Sprite sprite && sprite.name == "result_dna")
+            {
+                normalDnaSprite = sprite;
+                break;
+            }
         }
 
-        GameObject go = new GameObject("ResultDNA");
-        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-        BoxCollider2D col = go.AddComponent<BoxCollider2D>();
-        ResultDNA dna = go.AddComponent<ResultDNA>();
+        Sprite redDnaSprite = null;
+        Object[] redAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath("Assets/sprite/RoomOption/RedDna.png");
+        foreach (Object obj in redAssets)
+        {
+            if (obj is Sprite sprite && sprite.name.StartsWith("RedDna", System.StringComparison.OrdinalIgnoreCase))
+            {
+                redDnaSprite = sprite;
+                break;
+            }
+        }
 
-        Sprite normalDnaSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/sprite/RoomOption/RoomOption.png");
-        Sprite redDnaSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/sprite/RoomOption/RedDna.png");
+        GameObject dnaPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        bool modified = false;
 
-        dna.resultdna = normalDnaSprite;
-        dna.resultdna_red = redDnaSprite;
+        if (dnaPrefab == null)
+        {
+            // Create folder if it doesn't exist
+            string folder = "Assets/Prefabs/result";
+            if (!AssetDatabase.IsValidFolder(folder))
+            {
+                AssetDatabase.CreateFolder("Assets/Prefabs", "result");
+            }
 
-        sr.sprite = normalDnaSprite;
-        sr.color = new Color(0.405571f, 0.722131f, 0.924528f, 1f);
-        sr.sortingLayerName = "World_Dynamic";
-        sr.sortingOrder = 3;
+            GameObject go = new GameObject("ResultDNA");
+            SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+            BoxCollider2D col = go.AddComponent<BoxCollider2D>();
+            ResultDNA dna = go.AddComponent<ResultDNA>();
 
-        col.isTrigger = true;
-        col.size = new Vector2(1.0f, 1.6f);
+            dna.resultdna = normalDnaSprite;
+            dna.resultdna_red = redDnaSprite;
 
-        PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
-        Object.DestroyImmediate(go);
+            sr.sprite = normalDnaSprite;
+            sr.color = new Color(0.405571f, 0.722131f, 0.924528f, 1f);
+            sr.sortingLayerName = "World_Dynamic";
+            sr.sortingOrder = 3;
 
-        AssetDatabase.SaveAssets();
-        Debug.Log("[AutoSetup] Created ResultDNA prefab at " + prefabPath);
+            col.isTrigger = true;
+            col.size = new Vector2(1.0f, 1.6f);
+
+            PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
+            Object.DestroyImmediate(go);
+            modified = true;
+            Debug.Log("[AutoSetup] Created ResultDNA prefab at " + prefabPath);
+        }
+        else
+        {
+            using (var editingScope = new PrefabUtility.EditPrefabContentsScope(prefabPath))
+            {
+                var prefabRoot = editingScope.prefabContentsRoot;
+                var dna = prefabRoot.GetComponent<ResultDNA>();
+                if (dna != null)
+                {
+                    if (dna.resultdna != normalDnaSprite)
+                    {
+                        dna.resultdna = normalDnaSprite;
+                        modified = true;
+                    }
+                    if (dna.resultdna_red != redDnaSprite)
+                    {
+                        dna.resultdna_red = redDnaSprite;
+                        modified = true;
+                    }
+                }
+
+                var sr = prefabRoot.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                {
+                    if (sr.sprite != normalDnaSprite)
+                    {
+                        sr.sprite = normalDnaSprite;
+                        modified = true;
+                    }
+                    if (sr.sortingLayerName != "World_Dynamic" || sr.sortingOrder != 3)
+                    {
+                        sr.sortingLayerName = "World_Dynamic";
+                        sr.sortingOrder = 3;
+                        modified = true;
+                    }
+                }
+            }
+        }
+
+        if (modified)
+        {
+            AssetDatabase.SaveAssets();
+            Debug.Log("[AutoSetup] Verified and fixed ResultDNA prefab sprites!");
+        }
     }
 
     [InitializeOnLoadMethod]
@@ -250,64 +315,65 @@ public class AutoSetupPrefabs
         // Forced execution for verification
         SessionState.SetBool("SetupNormalStageRewardsRan", true);
 
-        string stagePrefabPath = "Assets/Prefabs/Map/NormalStageBases.prefab";
-        GameObject stagePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(stagePrefabPath);
-        if (stagePrefab == null)
+        string[] searchFolders = new string[] { "Assets/Prefabs/Map", "Assets/Prefabs/NormalStage" };
+        string[] guids = AssetDatabase.FindAssets("t:Prefab", searchFolders);
+
+        GameObject randomBox = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/RandomBox.prefab");
+        GameObject coinBox = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/CoinBox.prefab");
+        GameObject augmentBox = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/AugmentBox.prefab");
+        GameObject shop = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/ShopRoot.prefab");
+        GameObject transfusion = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/BloodTransfusionDevice.prefab");
+        GameObject potion = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/Pothon.prefab");
+        GameObject myTved = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/my_tved.prefab");
+
+        System.Type t = typeof(NormalStage);
+        
+        var fields = new (string fieldName, GameObject targetObj)[]
         {
-            Debug.LogWarning("[AutoSetup] NormalStageBases prefab not found at " + stagePrefabPath);
-            return;
-        }
+            ("randomBoxPrefab", randomBox),
+            ("coinBoxPrefab", coinBox),
+            ("augmentBoxPrefab", augmentBox),
+            ("shopPrefab", shop),
+            ("bloodTransfusionPrefab", transfusion),
+            ("potionPrefab", potion),
+            ("myTvedPrefab", myTved)
+        };
 
-        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(stagePrefabPath))
+        foreach (string guid in guids)
         {
-            var prefabRoot = editingScope.prefabContentsRoot;
-            NormalStage normalStage = prefabRoot.GetComponent<NormalStage>();
-            if (normalStage == null) return;
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            GameObject prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefabAsset == null) continue;
 
-            bool modified = false;
+            NormalStage ns = prefabAsset.GetComponent<NormalStage>();
+            if (ns == null) continue;
 
-            // Load and assign prefabs
-            GameObject randomBox = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/RandomBox.prefab");
-            GameObject coinBox = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/CoinBox.prefab");
-            GameObject augmentBox = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/AugmentBox.prefab");
-            GameObject shop = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/ShopRoot.prefab");
-            GameObject transfusion = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/BloodTransfusionDevice.prefab");
-            GameObject potion = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/result/Pothon.prefab");
-
-            System.Type t = typeof(NormalStage);
-            
-            var fields = new (string fieldName, GameObject targetObj)[]
+            using (var editingScope = new PrefabUtility.EditPrefabContentsScope(path))
             {
-                ("randomBoxPrefab", randomBox),
-                ("coinBoxPrefab", coinBox),
-                ("augmentBoxPrefab", augmentBox),
-                ("shopPrefab", shop),
-                ("bloodTransfusionPrefab", transfusion),
-                ("potionPrefab", potion)
-            };
+                var prefabRoot = editingScope.prefabContentsRoot;
+                NormalStage normalStage = prefabRoot.GetComponent<NormalStage>();
+                if (normalStage == null) continue;
 
-            foreach (var item in fields)
-            {
-                var fieldInfo = t.GetField(item.fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (fieldInfo != null)
+                bool modified = false;
+
+                foreach (var item in fields)
                 {
-                    var currentVal = fieldInfo.GetValue(normalStage) as GameObject;
-                    if (currentVal == null && item.targetObj != null)
+                    var fieldInfo = t.GetField(item.fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (fieldInfo != null)
                     {
-                        fieldInfo.SetValue(normalStage, item.targetObj);
-                        modified = true;
-                        Debug.Log($"[AutoSetup] Assigned {item.fieldName} -> {item.targetObj.name}");
+                        var currentVal = fieldInfo.GetValue(normalStage) as GameObject;
+                        if (currentVal == null && item.targetObj != null)
+                        {
+                            fieldInfo.SetValue(normalStage, item.targetObj);
+                            modified = true;
+                            Debug.Log($"[AutoSetup] Assigned {item.fieldName} -> {item.targetObj.name} in {prefabAsset.name}");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[AutoSetup] Field {item.fieldName} not found on NormalStage script.");
                     }
                 }
-                else
-                {
-                    Debug.LogWarning($"[AutoSetup] Field {item.fieldName} not found on NormalStage script.");
-                }
-            }
-
-            if (modified)
-            {
-                Debug.Log("[AutoSetup] Successfully set up all dynamic Reward Prefabs in NormalStageBases!");
             }
         }
     }
@@ -1371,5 +1437,354 @@ public class AutoSetupPrefabs
             AssetDatabase.SaveAssets();
         }
     }
-}
 
+    [InitializeOnLoadMethod]
+    private static void FixMapSelectionUI()
+    {
+        string spritePath = "Assets/sprite/RoomOption/map_symbol.png";
+        Object[] assets = AssetDatabase.LoadAllAssetRepresentationsAtPath(spritePath);
+        if (assets == null || assets.Length == 0)
+        {
+            Debug.LogWarning("[AutoSetup] No assets found in map_symbol.png!");
+            return;
+        }
+
+        Debug.Log($"[AutoSetup] map_symbol.png contains {assets.Length} sprites.");
+        
+        string mapUiPrefabPath = "Assets/Prefabs/UI/MapSelectionUI.prefab";
+        GameObject mapUiPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(mapUiPrefabPath);
+        
+        Sprite GetSprite(string name)
+        {
+            foreach (Object obj in assets)
+            {
+                if (obj is Sprite sprite && sprite.name.Equals(name, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return sprite;
+                }
+            }
+            return null;
+        }
+
+        System.Type t = typeof(MapSelectionUI);
+        var fields = new (string fieldName, string spriteName)[]
+        {
+            ("mysterySprite", "Mystery"),
+            ("shopSprite", "shop"),
+            ("transfusionSprite", "blood"),
+            ("dnaSprite", "DNA"),
+            ("coinSprite", "Gold"),
+            ("boxSprite", "Box"),
+            ("potionSprite", "potion"),
+        };
+
+        bool prefabModified = false;
+
+        if (mapUiPrefab != null)
+        {
+            using (var editingScope = new PrefabUtility.EditPrefabContentsScope(mapUiPrefabPath))
+            {
+                var prefabRoot = editingScope.prefabContentsRoot;
+                MapSelectionUI mapUI = prefabRoot.GetComponent<MapSelectionUI>();
+                if (mapUI != null)
+                {
+                    foreach (var item in fields)
+                    {
+                        var fieldInfo = t.GetField(item.fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                        if (fieldInfo != null)
+                        {
+                            var currentSprite = fieldInfo.GetValue(mapUI) as Sprite;
+                            Sprite targetSprite = GetSprite(item.spriteName);
+                            if (targetSprite != null && currentSprite != targetSprite)
+                            {
+                                fieldInfo.SetValue(mapUI, targetSprite);
+                                prefabModified = true;
+                                Debug.Log($"[AutoSetup] MapSelectionUI Assigned {item.fieldName} -> {targetSprite.name}");
+                            }
+                        }
+                    }
+
+                    var bossField = t.GetField("bossSprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (bossField != null)
+                    {
+                        var currentSprite = bossField.GetValue(mapUI) as Sprite;
+                        Sprite bossTarget = GetSprite("boss") ?? GetSprite("skull") ?? GetSprite("map_symbol_2");
+                        if (bossTarget == null)
+                        {
+                            foreach (Object obj in assets)
+                            {
+                                if (obj is Sprite sprite)
+                                {
+                                    if (sprite.name.Contains("boss") || sprite.name.Contains("skull") || sprite.name.Contains("death"))
+                                    {
+                                        bossTarget = sprite;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (bossTarget != null && currentSprite != bossTarget)
+                        {
+                            bossField.SetValue(mapUI, bossTarget);
+                            prefabModified = true;
+                            Debug.Log($"[AutoSetup] MapSelectionUI Assigned bossSprite -> {bossTarget.name}");
+                        }
+                    }
+
+                    // Scale spacing and padding by 1.5x
+                    var vSpacingField = t.GetField("verticalSpacing", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (vSpacingField != null && (float)vSpacingField.GetValue(mapUI) != 240f)
+                    {
+                        vSpacingField.SetValue(mapUI, 240f);
+                        prefabModified = true;
+                        Debug.Log("[AutoSetup] MapSelectionUI scaled verticalSpacing to 240f");
+                    }
+                    var hSpacingField = t.GetField("horizontalSpacing", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (hSpacingField != null && (float)hSpacingField.GetValue(mapUI) != 270f)
+                    {
+                        hSpacingField.SetValue(mapUI, 270f);
+                        prefabModified = true;
+                        Debug.Log("[AutoSetup] MapSelectionUI scaled horizontalSpacing to 270f");
+                    }
+                    var paddingTopField = t.GetField("mapPaddingTop", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (paddingTopField != null && (float)paddingTopField.GetValue(mapUI) != 150f)
+                    {
+                        paddingTopField.SetValue(mapUI, 150f);
+                        prefabModified = true;
+                        Debug.Log("[AutoSetup] MapSelectionUI scaled mapPaddingTop to 150f");
+                    }
+                    var paddingBotField = t.GetField("mapPaddingBottom", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (paddingBotField != null && (float)paddingBotField.GetValue(mapUI) != 150f)
+                    {
+                        paddingBotField.SetValue(mapUI, 150f);
+                        prefabModified = true;
+                        Debug.Log("[AutoSetup] MapSelectionUI scaled mapPaddingBottom to 150f");
+                    }
+                }
+            }
+        }
+
+        // Fix Active Scene instances
+        var sceneUIs = Object.FindObjectsByType<MapSelectionUI>(FindObjectsSortMode.None);
+        if (sceneUIs.Length > 0)
+        {
+            bool sceneModified = false;
+            foreach (var mapUI in sceneUIs)
+            {
+                Undo.RecordObject(mapUI, "Update MapSelectionUI settings");
+
+                foreach (var item in fields)
+                {
+                    var fieldInfo = t.GetField(item.fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (fieldInfo != null)
+                    {
+                        var currentSprite = fieldInfo.GetValue(mapUI) as Sprite;
+                        Sprite targetSprite = GetSprite(item.spriteName);
+                        if (targetSprite != null && currentSprite != targetSprite)
+                        {
+                            fieldInfo.SetValue(mapUI, targetSprite);
+                            sceneModified = true;
+                            Debug.Log($"[AutoSetup] Scene MapSelectionUI Assigned {item.fieldName} -> {targetSprite.name}");
+                        }
+                    }
+                }
+
+                var bossField = t.GetField("bossSprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (bossField != null)
+                {
+                    var currentSprite = bossField.GetValue(mapUI) as Sprite;
+                    Sprite bossTarget = GetSprite("boss") ?? GetSprite("skull") ?? GetSprite("map_symbol_2");
+                    if (bossTarget == null)
+                    {
+                        foreach (Object obj in assets)
+                        {
+                            if (obj is Sprite sprite)
+                            {
+                                if (sprite.name.Contains("boss") || sprite.name.Contains("skull") || sprite.name.Contains("death"))
+                                {
+                                    bossTarget = sprite;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (bossTarget != null && currentSprite != bossTarget)
+                    {
+                        bossField.SetValue(mapUI, bossTarget);
+                        sceneModified = true;
+                        Debug.Log($"[AutoSetup] Scene MapSelectionUI Assigned bossSprite -> {bossTarget.name}");
+                    }
+                }
+
+                // Scale spacing and padding by 1.5x in active scene
+                var vSpacingField = t.GetField("verticalSpacing", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (vSpacingField != null && (float)vSpacingField.GetValue(mapUI) != 240f)
+                {
+                    vSpacingField.SetValue(mapUI, 240f);
+                    sceneModified = true;
+                }
+                var hSpacingField = t.GetField("horizontalSpacing", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (hSpacingField != null && (float)hSpacingField.GetValue(mapUI) != 270f)
+                {
+                    hSpacingField.SetValue(mapUI, 270f);
+                    sceneModified = true;
+                }
+                var paddingTopField = t.GetField("mapPaddingTop", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (paddingTopField != null && (float)paddingTopField.GetValue(mapUI) != 150f)
+                {
+                    paddingTopField.SetValue(mapUI, 150f);
+                    sceneModified = true;
+                }
+                var paddingBotField = t.GetField("mapPaddingBottom", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (paddingBotField != null && (float)paddingBotField.GetValue(mapUI) != 150f)
+                {
+                    paddingBotField.SetValue(mapUI, 150f);
+                    sceneModified = true;
+                }
+            }
+
+            if (sceneModified)
+            {
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+                Debug.Log("[AutoSetup] Successfully synchronized MapSelectionUI objects in the active scene!");
+            }
+        }
+
+        if (prefabModified)
+        {
+            AssetDatabase.SaveAssets();
+        }
+    }
+
+    [InitializeOnLoadMethod]
+    private static void InspectAndFixMapNodePrefab()
+    {
+        System.IO.StringWriter sw = new System.IO.StringWriter();
+        sw.WriteLine("=== InspectAndFixMapNodePrefab Log ===");
+        
+        string prefabPath = "Assets/Prefabs/UI/MapNodePrefab.prefab";
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (prefab == null)
+        {
+            Debug.LogError("[AutoSetup] ERROR: MapNodePrefab not found at " + prefabPath);
+            return;
+        }
+        
+        sw.WriteLine("Loaded MapNodePrefab successfully.");
+        
+        // Print original hierarchy
+        sw.WriteLine("--- Original Hierarchy ---");
+        PrintTransformToLog(prefab.transform, "", sw);
+        
+        // We will modify the prefab inside EditPrefabContentsScope
+        bool modified = false;
+        using (var editingScope = new PrefabUtility.EditPrefabContentsScope(prefabPath))
+        {
+            var prefabRoot = editingScope.prefabContentsRoot;
+            var nodeUI = prefabRoot.GetComponent<MapRoomNodeUI>();
+            if (nodeUI == null)
+            {
+                sw.WriteLine("ERROR: MapRoomNodeUI component not found on prefab root.");
+            }
+            else
+            {
+                System.Type t = typeof(MapRoomNodeUI);
+                
+                // 1. Scale MapNodePrefab root sizeDelta to 135x135 (1.5x from 90x90)
+                RectTransform rootRect = prefabRoot.GetComponent<RectTransform>();
+                if (rootRect != null)
+                {
+                    Vector2 newSize = new Vector2(135f, 135f);
+                    if (rootRect.sizeDelta != newSize)
+                    {
+                        rootRect.sizeDelta = newSize;
+                        modified = true;
+                        sw.WriteLine($"Resized MapNodePrefab root RectTransform to {newSize}");
+                    }
+                }
+                
+                // 2. Remove the child SymbolImage GameObject
+                Transform symbolImageTrans = prefabRoot.transform.Find("SymbolImage");
+                if (symbolImageTrans != null)
+                {
+                    Object.DestroyImmediate(symbolImageTrans.gameObject, true);
+                    modified = true;
+                    sw.WriteLine("Destroyed SymbolImage child GameObject.");
+                }
+                
+                // 3. Deactivate child Bgimage GameObject
+                Transform bgImageTrans = prefabRoot.transform.Find("Bgimage") ?? prefabRoot.transform.Find("BgImage") ?? prefabRoot.transform.Find("Background");
+                if (bgImageTrans != null)
+                {
+                    if (bgImageTrans.gameObject.activeSelf)
+                    {
+                        bgImageTrans.gameObject.SetActive(false);
+                        modified = true;
+                        sw.WriteLine($"Deactivated child background GameObject: {bgImageTrans.name}");
+                    }
+                }
+                
+                // 4. Bind bgImage field of MapRoomNodeUI to null (so it is skipped at runtime)
+                var bgImageField = t.GetField("bgImage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (bgImageField != null)
+                {
+                    var currentBgVal = bgImageField.GetValue(nodeUI);
+                    if (currentBgVal != null)
+                    {
+                        bgImageField.SetValue(nodeUI, null);
+                        modified = true;
+                        sw.WriteLine("Cleared bgImage field (set to null).");
+                    }
+                }
+                
+                // 5. Bind symbolImage field to root Image component
+                var symImgField = t.GetField("symbolImage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (symImgField != null)
+                {
+                    var rootImg = prefabRoot.GetComponent<UnityEngine.UI.Image>();
+                    var currentVal = symImgField.GetValue(nodeUI) as UnityEngine.UI.Image;
+                    if (currentVal != rootImg)
+                    {
+                        symImgField.SetValue(nodeUI, rootImg);
+                        modified = true;
+                        sw.WriteLine("Assigned symbolImage field to root Image component.");
+                    }
+                    
+                    if (rootImg != null)
+                    {
+                        if (rootImg.raycastTarget == false)
+                        {
+                            rootImg.raycastTarget = true;
+                            modified = true;
+                            sw.WriteLine("Set root Image raycastTarget to true.");
+                        }
+                        if (!rootImg.preserveAspect)
+                        {
+                            rootImg.preserveAspect = true;
+                            modified = true;
+                            sw.WriteLine("Set root Image preserveAspect to true.");
+                        }
+                    }
+                }
+            }
+        }
+        sw.WriteLine($"Modified: {modified}");
+        Debug.Log(sw.ToString());
+    }
+
+    private static void PrintTransformToLog(Transform t, string indent, System.IO.StringWriter sw)
+    {
+        var list = new System.Collections.Generic.List<string>();
+        foreach (var c in t.GetComponents<Component>())
+        {
+            if (c != null) list.Add(c.GetType().Name);
+        }
+        sw.WriteLine($"{indent}- {t.name} (Components: {string.Join(", ", list)})");
+        for (int i = 0; i < t.childCount; i++)
+        {
+            PrintTransformToLog(t.GetChild(i), indent + "  ", sw);
+        }
+    }
+}

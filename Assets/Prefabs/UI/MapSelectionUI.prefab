@@ -348,10 +348,20 @@ MonoBehaviour:
   nodesContainer: {fileID: 2436233702968704724}
   lineContainer: {fileID: 278463991515311415}
   titleText: {fileID: 0}
+  bossSprite: {fileID: 0}
+  mysterySprite: {fileID: 4201627792212981732, guid: e190a1c8b203b635e8af60495309871f, type: 3}
+  shopSprite: {fileID: -3094360793509783561, guid: e190a1c8b203b635e8af60495309871f, type: 3}
+  transfusionSprite: {fileID: -4530911393691192929, guid: e190a1c8b203b635e8af60495309871f, type: 3}
+  dnaSprite: {fileID: 6718678216501808742, guid: e190a1c8b203b635e8af60495309871f, type: 3}
+  coinSprite: {fileID: -8142402034614090954, guid: e190a1c8b203b635e8af60495309871f, type: 3}
+  boxSprite: {fileID: 2902799305685455722, guid: e190a1c8b203b635e8af60495309871f, type: 3}
+  potionSprite: {fileID: -3574296247633138922, guid: e190a1c8b203b635e8af60495309871f, type: 3}
   nodePrefab: {fileID: 8537635066994379757, guid: f67868b7edd489841a93ef0698eb1fbc, type: 3}
-  verticalSpacing: 160
-  horizontalSpacing: 180
-  mapPaddingBottom: 100
+  verticalSpacing: 240
+  horizontalSpacing: 270
+  mapPaddingTop: 150
+  mapPaddingBottom: 150
+  lineOffset: 60
 --- !u!1 &3724449281751947361
 GameObject:
   m_ObjectHideFlags: 0

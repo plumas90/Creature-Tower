@@ -34,6 +34,7 @@ public class MapSelectionUI : MonoBehaviour
     [SerializeField] private float horizontalSpacing = 180f;
     [SerializeField] private float mapPaddingTop = 100f;
     [SerializeField] private float mapPaddingBottom = 100f;
+    [SerializeField] private float lineOffset = 60f;
 
     private List<MapRoomNodeUI> _spawnedNodes = new List<MapRoomNodeUI>();
     private bool _isInitialized = false;
@@ -351,11 +352,26 @@ public class MapSelectionUI : MonoBehaviour
             Vector2 direction = toPos - fromPos;
             float distance = direction.magnitude;
 
-            rect.anchoredPosition = fromPos;
-            rect.sizeDelta = new Vector2(4f, distance);
+            if (distance > lineOffset * 2f)
+            {
+                Vector2 dirNorm = direction.normalized;
+                Vector2 adjustedFrom = fromPos + dirNorm * lineOffset;
+                float adjustedDistance = distance - (lineOffset * 2f);
 
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            rect.localRotation = Quaternion.Euler(0f, 0f, angle - 90f);
+                rect.anchoredPosition = adjustedFrom;
+                rect.sizeDelta = new Vector2(4f, adjustedDistance);
+
+                float angle = Mathf.Atan2(dirNorm.y, dirNorm.x) * Mathf.Rad2Deg;
+                rect.localRotation = Quaternion.Euler(0f, 0f, angle - 90f);
+            }
+            else
+            {
+                rect.anchoredPosition = fromPos;
+                rect.sizeDelta = new Vector2(4f, distance);
+
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                rect.localRotation = Quaternion.Euler(0f, 0f, angle - 90f);
+            }
         }
     }
 

@@ -202,7 +202,10 @@ public class BossStage : Stage
             yield break;
         }
 
-        StartCoroutine(ShowBossNameRoutine(summonedBoss.GetDisplayName(), bossNameShowDuration));
+        summonedBoss.StatSet();
+
+        float nameDuration = summonedBoss.IntroTime > 0f ? summonedBoss.IntroTime : bossNameShowDuration;
+        StartCoroutine(ShowBossNameRoutine(summonedBoss.GetDisplayName(), nameDuration));
         BeginBossBattle(summonedBoss);
     }
 
@@ -230,6 +233,7 @@ public class BossStage : Stage
         if (summonedBoss == null)
             return;
 
+        summonedBoss.StatSet();
         BeginBossBattle(summonedBoss);
     }
 
@@ -258,7 +262,6 @@ public class BossStage : Stage
         if (boss == null)
             return;
 
-        boss.StatSet();
         RegisterBossSpawnCount(boss.bossCount);
 
         // 보스 인트로 연출 카메라 추적 및 플레이어 조작 차단
