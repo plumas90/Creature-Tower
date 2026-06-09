@@ -1044,7 +1044,7 @@ MonoBehaviour:
   isRareBox: 0
   forceDNA: 0
   coinDropChance: 0.3
-  dnaPrefab: {fileID: 262557969461933222, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
+  dnaPrefab: {fileID: 8639842615049523772, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
   closedSprite: {fileID: 67960899086109811, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   openedSprite: {fileID: -5092357024114813943, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   openingSprites:
@@ -1107,7 +1107,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9140625, y: 0.6875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1152,7 +1152,7 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 0.9140625, y: 0.6875}
-    newSize: {x: 1, y: 1}
+    newSize: {x: 0.9140625, y: 0.6875}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -6590,7 +6590,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9921875, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -6659,7 +6659,7 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 0.9921875, y: 1}
-    newSize: {x: 1, y: 1}
+    newSize: {x: 0.9921875, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
