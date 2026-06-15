@@ -42,7 +42,7 @@ MonoBehaviour:
   missileCount: 3
   missileFireInterval: 0.5
   missileSpeed: 5
-  missileLifetime: 4
+  missileLifetime: 10
   missileBulletPrefab: {fileID: 2254994090295727526, guid: 82f810e4219d6dc4d88b821781ade191, type: 3}
   idleAnimFps: 8
   rollingAnimFps: 12
