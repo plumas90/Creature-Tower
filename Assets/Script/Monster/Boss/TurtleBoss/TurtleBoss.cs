@@ -6,28 +6,93 @@ using System.Collections;
 /// 
 /// Phase 1 (HP > 30%):
 ///   - 가시 토네이도: 8방향으로 가시 발사 (쿨다운마다 반복)
-///   - 구르기: 플레이어 방향으로 구르면서 벽 반사, 반사 시 가시 발사
-///   - 미사일: 플레이어를 향해 3발 순차 발사
+///   - 구르기: 플레이어 방향으로 구르면서 벽반사, 반사 시마다 가시 발사
+///   - 미사일: 플레이어를 향해 3연차 발사
 ///
 /// Phase 2 (HP <= 30%):
 ///   - 무한 구르기: 멈추지 않고 구르며 반사 시마다 가시 발사
 /// </summary>
 public class TurtleBoss : BossBase
 {
+    [Header("Aiming")]
+    [SerializeField] private Transform bossAim;
+
+    private void UpdateAim()
+    {
+        if (bossAim == null || !live || !bossAim.gameObject.activeSelf) return;
+
+        // 인트로 연출 동안(wait = true 또는 introMoveRoutine 실행 중)에는 대포를 플레이어 방향으로 꺾지 않고 기본 상태(0도)로 유지합니다.
+        if (wait || introMoveRoutine != null)
+        {
+            bossAim.localRotation = Quaternion.identity;
+            SpriteRenderer aimSR = bossAim.GetComponent<SpriteRenderer>();
+            if (aimSR != null)
+            {
+                aimSR.flipY = false;
+            }
+            return;
+        }
+
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        Transform playerTr = playerObj != null ? playerObj.transform : null;
+        if (playerTr != null)
+        {
+            Vector3 directiontarget = (playerTr.position - bossAim.position).normalized;
+            float angle = Mathf.Atan2(directiontarget.y, directiontarget.x) * Mathf.Rad2Deg;
+            bossAim.rotation = Quaternion.Euler(0, 0, angle);
+
+            // Flip the entire boss Root scale so body and child pivots flip correctly
+            Vector3 scale = transform.localScale;
+            bool playerOnRight = playerTr.position.x > transform.position.x;
+            scale.x = playerOnRight ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+            transform.localScale = scale;
+
+            // bossAim의 로컬 스케일을 보정하여 부모 flip 시 발생하는 월드 스케일 반전을 상쇄
+            Vector3 aimScale = bossAim.localScale;
+            aimScale.x = (scale.x < 0) ? -Mathf.Abs(aimScale.x) : Mathf.Abs(aimScale.x);
+            bossAim.localScale = aimScale;
+
+            // Keep bodyRenderer flipX at false so scale is the sole flipping mechanism
+            if (bodyRenderer != null)
+            {
+                bodyRenderer.flipX = false;
+            }
+
+            // Prevent the weapon pivot sprite from looking upside-down when pointing left
+            SpriteRenderer aimSR = bossAim.GetComponent<SpriteRenderer>();
+            if (aimSR != null)
+            {
+                float normAngle = bossAim.eulerAngles.z;
+                if (normAngle > 180f) normAngle -= 360f;
+                aimSR.flipY = (Mathf.Abs(normAngle) > 90f);
+            }
+        }
+    }
+
     [Header("SO Reference")]
     [SerializeField] private TurtleBossSO turtleSO;
 
     [Header("Visuals")]
     [SerializeField] private SpriteRenderer bodyRenderer;
+    [SerializeField] private Transform makeMissilePosition;
 
-    // 내부 상태
+    [Header("Colliders")]
+    [SerializeField] private Collider2D normalCollider;
+    [SerializeField] private Collider2D rollingCollider;
+
+    public Transform MakeMissilePosition => makeMissilePosition;
+
+    // 보스 상태
     private bool isPhase2;
-    private Coroutine animCoroutine;
+    private Coroutine idleCoroutine;
+    private Coroutine rollingCoroutine;
 
-    // BT 태스크 참조 (Phase 2 전환 시 재구성 필요)
+    // BT 태스크 참조 (Phase 2 전환 시 복구 필요)
     private BossBTNode phase2Tree;
 
-    // ──────────────────── Unity 생명주기 ────────────────────
+    // =========================================================
+    // Unity 생명주기
+    // =========================================================
 
     protected override void Awake()
     {
@@ -35,14 +100,49 @@ public class TurtleBoss : BossBase
 
         if (turtleSO != null)
             MainSO = turtleSO;
+
+        if (makeMissilePosition == null)
+        {
+            Transform[] allChildren = GetComponentsInChildren<Transform>(true);
+            foreach (Transform child in allChildren)
+            {
+                if (child.name == "MakeMissilePosition" || child.name == "MakeMissilePositon")
+                {
+                    makeMissilePosition = child;
+                    break;
+                }
+            }
+        }
+
+        // 콜라이더 자동 할당
+        if (normalCollider == null)
+            normalCollider = GetComponent<BoxCollider2D>();
+        if (rollingCollider == null)
+            rollingCollider = GetComponent<CapsuleCollider2D>();
+
+        if (normalCollider == null)
+        {
+            Collider2D[] cols = GetComponents<Collider2D>();
+            foreach (var col in cols)
+            {
+                if (!(col is CapsuleCollider2D))
+                {
+                    normalCollider = col;
+                    break;
+                }
+            }
+        }
     }
 
     private void FixedUpdate()
     {
         TickBehaviorTree();
+        UpdateAim();
     }
 
-    // ──────────────────── StatSet (초기화) ────────────────────
+    // =========================================================
+    // StatSet (초기화)
+    // =========================================================
 
     public override void StatSet()
     {
@@ -63,28 +163,81 @@ public class TurtleBoss : BossBase
         bossCount = Mathf.Max(1, MainSO != null ? MainSO.bossCount : 1);
     }
 
-    // ──────────────────── 인트로 ────────────────────
+    // =========================================================
+    // 인트로
+    // =========================================================
+
+    private Coroutine introMoveRoutine;
 
     protected override float ResolveIntroTime()
     {
-        return MainSO != null ? Mathf.Max(0f, MainSO.IntroAnimationTime) : 2f;
+        return 5f;
     }
 
     protected override void OnBeforeIntroStart()
     {
         base.OnBeforeIntroStart();
-        // 인트로 애니메이션: idle 첫 프레임으로 설정
-        if (bodyRenderer != null && turtleSO?.idleSprites != null && turtleSO.idleSprites.Length > 0)
-            bodyRenderer.sprite = turtleSO.idleSprites[0];
+
+        // 초기 콜라이더 세팅 (굴러오는 상태이므로 캡슐 활성화)
+        if (normalCollider != null) normalCollider.enabled = false;
+        if (rollingCollider != null) rollingCollider.enabled = true;
+
+        Vector3 targetCenter = transform.position;
+        if (StageOwner != null && StageOwner is BossStage bossStage && bossStage.BossSpawnPoint != null)
+        {
+            targetCenter = bossStage.BossSpawnPoint.position;
+        }
+
+        // 왼쪽 화면 밖 멀리(-20f)에서 시작
+        Vector3 startPos = targetCenter + new Vector3(-20f, 0f, 0f);
+        transform.position = startPos;
+
+        // 구르기 상태로 설정
+        isRollingState = false;
+        SetRollingAnim(true);
+
+        // 5초의 인트로 시간 중 처음 1.5초 동안 아주 빠르게 굴러서 착지함
+        if (introMoveRoutine != null) StopCoroutine(introMoveRoutine);
+        introMoveRoutine = StartCoroutine(CoIntroMove(startPos, targetCenter, 1.5f));
+    }
+
+    private IEnumerator CoIntroMove(Vector3 start, Vector3 end, float moveDuration)
+    {
+        float elapsed = 0f;
+        while (elapsed < moveDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / moveDuration;
+            // 감속(EaseOut)을 주어 화면 밖에서 쏜살같이 들어와 부드럽게 멈춤
+            float easeOutT = Mathf.Sin(t * Mathf.PI * 0.5f);
+            transform.position = Vector3.Lerp(start, end, easeOutT);
+            yield return null;
+        }
+        transform.position = end;
+        
+        // 제자리에서 1초 동안 추가로 구르기(회전) 상태를 유지합니다.
+        yield return new WaitForSeconds(1f);
+        
+        // 구르기를 풀고 웅장하게 서 있는 모습(idle)으로 전환
+        SetRollingAnim(false);
+        introMoveRoutine = null;
     }
 
     public override void First()
     {
+        if (introMoveRoutine != null)
+        {
+            StopCoroutine(introMoveRoutine);
+            introMoveRoutine = null;
+        }
+
         base.First();
-        StartIdleAnimation();
+        SetRollingAnim(false);
     }
 
-    // ──────────────────── BT 트리 ────────────────────
+    // =========================================================
+    // BT 트리 생성
+    // =========================================================
 
     protected override BossBTNode CreateBehaviorTree()
     {
@@ -101,30 +254,16 @@ public class TurtleBoss : BossBase
             new BTTask_TurtleInfinityRolling(this, so)
         );
 
-        // Phase 1 패턴 (쿨다운 기반 Selector)
-        //   - ThornTornado, Rolling, Missile 중 쿨다운이 끝난 것을 순서대로 시도
-        var phase1Patterns = new BossSelectorNode(
-            // 1순위: 가시 토네이도
-            new BossCooldownNode(so.thornTornadoCooldown,
-                new BossSequenceNode(
-                    new BossConditionNode(() => live && !wait && !isPhase2),
-                    new BTTask_TurtleThornTornado(this, so)
-                )
-            ),
-            // 2순위: 구르기
-            new BossCooldownNode(so.rollingCooldown,
-                new BossSequenceNode(
-                    new BossConditionNode(() => live && !wait && !isPhase2),
-                    new BTTask_TurtleRolling(this, so, false)
-                )
-            ),
-            // 3순위: 미사일
-            new BossCooldownNode(so.missileCooldown,
-                new BossSequenceNode(
-                    new BossConditionNode(() => live && !wait && !isPhase2),
-                    new BTTask_TurtleMissile(this, so)
-                )
-            )
+        // Phase 1 패턴 (공격 -> 2초 대기 -> 구르기 -> 2초 대기 순환)
+        var phase1Patterns = new BossSequenceNode(
+            // 1단계: 공격 (미사일 혹은 가시 토네이도 중 하나를 진입 시 무작위 선택)
+            new BTTask_TurtleRandomAttack(this, so),
+            // 2단계: 공격 후 2초 대기
+            new BTTask_Wait(this, 2f),
+            // 3단계: 구르기
+            new BTTask_TurtleRolling(this, so, false),
+            // 4단계: 구르기 후 2초 대기
+            new BTTask_Wait(this, 2f)
         );
 
         // Phase 1 트리
@@ -172,36 +311,78 @@ public class TurtleBoss : BossBase
         // Phase 2 구르기는 BTTask_TurtleInfinityRolling에서 SetRollingAnim(true) 호출
     }
 
-    // ──────────────────── 애니메이션 ────────────────────
+    // =========================================================
+    // 애니메이션
+    // =========================================================
+
+    private bool isRollingState = false;
+
+    private void StopAllAnimationCoroutines()
+    {
+        if (idleCoroutine != null)
+        {
+            StopCoroutine(idleCoroutine);
+            idleCoroutine = null;
+        }
+        if (rollingCoroutine != null)
+        {
+            StopCoroutine(rollingCoroutine);
+            rollingCoroutine = null;
+        }
+    }
 
     public void SetRollingAnim(bool rolling)
     {
-        if (animCoroutine != null)
+        // 동일 상태로 재호출 시 불필요한 코루틴 재시작 방지
+        if (isRollingState == rolling) return;
+
+        isRollingState = rolling;
+        StopAllAnimationCoroutines();
+        Debug.Log($"[TurtleBoss] SetRollingAnim: {rolling}, frame={Time.frameCount}");
+
+        // 구르기 중에는 팔(bossAim)을 숨김
+        if (bossAim != null)
         {
-            StopCoroutine(animCoroutine);
-            animCoroutine = null;
+            bossAim.gameObject.SetActive(!rolling);
+        }
+
+        // 콜라이더 전환 (구르기 시 캡슐 활성화 / 사각 비활성화)
+        if (rolling)
+        {
+            if (rollingCollider != null) rollingCollider.enabled = true;
+            if (normalCollider != null) normalCollider.enabled = false;
+        }
+        else
+        {
+            if (normalCollider != null) normalCollider.enabled = true;
+            if (rollingCollider != null) rollingCollider.enabled = false;
+        }
+
+        Animator anim = GetComponent<Animator>();
+        if (anim != null && anim.runtimeAnimatorController != null)
+        {
+            anim.Play(rolling ? "roll" : "idle");
+            return;
         }
 
         if (rolling)
-            animCoroutine = StartCoroutine(CoRollingAnimation());
+            rollingCoroutine = StartCoroutine(CoRollingAnimation());
         else
-            animCoroutine = StartCoroutine(CoIdleAnimation());
+            idleCoroutine = StartCoroutine(CoIdleAnimation());
     }
+
+    // Update()에서 매 프레임 anim.Play()를 강제 호출하면
+    // rolling→idle 전환이 늦어지거나 idle이 roll 도중에 재생되는 버그가 발생한다.
+    // 상태 전환은 SetRollingAnim() 호출 시점에만 수행하도록 Update()를 제거.
 
     private void StartIdleAnimation()
     {
-        if (animCoroutine != null)
-            StopCoroutine(animCoroutine);
-        animCoroutine = StartCoroutine(CoIdleAnimation());
+        SetRollingAnim(false);
     }
 
     private void StopIdleAnimation()
     {
-        if (animCoroutine != null)
-        {
-            StopCoroutine(animCoroutine);
-            animCoroutine = null;
-        }
+        StopAllAnimationCoroutines();
     }
 
     private IEnumerator CoIdleAnimation()
@@ -213,7 +394,9 @@ public class TurtleBoss : BossBase
         float delay = 1f / fps;
         int frameIndex = 0;
 
-        while (live && !isDead)
+        // isRollingState가 true로 바뀌면 즉시 중단 (SetRollingAnim이 이 코루틴을 Stop하지만,
+        // 같은 프레임에 중복 실행되는 엣지케이스를 방어하기 위해 플래그도 체크)
+        while (live && !isDead && !isRollingState)
         {
             if (bodyRenderer != null)
                 bodyRenderer.sprite = turtleSO.idleSprites[frameIndex];
@@ -232,7 +415,8 @@ public class TurtleBoss : BossBase
         float delay = 1f / fps;
         int frameIndex = 0;
 
-        while (live && !isDead)
+        // isRollingState가 false로 바뀌면 즉시 중단
+        while (live && !isDead && isRollingState)
         {
             if (bodyRenderer != null)
                 bodyRenderer.sprite = turtleSO.rollingSprites[frameIndex];
@@ -242,17 +426,28 @@ public class TurtleBoss : BossBase
         }
     }
 
-    // ──────────────────── 방향 (좌우 플립) ────────────────────
+    // =========================================================
+    // 방향 (좌우 플립)
+    // =========================================================
 
     private void UpdateFacingDirection()
     {
-        if (Player == null || bodyRenderer == null) return;
+        if (Player == null) return;
 
-        bool playerOnLeft = Player.transform.position.x < transform.position.x;
-        bodyRenderer.flipX = playerOnLeft;
+        Vector3 scale = transform.localScale;
+        bool playerOnRight = Player.transform.position.x > transform.position.x;
+        scale.x = playerOnRight ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+        transform.localScale = scale;
+
+        if (bodyRenderer != null)
+        {
+            bodyRenderer.flipX = false;
+        }
     }
 
-    // ──────────────────── 사망 ────────────────────
+    // =========================================================
+    // 사망
+    // =========================================================
 
     public override void BossDie()
     {
@@ -267,5 +462,43 @@ public class TurtleBoss : BossBase
     {
         StopIdleAnimation();
         base.OnDisable();
+    }
+}
+
+/// <summary>
+/// 진입 시점에 미사일 공격과 가시 토네이도 공격 중 하나를 무작위로 한 번만 결정하여 실행하는 데코레이터성 Task.
+/// 매 틱마다 확률을 검사하면 상태가 취소되는 문제가 발생하므로, OnEnter에서만 한 번 확률을 판정합니다.
+/// </summary>
+public class BTTask_TurtleRandomAttack : BTTask
+{
+    private readonly BTTask_TurtleMissile missileTask;
+    private readonly BTTask_TurtleThornTornado thornTask;
+    private BTTask chosenTask;
+
+    public BTTask_TurtleRandomAttack(TurtleBoss boss, TurtleBossSO so) : base(boss)
+    {
+        missileTask = new BTTask_TurtleMissile(boss, so);
+        thornTask = new BTTask_TurtleThornTornado(boss, so);
+    }
+
+    protected override void OnEnter()
+    {
+        chosenTask = (UnityEngine.Random.value < 0.5f) ? (BTTask)missileTask : (BTTask)thornTask;
+        chosenTask.Reset();
+    }
+
+    protected override BossBTState OnTick()
+    {
+        if (chosenTask == null) return BossBTState.Failure;
+        return chosenTask.Tick();
+    }
+
+    protected override void OnExit()
+    {
+        if (chosenTask != null)
+        {
+            chosenTask.Reset();
+        }
+        chosenTask = null;
     }
 }

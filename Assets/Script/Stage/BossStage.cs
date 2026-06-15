@@ -211,10 +211,21 @@ public class BossStage : Stage
 
     private void MovePlayerInside(GameObject player)
     {
-        if (player == null || PlayerStartPosition == null)
+        if (player == null)
             return;
 
-        player.transform.position = PlayerStartPosition.position;
+        Vector3 targetPos = player.transform.position;
+        if (botDoor != null)
+        {
+            targetPos.x = botDoor.transform.position.x;
+            targetPos.y = botDoor.transform.position.y + 1f;
+        }
+        else if (PlayerStartPosition != null)
+        {
+            targetPos = PlayerStartPosition.position;
+        }
+
+        player.transform.position = targetPos;
 
         MainCamera mc = Camera.main != null ? Camera.main.GetComponent<MainCamera>() : null;
         if (mc != null)
@@ -268,7 +279,7 @@ public class BossStage : Stage
         MainCamera mc = Camera.main != null ? Camera.main.GetComponent<MainCamera>() : null;
         if (mc != null && boss.IntroTime > 0f)
         {
-            if (boss is TheWorm && BossSpawnPoint != null)
+            if ((boss is TheWorm || boss is TurtleBoss) && BossSpawnPoint != null)
             {
                 mc.StartBossIntroTracking(BossSpawnPoint.gameObject, boss.IntroTime);
             }

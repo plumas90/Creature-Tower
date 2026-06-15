@@ -53,7 +53,10 @@ public class BTTask_Wait : BTTask
     protected override BossBTState OnTick()
     {
         if (!IsBossValid())
-            return BossBTState.Failure;
+        {
+            Debug.LogWarning($"[BTTask_Wait] Failure: IsBossValid is false. live={boss?.live}, wait={boss?.wait}");
+            return BossBTState.Success; // Failure 방지 폴백
+        }
 
         // 대기 시간 체크
         float elapsed = Time.time - startTime;

@@ -13,6 +13,12 @@ public class BTTask_TurtleInfinityRolling : BTTask
     private BallisticMovementComponent ballisticComp;
     private Vector2 previousDirection;
 
+    // Phase 2 지속 가시 발사용 변수
+    private float nextContinuousThornTime;
+    private float continuousThornAngle;
+    private const float THORN_FIRE_INTERVAL = 0.2f; // 0.2초 간격 발사
+    private const float THORN_ANGLE_STEP = 15f;      // 시계방향 15도 회전
+
     public BTTask_TurtleInfinityRolling(TurtleBoss boss, TurtleBossSO so) : base(boss)
     {
         this.turtleBoss = boss;
@@ -21,6 +27,7 @@ public class BTTask_TurtleInfinityRolling : BTTask
 
     protected override void OnEnter()
     {
+        Debug.Log($"[BTTask_TurtleInfinityRolling] OnEnter, frame={Time.frameCount}");
         // BallisticMovementComponent 가져오거나 추가
         ballisticComp = boss.GetComponent<BallisticMovementComponent>();
         if (ballisticComp == null)
@@ -46,6 +53,10 @@ public class BTTask_TurtleInfinityRolling : BTTask
         // 빠른 구르기 속도 (Phase 2는 더 빠름)
         ballisticComp.SpeedMultiplier = 1.4f;
 
+        // 지속 가시 발사 타이밍 초기화
+        nextContinuousThornTime = Time.time + THORN_FIRE_INTERVAL;
+        continuousThornAngle = 0f;
+
         // 반사 시 콜백
         ballisticComp.OnCastPlayerHit = (playerStat) =>
         {
@@ -60,6 +71,13 @@ public class BTTask_TurtleInfinityRolling : BTTask
 
         // 이동 수행
         ballisticComp.MoveBallistic(so.rollingSpeed);
+
+        // 무한 구르기 중 지속적으로 시계방향 회전하며 가시 뿜기
+        if (Time.time >= nextContinuousThornTime)
+        {
+            FireContinuousThorn();
+            nextContinuousThornTime = Time.time + THORN_FIRE_INTERVAL;
+        }
 
         // 방향 변화 감지 (반사 발생 체크)
         Vector2 currentDir = ballisticComp.CurrentDirection;
@@ -77,6 +95,7 @@ public class BTTask_TurtleInfinityRolling : BTTask
 
     protected override void OnExit()
     {
+        Debug.Log($"[BTTask_TurtleInfinityRolling] OnExit, frame={Time.frameCount}");
         turtleBoss.SetRollingAnim(false);
 
         if (ballisticComp != null)
@@ -88,6 +107,7 @@ public class BTTask_TurtleInfinityRolling : BTTask
 
     private void OnBounce()
     {
+        Debug.Log($"[BTTask_TurtleInfinityRolling] OnBounce, frame={Time.frameCount}");
         // Phase 2: 반사 시마다 가시 발사 (thornOnBounce 무조건)
         FireThornOnBounce();
     }
@@ -116,6 +136,31 @@ public class BTTask_TurtleInfinityRolling : BTTask
                     bullet.targets = new System.Collections.Generic.Dictionary<string, int>();
                 bullet.targets["Player"] = (int)BulletTarget.Player;
             }
+        }
+    }
+
+    private void FireContinuousThorn()
+    {
+        if (so.thornBulletPrefab == null) return;
+
+        // 시계방향으로 회전하기 위해 각도를 뺌
+        continuousThornAngle -= THORN_ANGLE_STEP;
+        if (continuousThornAngle <= -360f)
+            continuousThornAngle += 360f;
+
+        Quaternion rotation = Quaternion.Euler(0f, 0f, continuousThornAngle);
+        GameObject bulletObj = Object.Instantiate(so.thornBulletPrefab, boss.transform.position, rotation);
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        if (bullet != null)
+        {
+            bullet.ATK = boss.atk * 0.5f; // 지속 가시이므로 기본 대미지 대비 감소
+            bullet.BulletSpeed = so.thornBulletSpeed * 0.8f; // 속도도 약간 감소
+            bullet.BulletLifeTime = so.thornBulletLifetime;
+            bullet.IsDamage = true;
+            bullet._direction = rotation * Vector2.right;
+            if (bullet.targets == null)
+                bullet.targets = new System.Collections.Generic.Dictionary<string, int>();
+            bullet.targets["Player"] = (int)BulletTarget.Player;
         }
     }
 }

@@ -82,6 +82,13 @@ public class Bullet : MonoBehaviour
     {
         transform.Translate(Vector3.right * BulletSpeed * Time.deltaTime);
         ApplyYBasedSorting();
+        
+        if (spriteRenderer != null)
+        {
+            float zRot = transform.eulerAngles.z;
+            spriteRenderer.flipY = (zRot > 90f && zRot < 270f);
+        }
+
         time += Time.deltaTime;
         if (time>= BulletLifeTime) 
         {

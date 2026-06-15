@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3db42fe9d1b9d9c24ab18d7bcbfd7196, type: 3}
+  m_Name: TurtleBossSO
+  m_EditorClassIdentifier: 
+  enemyName: 
+  atk: 10
+  hp: 1000
+  speed: 3
+  bossCount: 1
+  IntroAnimationTime: 0
+  bossPatternTime: 0
+  slimeLandRestTime: 1
+  slimeKeepDistance: 4
+  btChaseRange: 100
+  btStopDistance: 0.6
+  btRepathInterval: 0.15
+  btMoveSpeedMultiplier: 1
+  btChaseChance: 1
+  phase2HpThreshold: 0.3
+  rollingCooldown: 4
+  rollingSpeed: 8
+  rollingBounceCount: 4
+  rollingDamageMultiplier: 2
+  thornOnBounce: 1
+  thornTornadoCooldown: 5
+  thornBulletPrefab: {fileID: 8319629321944255218, guid: c957a26897ccd5b4e9d9dfd5aab9f3dd, type: 3}
+  thornDirections: 8
+  thornSecondWaveDelay: 1
+  thornBulletSpeed: 6
+  thornBulletLifetime: 3
+  missileCooldown: 6
+  missileCount: 3
+  missileFireInterval: 0.5
+  missileSpeed: 5
+  missileLifetime: 4
+  missileBulletPrefab: {fileID: 2254994090295727526, guid: 82f810e4219d6dc4d88b821781ade191, type: 3}
+  idleAnimFps: 8
+  rollingAnimFps: 12
+  idleSprites:
+  - {fileID: 159179007, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: 625305629, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: -819264332, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: 2097151650, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: 1191260898, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: 125620745, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  rollingSprites:
+  - {fileID: -1144812333, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: -1191221006, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: 1304245097, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: 1792153995, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: 2144392065, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}
+  - {fileID: -319764251, guid: 22898333ce8546409c72c0dc0c45de55, type: 3}

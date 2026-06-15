@@ -78,7 +78,7 @@ public abstract class BTTask : BossBTNode
     /// <summary>
     /// Task를 강제로 리셋한다. 다음 Tick에서 OnEnter부터 다시 시작한다.
     /// </summary>
-    public void Reset()
+    public override void Reset()
     {
         if (isEntered)
         {

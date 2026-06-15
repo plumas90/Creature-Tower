@@ -12,6 +12,7 @@ public enum BossBTState
 public abstract class BossBTNode
 {
     public abstract BossBTState Tick();
+    public virtual void Reset() {}
 }
 
 public sealed class BossSequenceNode : BossBTNode
@@ -52,11 +53,21 @@ public sealed class BossSequenceNode : BossBTNode
         currentChildIndex = 0; // 리셋
         return BossBTState.Success;
     }
+
+    public override void Reset()
+    {
+        if (currentChildIndex < children.Count)
+        {
+            children[currentChildIndex].Reset();
+        }
+        currentChildIndex = 0;
+    }
 }
 
 public sealed class BossSelectorNode : BossBTNode
 {
     private readonly List<BossBTNode> children;
+    private int lastRunningChildIndex = -1;
 
     public BossSelectorNode(params BossBTNode[] nodes)
     {
@@ -65,14 +76,40 @@ public sealed class BossSelectorNode : BossBTNode
 
     public override BossBTState Tick()
     {
+        int runningChildIndex = -1;
+        BossBTState finalState = BossBTState.Failure;
+
         for (int i = 0; i < children.Count; i++)
         {
             BossBTState state = children[i].Tick();
             if (state == BossBTState.Success || state == BossBTState.Running)
-                return state;
+            {
+                if (state == BossBTState.Running)
+                {
+                    runningChildIndex = i;
+                }
+                finalState = state;
+                break;
+            }
         }
 
-        return BossBTState.Failure;
+        // If the running child changed, reset the previously running child.
+        if (lastRunningChildIndex != -1 && lastRunningChildIndex != runningChildIndex)
+        {
+            children[lastRunningChildIndex].Reset();
+        }
+
+        lastRunningChildIndex = runningChildIndex;
+        return finalState;
+    }
+
+    public override void Reset()
+    {
+        if (lastRunningChildIndex != -1 && lastRunningChildIndex < children.Count)
+        {
+            children[lastRunningChildIndex].Reset();
+        }
+        lastRunningChildIndex = -1;
     }
 }
 
@@ -141,6 +178,14 @@ public sealed class BossCooldownNode : BossBTNode
 
         return state;
     }
+
+    public override void Reset()
+    {
+        if (child != null)
+        {
+            child.Reset();
+        }
+    }
 }
 
 public sealed class BossRandomChanceNode : BossBTNode
@@ -169,5 +214,13 @@ public sealed class BossRandomChanceNode : BossBTNode
             return BossBTState.Failure;
 
         return child.Tick();
+    }
+
+    public override void Reset()
+    {
+        if (child != null)
+        {
+            child.Reset();
+        }
     }
 }

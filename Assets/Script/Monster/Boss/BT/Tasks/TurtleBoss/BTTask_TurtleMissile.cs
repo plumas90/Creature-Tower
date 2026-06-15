@@ -49,7 +49,8 @@ public class BTTask_TurtleMissile : BTTask
         Vector3 dir = (playerTarget.position - turtleBoss.transform.position).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
-        Vector3 spawnPos = turtleBoss.transform.position;
+        // MakeMissilePosition 사용 (없으면 기본 transform.position)
+        Vector3 spawnPos = turtleBoss.MakeMissilePosition != null ? turtleBoss.MakeMissilePosition.position : turtleBoss.transform.position;
 
         GameObject bulletObj = Object.Instantiate(so.missileBulletPrefab, spawnPos, rotation);
         Bullet bullet = bulletObj.GetComponent<Bullet>();
@@ -63,6 +64,9 @@ public class BTTask_TurtleMissile : BTTask
             if (bullet.targets == null)
                 bullet.targets = new System.Collections.Generic.Dictionary<string, int>();
             bullet.targets["Player"] = (int)BulletTarget.Player;
+
+            // 유도 미사일 시스템 작동 (2번 타입 = 보스 추적 미사일)
+            bullet.MissileFire(2);
         }
     }
 }

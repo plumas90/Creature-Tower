@@ -1,37 +1,37 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 탄도 이동 컴포넌트: Cast + MovePosition + 반사 로직을 재사용 가능한 컴포넌트로 분리.
-/// ThreeMonkeyBoss, MonkeyPart 등에서 공통으로 사용한다.
+/// ?�도 ?�동 컴포?�트: Cast + MovePosition + 반사 로직???�사??가?�한 컴포?�트�?분리.
+/// ThreeMonkeyBoss, MonkeyPart ?�에??공통?�로 ?�용?�다.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class BallisticMovementComponent : MonoBehaviour
 {
     [Header("Contact Damage Settings")]
-    [Tooltip("Cast 충돌 시 PlayerStatControl에 접촉 데미지를 시도할지 여부")]
+    [Tooltip("Cast 충돌 ??PlayerStatControl???�촉 ?��?지�??�도?��? ?��?")]
     [SerializeField] private bool applyCastContactDamage = true;
 
     [Header("Movement Settings")]
-    [Tooltip("Cast 시 사용할 skin 두께")]
+    [Tooltip("Cast ???�용??skin ?�께")]
     [SerializeField] [Min(0f)] private float sweepSkin = 0.02f;
     
-    [Tooltip("한 틱당 최대 반사 횟수")]
+    [Tooltip("???�당 최�? 반사 ?�수")]
     [SerializeField] [Range(0, 4)] private int maxRaycastBouncesPerTick = 2;
     
-    [Tooltip("벽/장애물 충돌 시 정지 시간")]
+    [Tooltip("�??�애�?충돌 ???��? ?�간")]
     [SerializeField] [Min(0f)] private float collisionStopDuration = 0.04f;
 
     [Header("Layer Settings")]
-    [Tooltip("반사 가능한 레이어 (비어있으면 자동 설정)")]
+    [Tooltip("반사 가?�한 ?�이??(비어?�으�??�동 ?�정)")]
     [SerializeField] private LayerMask reflectLayerMask;
 
     [Header("Debug")]
     [SerializeField] private bool enableMoveDebug = false;
     [SerializeField] [Min(0.02f)] private float moveDebugInterval = 0.1f;
 
-    // 내부 상태
+    // ?��? ?�태
     private Rigidbody2D moveBody2D;
     private Collider2D moveCollider2D;
     private BossBase ownerBoss;
@@ -44,12 +44,12 @@ public class BallisticMovementComponent : MonoBehaviour
     private bool softBodyLayerMaskCached;
 
     /// <summary>
-    /// 현재 이동 방향 (외부에서 읽고 쓸 수 있음)
+    /// ?�재 ?�동 방향 (?��??�서 ?�고 ?????�음)
     /// </summary>
     public Vector2 CurrentDirection { get; set; }
 
     /// <summary>
-    /// 이동 속도 배율 (외부에서 조정 가능)
+    /// ?�동 ?�도 배율 (?��??�서 조정 가??
     /// </summary>
     public float SpeedMultiplier { get; set; } = 1f;
     public Action<PlayerStatControl> OnCastPlayerHit { get; set; }
@@ -76,9 +76,9 @@ public class BallisticMovementComponent : MonoBehaviour
     }
 
     /// <summary>
-    /// 탄도 이동을 수행한다. FixedUpdate에서 호출하는 것을 권장.
+    /// ?�도 ?�동???�행?�다. FixedUpdate?�서 ?�출?�는 것을 권장.
     /// </summary>
-    /// <param name="baseSpeed">기본 이동 속도</param>
+    /// <param name="baseSpeed">기본 ?�동 ?�도</param>
     public void MoveBallistic(float baseSpeed)
     {
         if (moveBody2D == null)
@@ -94,7 +94,7 @@ public class BallisticMovementComponent : MonoBehaviour
             return;
         }
 
-        // 방향 검증
+        // 방향 검�?
         if (CurrentDirection.sqrMagnitude < 0.0001f)
         {
             LogMoveDebug("Direction is zero; MoveBallistic skipped");
@@ -123,7 +123,7 @@ public class BallisticMovementComponent : MonoBehaviour
             int hitCount = moveBody2D.Cast(simPos, moveBody2D.rotation, moveDir, moveContactFilter, sweepHits, castDistance);
             bool hasHit = TryGetNearestCastHit(hitCount, out RaycastHit2D nearestHit);
 
-            // 충돌 없음 - 직진
+            // 충돌 ?�음 - 직진
             if (!hasHit)
             {
                 simPos += moveDir * remainingDistance;
@@ -131,7 +131,7 @@ public class BallisticMovementComponent : MonoBehaviour
                 break;
             }
 
-            // 안전 거리만큼 이동
+            // ?�전 거리만큼 ?�동
             float safeDistance = Mathf.Max(0f, nearestHit.distance - sweepSkin);
             if (safeDistance > 0f)
                 simPos += moveDir * safeDistance;
@@ -154,14 +154,14 @@ public class BallisticMovementComponent : MonoBehaviour
             bool softBodyHit = IsSoftBodyHitLayer(nearestHit.collider != null ? nearestHit.collider.gameObject.layer : -1);
             if (softBodyHit)
             {
-                // 미세 분리 + 잔여 이동 유지
+                // 미세 분리 + ?�여 ?�동 ?��?
                 float separation = Mathf.Max(0.005f, sweepSkin * 0.5f);
                 simPos += nearestHit.normal * separation;
                 remainingDistance = Mathf.Max(0f, remainingDistance - separation);
             }
             else
             {
-                // 벽/장애물 충돌 - stop-window 적용 + 잔여 이동 중단
+                // �??�애�?충돌 - stop-window ?�용 + ?�여 ?�동 중단
                 collisionStopUntilTime = Time.time + collisionStopDuration;
                 remainingDistance = 0f;
             }
@@ -169,7 +169,7 @@ public class BallisticMovementComponent : MonoBehaviour
             bounceCount++;
         }
 
-        // 최종 위치 적용 및 방향 업데이트
+        // 최종 ?�치 ?�용 �?방향 ?�데?�트
         CurrentDirection = moveDir;
         moveBody2D.MovePosition(simPos);
 
@@ -210,7 +210,7 @@ public class BallisticMovementComponent : MonoBehaviour
         if (!softBodyLayerMaskCached)
         {
             int bossLayer = LayerMask.NameToLayer("Boss");
-            int creatureLayer = LayerMask.NameToLayer("Creatuer"); // 오타 그대로 유지
+            int creatureLayer = LayerMask.NameToLayer("Creatuer");
             int creature2Layer = LayerMask.NameToLayer("Creature");
 
             softBodyLayerMask = 0;
@@ -246,7 +246,7 @@ public class BallisticMovementComponent : MonoBehaviour
     }
 
     /// <summary>
-    /// 반사 레이어 마스크를 가져옴 (Inspector 설정 또는 기본값)
+    /// 반사 ?�이??마스?��? 가?�옴 (Inspector ?�정 ?�는 기본�?
     /// </summary>
     public int GetReflectLayerMask()
     {
@@ -258,34 +258,34 @@ public class BallisticMovementComponent : MonoBehaviour
     private int GetDefaultReflectLayerMask()
     {
         int wallLayer = LayerMask.NameToLayer("Wall");
-        int groundLayer = LayerMask.NameToLayer("Ground");
+        //int groundLayer = LayerMask.NameToLayer("Ground");
         int playerLayer = LayerMask.NameToLayer("Player");
         int bossLayer = LayerMask.NameToLayer("Boss");
         int creatureLayer = LayerMask.NameToLayer("Creatuer");
         int creature2Layer = LayerMask.NameToLayer("Creature");
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        //int enemyLayer = LayerMask.NameToLayer("Enemy");
 
         int mask = 0;
         if (wallLayer >= 0) mask |= (1 << wallLayer);
-        if (groundLayer >= 0) mask |= (1 << groundLayer);
+        
         if (playerLayer >= 0) mask |= (1 << playerLayer);
-        if (bossLayer >= 0) mask |= (1 << bossLayer);
-        if (creatureLayer >= 0) mask |= (1 << creatureLayer);
-        if (creature2Layer >= 0) mask |= (1 << creature2Layer);
-        if (enemyLayer >= 0) mask |= (1 << enemyLayer);
+        
+        
+        
+        
 
         return mask;
     }
 
     /// <summary>
-    /// OnCollisionEnter2D/Stay2D fallback용 반사 처리
+    /// OnCollisionEnter2D/Stay2D fallback??반사 처리
     /// </summary>
     public void HandleCollisionReflection(Collision2D collision, bool applyStopWindow)
     {
         if (collision == null || collision.contactCount <= 0)
             return;
 
-        // 반사 대상 레이어 체크
+        // 반사 ?�???�이??체크
         int layer = collision.gameObject.layer;
         int mask = GetReflectLayerMask();
         if ((mask & (1 << layer)) == 0)
@@ -294,7 +294,7 @@ public class BallisticMovementComponent : MonoBehaviour
         Vector2 dir = CurrentDirection.sqrMagnitude > 0.0001f ? CurrentDirection.normalized : Vector2.right;
         Vector2 normal = collision.contacts[0].normal;
 
-        // 이미 표면에서 멀어지는 방향이면 반사하지 않는다
+        // ?��? ?�면?�서 멀?��???방향?�면 반사?��? ?�는??
         if (Vector2.Dot(dir, normal) >= 0f)
             return;
 
@@ -319,7 +319,7 @@ public class BallisticMovementComponent : MonoBehaviour
     }
 
     /// <summary>
-    /// 외부에서 stop-window를 수동으로 설정할 수 있음
+    /// ?��??�서 stop-window�??�동?�로 ?�정?????�음
     /// </summary>
     public void SetStopWindow(float duration)
     {
@@ -327,10 +327,12 @@ public class BallisticMovementComponent : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 stop-window가 활성 상태인지 확인
+    /// ?�재 stop-window가 ?�성 ?�태?��? ?�인
     /// </summary>
     public bool IsInStopWindow()
     {
         return Time.time < collisionStopUntilTime;
     }
 }
+
+

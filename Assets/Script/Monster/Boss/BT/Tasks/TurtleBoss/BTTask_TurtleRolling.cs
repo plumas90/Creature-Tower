@@ -25,6 +25,7 @@ public class BTTask_TurtleRolling : BTTask
 
     protected override void OnEnter()
     {
+        Debug.Log($"[BTTask_TurtleRolling] OnEnter, frame={Time.frameCount}");
         bounceCount = 0;
 
         // BallisticMovementComponent 가져오거나 추가
@@ -59,8 +60,16 @@ public class BTTask_TurtleRolling : BTTask
 
     protected override BossBTState OnTick()
     {
-        if (!IsBossValid()) return BossBTState.Failure;
-        if (ballisticComp == null) return BossBTState.Failure;
+        if (!IsBossValid())
+        {
+            Debug.LogWarning($"[BTTask_TurtleRolling] Failure: IsBossValid is false. live={boss?.live}, wait={boss?.wait}");
+            return BossBTState.Success; // Failure 방지 폴백
+        }
+        if (ballisticComp == null)
+        {
+            Debug.LogWarning("[BTTask_TurtleRolling] Failure: ballisticComp is null");
+            return BossBTState.Success; // Failure 방지 폴백
+        }
 
         // 이동 수행
         ballisticComp.MoveBallistic(so.rollingSpeed);
@@ -79,15 +88,20 @@ public class BTTask_TurtleRolling : BTTask
         if (isPhase2)
             return BossBTState.Running;
 
-        // Phase 1: 설정된 반사 횟수 이후 종료
-        if (bounceCount >= so.rollingBounceCount)
+        // Phase 1: 설정된 반사 횟수 이후 종료 (에셋 설정 오류로 0일 때 즉시 종료 방지를 위해 최소 1회 보장)
+        int requiredBounce = so != null ? Mathf.Max(1, so.rollingBounceCount) : 4;
+        if (bounceCount >= requiredBounce)
+        {
+            Debug.Log($"[BTTask_TurtleRolling] Success: bounceCount={bounceCount}, max={requiredBounce}");
             return BossBTState.Success;
+        }
 
         return BossBTState.Running;
     }
 
     protected override void OnExit()
     {
+        Debug.Log($"[BTTask_TurtleRolling] OnExit, frame={Time.frameCount}");
         // 구르기 애니메이션 종료
         turtleBoss.SetRollingAnim(false);
 
@@ -98,6 +112,7 @@ public class BTTask_TurtleRolling : BTTask
     private void OnBounce()
     {
         bounceCount++;
+        Debug.Log($"[BTTask_TurtleRolling] OnBounce: bounceCount={bounceCount}, frame={Time.frameCount}");
 
         // Phase 1에서 가시 발사 (thornOnBounce 설정 시)
         if (!isPhase2 && so.thornOnBounce && so.thornBulletPrefab != null)
