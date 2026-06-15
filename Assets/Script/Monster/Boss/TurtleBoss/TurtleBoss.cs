@@ -354,6 +354,9 @@ public class TurtleBoss : BossBase
         }
         else
         {
+            // 구르기 -> 평상시로 돌아올 때 벽 끼임 보정
+            AdjustPositionForWallOverlap();
+
             if (normalCollider != null) normalCollider.enabled = true;
             if (rollingCollider != null) rollingCollider.enabled = false;
         }
@@ -456,6 +459,50 @@ public class TurtleBoss : BossBase
         StopIdleAnimation();
         base.BossDie();
         gameObject.SetActive(false);
+    }
+
+    private void AdjustPositionForWallOverlap()
+    {
+        if (normalCollider == null || rollingCollider == null) return;
+
+        // 아래쪽 벽(Wall 레이어) 감지
+        int wallMask = 1 << LayerMask.NameToLayer("Wall");
+        
+        // 보스 위치(피벗) 기준 발밑 방향으로 Raycast 수행
+        float rayLength = 2.0f;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, rayLength, wallMask);
+        
+        if (hit.collider != null)
+        {
+            float normalBottom = 0f;
+            float rollingBottom = 0f;
+
+            if (normalCollider is BoxCollider2D box)
+                normalBottom = box.offset.y - (box.size.y / 2f);
+            else if (normalCollider is CircleCollider2D circle)
+                normalBottom = circle.offset.y - circle.radius;
+
+            if (rollingCollider is CapsuleCollider2D cap)
+                rollingBottom = cap.offset.y - (cap.size.y / 2f);
+            else if (rollingCollider is CircleCollider2D capCircle)
+                rollingBottom = capCircle.offset.y - capCircle.radius;
+
+            float diff = normalBottom - rollingBottom; // 예: -1.0f - (-0.5f) = -0.5f
+            
+            if (diff < 0f)
+            {
+                float distanceToNormalBottom = Mathf.Abs(normalBottom);
+                // 발밑 벽까지의 거리(hit.distance)가 normalCollider의 로컬 바닥 깊이보다 작거나 겹칠 위기일 때 보정
+                if (hit.distance < distanceToNormalBottom + 0.1f)
+                {
+                    float pushDistance = (distanceToNormalBottom + 0.1f) - hit.distance;
+                    Vector3 pos = transform.position;
+                    pos.y += pushDistance;
+                    transform.position = pos;
+                    Debug.Log($"[TurtleBoss] Wall overlap avoided! Pushed boss up by {pushDistance}f at frame {Time.frameCount}");
+                }
+            }
+        }
     }
 
     protected override void OnDisable()

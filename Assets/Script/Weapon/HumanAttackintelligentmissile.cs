@@ -11,16 +11,11 @@ public class HumanAttackintelligentmissile : MonoBehaviour
     public bool ready;
     int targetName;
 
-    // ## Áß¿ä ## ½ºÅ¸Æ®¿¡¼­ ±âº»°ªÀ» ¼³Á¤ÇÏ¸é Áß°£¿¡ »ı¼ºµÈ ¹°Ã¼ÀÇ ½ºÅ¸Æ®¸¦ ÄÁÆ®·Ñ ÇÏ±â ¾î·Á¿ò ¾Æ·¡Ã³·³ ÀÌ´Ï½Ã¿¡ÀÌÆÃ ÁÙ¿©¼­ initÀ» ¸¸µé°í ±×°É ½ÇÇà½ÃÄÑÁÖ´Â°Ô
-    // ÄÁÆ®·ÑÀÌ ½¬¿ò
-    //public void Start()
-    //{
-    //targeting = false;
-    //_bullet = GetComponentInParent<Bullet>();
-    //turningForce = 15f;
-    //targetName = "Enemy";
-    //}
-    public void init(int i) // 2°³ÀÎ ÀÌÀ¯ °ÅºÏÀÌ À¯µµ °ø°İµµ °°Àº ¿ø¸®¿´À½ ¼Óµµ ´Ù¸£°Ô ÇÒ·Á°í 2°³·ÎÇÔ
+    // ìœ ë„ ì¶”ì  íƒ€ì´ë¨¸ (2ì´ˆ ë™ì•ˆë§Œ ì¶”ì í•˜ë„ë¡ ì œí•œ)
+    private float trackingTimer = 0f;
+    private const float MAX_TRACKING_DURATION = 2.0f; // ìµœëŒ€ ì¶”ì  ì‹œê°„ (2ì´ˆ)
+
+    public void init(int i)
     {
         if (i == 1)
         {
@@ -39,25 +34,36 @@ public class HumanAttackintelligentmissile : MonoBehaviour
             targetName = 8;
             ready = true;
         }
+        trackingTimer = 0f;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (targeting)
         {
             if (target == null) { return; }
+
+            // ì§€ì •ëœ ìµœëŒ€ ì¶”ì  ì‹œê°„ì´ ì§€ë‚˜ë©´ ìœ ë„ë¥¼ í•´ì œí•˜ê³  ì§ì§„
+            trackingTimer += Time.deltaTime;
+            if (trackingTimer >= MAX_TRACKING_DURATION)
+            {
+                targeting = false;
+                target = null;
+                return;
+            }
+
             Vector2 dir = (target.transform.position - transform.position).normalized;
             _bullet.gameObject.transform.right = Vector3.Slerp(_bullet.gameObject.transform.right.normalized, dir, turningForce * Time.deltaTime);
-            //slerp == º¸°£ Ã³¸®
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision) // ÃÑ¾Ë¿¡ ÀÏÁ¤ °Å¸® ÀÌ³»·Î µé¾î¿Ã½Ã Å¸°ÙÆÃ Æ®·ç·Î ¹Ù²ã À¯µµ ½ÃÀÛ
+
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (ready && !targeting && collision.gameObject.layer == targetName)
         {
             targeting = true;
             target = collision.gameObject;
+            trackingTimer = 0f; // ì¶”ì  ì‹œì‘ ì‹œì ë¶€í„° íƒ€ì´ë¨¸ ëˆ„ì 
         }
     }
 }
