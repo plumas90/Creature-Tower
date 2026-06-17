@@ -87,6 +87,9 @@ public class TurtleBoss : BossBase
     private Coroutine idleCoroutine;
     private Coroutine rollingCoroutine;
 
+    public bool IsPhase2 => isPhase2;
+    public bool IsRollingState => isRollingState;
+
     // BT 태스크 참조 (Phase 2 전환 시 복구 필요)
     private BossBTNode phase2Tree;
 
@@ -161,6 +164,16 @@ public class TurtleBoss : BossBase
         isPhase2 = false;
         base.StatSet();
         bossCount = Mathf.Max(1, MainSO != null ? MainSO.bossCount : 1);
+    }
+
+    protected override float CalculateFinalDamage(float incomingDamage)
+    {
+        float damage = base.CalculateFinalDamage(incomingDamage);
+        if (isRollingState)
+        {
+            damage *= 0.5f;
+        }
+        return damage;
     }
 
     // =========================================================

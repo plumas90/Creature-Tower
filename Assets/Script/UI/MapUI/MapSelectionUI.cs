@@ -15,6 +15,8 @@ public class MapSelectionUI : MonoBehaviour
     [SerializeField] private Transform nodesContainer;
     [SerializeField] private Transform lineContainer;
     [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private Image mapBackgroundImage; // 지도 배경 이미지
+    [SerializeField] private Sprite mapBackgroundSprite; // vertical_map_background_transparent
 
     [Header("Theme Sprites (비워두면 기존 텍스트 심볼 사용)")]
     [SerializeField] private Sprite bossSprite;
@@ -68,6 +70,15 @@ public class MapSelectionUI : MonoBehaviour
 
         LockPlayer(true);
         mapPanel.SetActive(true);
+
+        // 배경 이미지 적용 (vertical_map_background_transparent)
+        if (mapBackgroundImage != null && mapBackgroundSprite != null)
+        {
+            mapBackgroundImage.sprite = mapBackgroundSprite;
+            mapBackgroundImage.type = Image.Type.Simple;
+            mapBackgroundImage.preserveAspect = false;
+            mapBackgroundImage.color = Color.white;
+        }
 
         // 지도를 열 때마다 최신 상태로 빌드/갱신
         if (!_isInitialized)

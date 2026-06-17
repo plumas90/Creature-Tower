@@ -64,12 +64,13 @@ public class BTTask_TurtleThornTornado : BTTask
             {
                 bullet.ATK = turtleBoss.atk;
                 bullet.BulletSpeed = so.thornBulletSpeed;
-                bullet.BulletLifeTime = so.thornBulletLifetime;
                 bullet.IsDamage = true;
                 bullet._direction = rotation * Vector2.right;
                 if (bullet.targets == null)
                     bullet.targets = new System.Collections.Generic.Dictionary<string, int>();
                 bullet.targets["Player"] = (int)BulletTarget.Player;
+                bullet.Init();
+                bullet.BulletLifeTime = so.thornBulletLifetime;
             }
         }
     }

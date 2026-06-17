@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7115072641866412388
+--- !u!1 &3167785178810613699
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,10 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 622772722125840814}
-  - component: {fileID: 3650780559637298611}
-  - component: {fileID: 2800865052425060040}
-  - component: {fileID: 1314087771667160204}
+  - component: {fileID: 1755601033589023680}
+  - component: {fileID: 4346910774766705407}
+  - component: {fileID: 7587280821499588287}
+  - component: {fileID: 7370927085725956981}
   m_Layer: 0
   m_Name: HauntedCrystalBallGhostBlack
   m_TagString: Untagged
@@ -19,13 +19,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &622772722125840814
+--- !u!4 &1755601033589023680
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7115072641866412388}
+  m_GameObject: {fileID: 3167785178810613699}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.0158, y: 0.2478, z: 0}
@@ -34,13 +34,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &3650780559637298611
+--- !u!212 &4346910774766705407
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7115072641866412388}
+  m_GameObject: {fileID: 3167785178810613699}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -89,13 +89,13 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2800865052425060040
+--- !u!114 &7587280821499588287
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7115072641866412388}
+  m_GameObject: {fileID: 3167785178810613699}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 770d0e72bafe80f4e9df5a789bd158f0, type: 3}
@@ -110,13 +110,13 @@ MonoBehaviour:
   - {fileID: 7363082682622003973, guid: 5164d3d6d22ff8097a31feae201fecf0, type: 3}
   - {fileID: -5984188006412247959, guid: 5164d3d6d22ff8097a31feae201fecf0, type: 3}
   animationFps: 10
---- !u!61 &1314087771667160204
+--- !u!61 &7370927085725956981
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7115072641866412388}
+  m_GameObject: {fileID: 3167785178810613699}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1

@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Creature-Tower.slnx"
+    "dotnet.defaultSolution": "creature.slnx"
 }

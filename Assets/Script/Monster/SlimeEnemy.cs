@@ -124,12 +124,6 @@ public class SlimeEnemy : EnemyBase
         // 점프 타이머 무작위 초기화 (생성 직후 동시에 다 뛰는 현상 방지)
         _jumpTimer = Random.Range(1.0f, jumpInterval);
 
-        // SO 데이터 동기화 (조절 가능 변수 연동)
-        if (MainSO != null)
-        {
-            landDelay = MainSO.slimeLandRestTime;
-            _keepDistance = MainSO.slimeKeepDistance;
-        }
 
         // 기존 Animator가 스프라이트를 덮어씌우는 것을 방지하기 위해 비활성화
         if (_animator != null)

@@ -1443,6 +1443,30 @@ public class AutoSetupPrefabs
     {
         string spritePath = "Assets/sprite/RoomOption/map_symbol.png";
         Object[] assets = AssetDatabase.LoadAllAssetRepresentationsAtPath(spritePath);
+        
+        Sprite skullStampSprite = null;
+        Object[] skullAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath("Assets/sprite/RoomOption/skull_stamp.png");
+        if (skullAssets != null)
+        {
+            foreach (var sub in skullAssets)
+            {
+                if (sub is Sprite s) { skullStampSprite = s; break; }
+            }
+        }
+        if (skullStampSprite == null)
+            skullStampSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/sprite/RoomOption/skull_stamp.png");
+        
+        Sprite verticalMapBgSprite = null;
+        Object[] bgAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath("Assets/sprite/RoomOption/vertical_map_background_transparent.png");
+        if (bgAssets != null)
+        {
+            foreach (var sub in bgAssets)
+            {
+                if (sub is Sprite s) { verticalMapBgSprite = s; break; }
+            }
+        }
+        if (verticalMapBgSprite == null)
+            verticalMapBgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/sprite/RoomOption/vertical_map_background_transparent.png");
         if (assets == null || assets.Length == 0)
         {
             Debug.LogWarning("[AutoSetup] No assets found in map_symbol.png!");
@@ -1508,17 +1532,21 @@ public class AutoSetupPrefabs
                     if (bossField != null)
                     {
                         var currentSprite = bossField.GetValue(mapUI) as Sprite;
-                        Sprite bossTarget = GetSprite("boss") ?? GetSprite("skull") ?? GetSprite("map_symbol_2");
+                        Sprite bossTarget = skullStampSprite;
                         if (bossTarget == null)
                         {
-                            foreach (Object obj in assets)
+                            bossTarget = GetSprite("boss") ?? GetSprite("skull") ?? GetSprite("map_symbol_2");
+                            if (bossTarget == null)
                             {
-                                if (obj is Sprite sprite)
+                                foreach (Object obj in assets)
                                 {
-                                    if (sprite.name.Contains("boss") || sprite.name.Contains("skull") || sprite.name.Contains("death"))
+                                    if (obj is Sprite sprite)
                                     {
-                                        bossTarget = sprite;
-                                        break;
+                                        if (sprite.name.Contains("boss") || sprite.name.Contains("skull") || sprite.name.Contains("death"))
+                                        {
+                                            bossTarget = sprite;
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -1529,6 +1557,35 @@ public class AutoSetupPrefabs
                             bossField.SetValue(mapUI, bossTarget);
                             prefabModified = true;
                             Debug.Log($"[AutoSetup] MapSelectionUI Assigned bossSprite -> {bossTarget.name}");
+                        }
+                    }
+
+                    var bgSpriteField = t.GetField("mapBackgroundSprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (bgSpriteField != null && verticalMapBgSprite != null)
+                    {
+                        var currentBgSprite = bgSpriteField.GetValue(mapUI) as Sprite;
+                        if (currentBgSprite != verticalMapBgSprite)
+                        {
+                            bgSpriteField.SetValue(mapUI, verticalMapBgSprite);
+                            prefabModified = true;
+                            Debug.Log($"[AutoSetup] MapSelectionUI Assigned mapBackgroundSprite -> {verticalMapBgSprite.name}");
+                        }
+                    }
+
+                    var bgImageField = t.GetField("mapBackgroundImage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (bgImageField != null)
+                    {
+                        var currentBgImage = bgImageField.GetValue(mapUI) as UnityEngine.UI.Image;
+                        Transform scrollViewTrans = prefabRoot.transform.Find("Scroll View");
+                        if (scrollViewTrans != null)
+                        {
+                            var scrollViewImg = scrollViewTrans.GetComponent<UnityEngine.UI.Image>();
+                            if (scrollViewImg != null && currentBgImage != scrollViewImg)
+                            {
+                                bgImageField.SetValue(mapUI, scrollViewImg);
+                                prefabModified = true;
+                                Debug.Log($"[AutoSetup] MapSelectionUI Assigned mapBackgroundImage -> Scroll View Image component");
+                            }
                         }
                     }
 
@@ -1594,17 +1651,21 @@ public class AutoSetupPrefabs
                 if (bossField != null)
                 {
                     var currentSprite = bossField.GetValue(mapUI) as Sprite;
-                    Sprite bossTarget = GetSprite("boss") ?? GetSprite("skull") ?? GetSprite("map_symbol_2");
+                    Sprite bossTarget = skullStampSprite;
                     if (bossTarget == null)
                     {
-                        foreach (Object obj in assets)
+                        bossTarget = GetSprite("boss") ?? GetSprite("skull") ?? GetSprite("map_symbol_2");
+                        if (bossTarget == null)
                         {
-                            if (obj is Sprite sprite)
+                            foreach (Object obj in assets)
                             {
-                                if (sprite.name.Contains("boss") || sprite.name.Contains("skull") || sprite.name.Contains("death"))
+                                if (obj is Sprite sprite)
                                 {
-                                    bossTarget = sprite;
-                                    break;
+                                    if (sprite.name.Contains("boss") || sprite.name.Contains("skull") || sprite.name.Contains("death"))
+                                    {
+                                        bossTarget = sprite;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -1615,6 +1676,35 @@ public class AutoSetupPrefabs
                         bossField.SetValue(mapUI, bossTarget);
                         sceneModified = true;
                         Debug.Log($"[AutoSetup] Scene MapSelectionUI Assigned bossSprite -> {bossTarget.name}");
+                    }
+                }
+
+                var bgSpriteField = t.GetField("mapBackgroundSprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (bgSpriteField != null && verticalMapBgSprite != null)
+                {
+                    var currentBgSprite = bgSpriteField.GetValue(mapUI) as Sprite;
+                    if (currentBgSprite != verticalMapBgSprite)
+                    {
+                        bgSpriteField.SetValue(mapUI, verticalMapBgSprite);
+                        sceneModified = true;
+                        Debug.Log($"[AutoSetup] Scene MapSelectionUI Assigned mapBackgroundSprite -> {verticalMapBgSprite.name}");
+                    }
+                }
+
+                var bgImageField = t.GetField("mapBackgroundImage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (bgImageField != null)
+                {
+                    var currentBgImage = bgImageField.GetValue(mapUI) as UnityEngine.UI.Image;
+                    Transform scrollViewTrans = mapUI.transform.Find("Scroll View");
+                    if (scrollViewTrans != null)
+                    {
+                        var scrollViewImg = scrollViewTrans.GetComponent<UnityEngine.UI.Image>();
+                        if (scrollViewImg != null && currentBgImage != scrollViewImg)
+                        {
+                            bgImageField.SetValue(mapUI, scrollViewImg);
+                            sceneModified = true;
+                            Debug.Log($"[AutoSetup] Scene MapSelectionUI Assigned mapBackgroundImage -> Scroll View Image component");
+                        }
                     }
                 }
 

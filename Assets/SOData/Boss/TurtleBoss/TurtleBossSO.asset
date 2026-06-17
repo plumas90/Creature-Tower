@@ -37,7 +37,7 @@ MonoBehaviour:
   thornDirections: 8
   thornSecondWaveDelay: 1
   thornBulletSpeed: 6
-  thornBulletLifetime: 3
+  thornBulletLifetime: 10
   missileCooldown: 6
   missileCount: 3
   missileFireInterval: 0.5

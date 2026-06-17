@@ -102,11 +102,14 @@ public class BTTask_TurtleRolling : BTTask
     protected override void OnExit()
     {
         Debug.Log($"[BTTask_TurtleRolling] OnExit, frame={Time.frameCount}");
-        // 구르기 애니메이션 종료
-        turtleBoss.SetRollingAnim(false);
+        // 만약 Phase 2로 전환된 상태라면 구르기를 풀거나 콜백을 해제하지 않습니다.
+        if (turtleBoss != null && !turtleBoss.IsPhase2)
+        {
+            turtleBoss.SetRollingAnim(false);
 
-        if (ballisticComp != null)
-            ballisticComp.OnCastPlayerHit = null;
+            if (ballisticComp != null)
+                ballisticComp.OnCastPlayerHit = null;
+        }
     }
 
     private void OnBounce()
@@ -138,12 +141,13 @@ public class BTTask_TurtleRolling : BTTask
             {
                 bullet.ATK = boss.atk * so.rollingDamageMultiplier;
                 bullet.BulletSpeed = so.thornBulletSpeed;
-                bullet.BulletLifeTime = so.thornBulletLifetime;
                 bullet.IsDamage = true;
                 bullet._direction = rotation * Vector2.right;
                 if (bullet.targets == null)
                     bullet.targets = new System.Collections.Generic.Dictionary<string, int>();
                 bullet.targets["Player"] = (int)BulletTarget.Player;
+                bullet.Init();
+                bullet.BulletLifeTime = so.thornBulletLifetime;
             }
         }
     }

@@ -131,6 +131,8 @@ MonoBehaviour:
   turtleSO: {fileID: 11400000, guid: 1a2d99bf313230943a28d51ea729a93c, type: 2}
   bodyRenderer: {fileID: 2039713456662949477}
   makeMissilePosition: {fileID: 0}
+  normalCollider: {fileID: 0}
+  rollingCollider: {fileID: 0}
 --- !u!50 &4722656573485929430
 Rigidbody2D:
   serializedVersion: 5

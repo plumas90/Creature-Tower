@@ -11,26 +11,28 @@ public class HumanAttackintelligentmissile : MonoBehaviour
     public bool ready;
     int targetName;
 
-    // 유도 추적 타이머 (2초 동안만 추적하도록 제한)
+    // 유도 추적 타이머
     private float trackingTimer = 0f;
-    private const float MAX_TRACKING_DURATION = 2.0f; // 최대 추적 시간 (2초)
+    private const float MAX_TRACKING_DURATION = 1.5f; // 최대 추적 시간
 
     public void init(int i)
     {
         if (i == 1)
         {
+            //Debug.Log("인공지능 미사일 초기화222");
             targeting = false;
             _bullet = GetComponentInParent<Bullet>();
-            turningForce = 15f;
+            turningForce = 5f;
             targetName = 7;
             ready = true;
         }
         else
         {
-            transform.localScale = new Vector3(5, 5, 0);
+            //Debug.Log("인공지능 미사일 초기화");
+            //transform.localScale = new Vector3(5, 5, 0);
             targeting = false;
             _bullet = GetComponentInParent<Bullet>();
-            turningForce = 7f;
+            turningForce = 5f;
             targetName = 8;
             ready = true;
         }

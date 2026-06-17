@@ -348,7 +348,9 @@ MonoBehaviour:
   nodesContainer: {fileID: 2436233702968704724}
   lineContainer: {fileID: 278463991515311415}
   titleText: {fileID: 0}
-  bossSprite: {fileID: 0}
+  mapBackgroundImage: {fileID: 8691251234528842445}
+  mapBackgroundSprite: {fileID: 2926736295922338925, guid: 121606bdabf0d0853b4e0cbfea715f88, type: 3}
+  bossSprite: {fileID: 1132326668646858990, guid: 76b05c60c6bf53c268eba967fc2d0d5f, type: 3}
   mysterySprite: {fileID: 4201627792212981732, guid: e190a1c8b203b635e8af60495309871f, type: 3}
   shopSprite: {fileID: -3094360793509783561, guid: e190a1c8b203b635e8af60495309871f, type: 3}
   transfusionSprite: {fileID: -4530911393691192929, guid: e190a1c8b203b635e8af60495309871f, type: 3}
