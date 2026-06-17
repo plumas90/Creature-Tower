@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a056f94225a38b4d6921f0e6557cca1b, type: 3}
+  m_Name: GhostKnightSO
+  m_EditorClassIdentifier: 
+  enemyName: Ghost Knight
+  atk: 15
+  hp: 1200
+  speed: 3
+  bossCount: 1
+  IntroAnimationTime: 3
+  bossPatternTime: 0
+  btChaseRange: 100
+  btStopDistance: 0.6
+  btRepathInterval: 0.15
+  btMoveSpeedMultiplier: 1
+  btChaseChance: 1
+  idleAnimFps: 8
+  idleSprites:
+  - {fileID: -7530129659958933045, guid: ac3302afccff9eecba82273177f94b8c, type: 3}
+  - {fileID: 8104401342874870684, guid: ac3302afccff9eecba82273177f94b8c, type: 3}
+  - {fileID: 1898238810222865007, guid: ac3302afccff9eecba82273177f94b8c, type: 3}
+  - {fileID: -1125484428659103008, guid: ac3302afccff9eecba82273177f94b8c, type: 3}
+  - {fileID: -8258371630828006994, guid: ac3302afccff9eecba82273177f94b8c, type: 3}
+  swordPrefab: {fileID: 4659753386444947473, guid: 6f543668507616f4ca8580b8cf23e59f, type: 3}
+  swordDamage: 15
+  swordSwingPeriod: 4.5
+  swordRotationSpeed: 360
+  swordSwingCount: 3

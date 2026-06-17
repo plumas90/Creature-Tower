@@ -1,0 +1,345 @@
+fileFormatVersion: 2
+guid: ac3302afccff9eecba82273177f94b8c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4306257910188101022
+    second: ghost_knight_fix_0
+  - first:
+      213: 4501392011080478665
+    second: ghost_knight_fix_1
+  - first:
+      213: -9052011262626257164
+    second: ghost_knight_fix_2
+  - first:
+      213: -4645684286873188696
+    second: ghost_knight_fix_3
+  - first:
+      213: 8330805169662353899
+    second: ghost_knight_fix_4
+  - first:
+      213: 5047367779072740210
+    second: ghost_knight_fix_5
+  - first:
+      213: -6049790817226599830
+    second: ghost_knight_fix_6
+  - first:
+      213: 4740446548802648063
+    second: ghost_knight_fix_7
+  - first:
+      213: -5216841526698561609
+    second: ghost_knight_fix_8
+  - first:
+      213: 5792030934047591626
+    second: ghost_knight_fix_9
+  - first:
+      213: -3689634059160085521
+    second: ghost_knight_fix_10
+  - first:
+      213: 8104318092731357887
+    second: ghost_knight_fix_11
+  - first:
+      213: -6551859692173836208
+    second: ghost_knight_fix_12
+  - first:
+      213: -7530129659958933045
+    second: ghost_knight_fix_13
+  - first:
+      213: 8104401342874870684
+    second: ghost_knight_fix_14
+  - first:
+      213: 1898238810222865007
+    second: ghost_knight_fix_15
+  - first:
+      213: -1125484428659103008
+    second: ghost_knight_fix_16
+  - first:
+      213: -8258371630828006994
+    second: ghost_knight_fix_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ghost_knight_Hand
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 1357
+        width: 52
+        height: 106
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9d4af7f0c6e2cb30800000000000000
+      internalID: 4306257910188101022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ghost_knight_Sword
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 1123
+        width: 200
+        height: 194
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27b0262c04adb0640800000000000000
+      internalID: 5047367779072740210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ghost_knight_idle1
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 13
+        width: 231
+        height: 458
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc9c38978fa9f7790800000000000000
+      internalID: -7530129659958933045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ghost_knight_idle2
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 13
+        width: 231
+        height: 458
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c936147151e987070800000000000000
+      internalID: 8104401342874870684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ghost_knight_idle3
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 13
+        width: 231
+        height: 458
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6aa13ef326e75a10800000000000000
+      internalID: 1898238810222865007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ghost_knight_idle4
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 13
+        width: 231
+        height: 458
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ea6a8d00e97160f0800000000000000
+      internalID: -1125484428659103008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ghost_knight_idle5
+      rect:
+        serializedVersion: 2
+        x: 1016
+        y: 13
+        width: 231
+        height: 458
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea15559a1ce546d80800000000000000
+      internalID: -8258371630828006994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 26c88a984ba31f6838968896b9768a3d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      1ghost_knight_idle: -7530129659958933045
+      ghost_knight_Hand: 4306257910188101022
+      ghost_knight_Sword: 5047367779072740210
+      ghost_knight_fix_0: -688402674
+      ghost_knight_fix_1: 782839476
+      ghost_knight_fix_10: 69996233
+      ghost_knight_fix_11: 168791132
+      ghost_knight_fix_12: 311556353
+      ghost_knight_fix_2: -1418916320
+      ghost_knight_fix_3: 1582098243
+      ghost_knight_fix_4: 162949945
+      ghost_knight_fix_6: 1450519347
+      ghost_knight_fix_7: -458999608
+      ghost_knight_fix_8: 1290036647
+      ghost_knight_fix_9: 948053539
+      ghost_knight_idle1: -7530129659958933045
+      ghost_knight_idle2: 8104401342874870684
+      ghost_knight_idle3: 1898238810222865007
+      ghost_knight_idle4: -1125484428659103008
+      ghost_knight_idle5: -8258371630828006994
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
