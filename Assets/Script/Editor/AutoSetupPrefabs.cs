@@ -1467,6 +1467,19 @@ public class AutoSetupPrefabs
         }
         if (verticalMapBgSprite == null)
             verticalMapBgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/sprite/RoomOption/vertical_map_background_transparent.png");
+
+        Sprite xMarkSprite = null;
+        Object[] xAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath("Assets/sprite/RoomOption/x_mark_stamp_transparent.png");
+        if (xAssets != null)
+        {
+            foreach (var sub in xAssets)
+            {
+                if (sub is Sprite s) { xMarkSprite = s; break; }
+            }
+        }
+        if (xMarkSprite == null)
+            xMarkSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/sprite/RoomOption/x_mark_stamp_transparent.png");
+
         if (assets == null || assets.Length == 0)
         {
             Debug.LogWarning("[AutoSetup] No assets found in map_symbol.png!");
@@ -1572,30 +1585,81 @@ public class AutoSetupPrefabs
                         }
                     }
 
+                    // Find or create child MapBackground in prefab
+                    Transform bgTrans = prefabRoot.transform.Find("MapBackground");
+                    UnityEngine.UI.Image bgImg = null;
+                    if (bgTrans == null)
+                    {
+                        GameObject bgObj = new GameObject("MapBackground", typeof(CanvasRenderer), typeof(UnityEngine.UI.Image));
+                        bgObj.transform.SetParent(prefabRoot.transform, false);
+                        bgObj.transform.SetSiblingIndex(0); // Under MapSelectionUI root, behind Scroll View (Scroll View is index 1)
+                        
+                        RectTransform rect = bgObj.GetComponent<RectTransform>();
+                        rect.anchorMin = new Vector2(0.5f, 0f);
+                        rect.anchorMax = new Vector2(0.5f, 1f);
+                        rect.pivot = new Vector2(0.5f, 0.5f);
+                        rect.anchoredPosition = Vector2.zero;
+                        rect.sizeDelta = new Vector2(900f, 0f);
+                        rect.offsetMin = new Vector2(rect.offsetMin.x, -50f); // Bottom: -50
+                        rect.offsetMax = new Vector2(rect.offsetMax.x, 55f);  // Top: -55
+                        
+                        bgTrans = bgObj.transform;
+                        prefabModified = true;
+                    }
+                    else
+                    {
+                        RectTransform rect = bgTrans.GetComponent<RectTransform>();
+                        if (rect.sizeDelta.x != 900f || rect.offsetMin.y != -50f || rect.offsetMax.y != 55f)
+                        {
+                            rect.sizeDelta = new Vector2(900f, rect.sizeDelta.y);
+                            rect.offsetMin = new Vector2(rect.offsetMin.x, -50f);
+                            rect.offsetMax = new Vector2(rect.offsetMax.x, 55f);
+                            prefabModified = true;
+                        }
+                    }
+                    bgImg = bgTrans.GetComponent<UnityEngine.UI.Image>();
+
+                    Transform scrollViewTrans = prefabRoot.transform.Find("Scroll View");
+                    if (scrollViewTrans != null)
+                    {
+                        var scrollViewImg = scrollViewTrans.GetComponent<UnityEngine.UI.Image>();
+                        if (scrollViewImg != null && scrollViewImg.enabled)
+                        {
+                            scrollViewImg.enabled = false;
+                            prefabModified = true;
+                        }
+                    }
+
                     var bgImageField = t.GetField("mapBackgroundImage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     if (bgImageField != null)
                     {
                         var currentBgImage = bgImageField.GetValue(mapUI) as UnityEngine.UI.Image;
-                        Transform scrollViewTrans = prefabRoot.transform.Find("Scroll View");
-                        if (scrollViewTrans != null)
+                        if (currentBgImage != bgImg)
                         {
-                            var scrollViewImg = scrollViewTrans.GetComponent<UnityEngine.UI.Image>();
-                            if (scrollViewImg != null && currentBgImage != scrollViewImg)
-                            {
-                                bgImageField.SetValue(mapUI, scrollViewImg);
-                                prefabModified = true;
-                                Debug.Log($"[AutoSetup] MapSelectionUI Assigned mapBackgroundImage -> Scroll View Image component");
-                            }
+                            bgImageField.SetValue(mapUI, bgImg);
+                            prefabModified = true;
+                            Debug.Log($"[AutoSetup] MapSelectionUI Assigned mapBackgroundImage -> MapBackground Image component");
                         }
                     }
 
-                    // Scale spacing and padding by 1.5x
+                    var xMarkSpriteField = t.GetField("xMarkSprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (xMarkSpriteField != null && xMarkSprite != null)
+                    {
+                        var currentXMarkSprite = xMarkSpriteField.GetValue(mapUI) as Sprite;
+                        if (currentXMarkSprite != xMarkSprite)
+                        {
+                            xMarkSpriteField.SetValue(mapUI, xMarkSprite);
+                            prefabModified = true;
+                            Debug.Log($"[AutoSetup] MapSelectionUI Assigned xMarkSprite -> {xMarkSprite.name}");
+                        }
+                    }
+
+                    // Scale spacing and padding
                     var vSpacingField = t.GetField("verticalSpacing", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     if (vSpacingField != null && (float)vSpacingField.GetValue(mapUI) != 240f)
                     {
                         vSpacingField.SetValue(mapUI, 240f);
                         prefabModified = true;
-                        Debug.Log("[AutoSetup] MapSelectionUI scaled verticalSpacing to 240f");
                     }
                     var hSpacingField = t.GetField("horizontalSpacing", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     if (hSpacingField != null && (float)hSpacingField.GetValue(mapUI) != 270f)
@@ -1691,24 +1755,76 @@ public class AutoSetupPrefabs
                     }
                 }
 
+                // Find or create child MapBackground in scene instance
+                Transform bgTrans = mapUI.transform.Find("MapBackground");
+                UnityEngine.UI.Image bgImg = null;
+                if (bgTrans == null)
+                {
+                    GameObject bgObj = new GameObject("MapBackground", typeof(CanvasRenderer), typeof(UnityEngine.UI.Image));
+                    bgObj.transform.SetParent(mapUI.transform, false);
+                    bgObj.transform.SetSiblingIndex(0);
+                    
+                    RectTransform rect = bgObj.GetComponent<RectTransform>();
+                    rect.anchorMin = new Vector2(0.5f, 0f);
+                    rect.anchorMax = new Vector2(0.5f, 1f);
+                    rect.pivot = new Vector2(0.5f, 0.5f);
+                    rect.anchoredPosition = Vector2.zero;
+                    rect.sizeDelta = new Vector2(900f, 0f);
+                    rect.offsetMin = new Vector2(rect.offsetMin.x, -50f);
+                    rect.offsetMax = new Vector2(rect.offsetMax.x, 55f);
+                    
+                    bgTrans = bgObj.transform;
+                    sceneModified = true;
+                }
+                else
+                {
+                    RectTransform rect = bgTrans.GetComponent<RectTransform>();
+                    if (rect.sizeDelta.x != 900f || rect.offsetMin.y != -50f || rect.offsetMax.y != 55f)
+                    {
+                        rect.sizeDelta = new Vector2(900f, rect.sizeDelta.y);
+                        rect.offsetMin = new Vector2(rect.offsetMin.x, -50f);
+                        rect.offsetMax = new Vector2(rect.offsetMax.x, 55f);
+                        sceneModified = true;
+                    }
+                }
+                bgImg = bgTrans.GetComponent<UnityEngine.UI.Image>();
+
+                Transform scrollViewTrans = mapUI.transform.Find("Scroll View");
+                if (scrollViewTrans != null)
+                {
+                    var scrollViewImg = scrollViewTrans.GetComponent<UnityEngine.UI.Image>();
+                    if (scrollViewImg != null && scrollViewImg.enabled)
+                    {
+                        scrollViewImg.enabled = false;
+                        sceneModified = true;
+                    }
+                }
+
                 var bgImageField = t.GetField("mapBackgroundImage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 if (bgImageField != null)
                 {
                     var currentBgImage = bgImageField.GetValue(mapUI) as UnityEngine.UI.Image;
-                    Transform scrollViewTrans = mapUI.transform.Find("Scroll View");
-                    if (scrollViewTrans != null)
+                    if (currentBgImage != bgImg)
                     {
-                        var scrollViewImg = scrollViewTrans.GetComponent<UnityEngine.UI.Image>();
-                        if (scrollViewImg != null && currentBgImage != scrollViewImg)
-                        {
-                            bgImageField.SetValue(mapUI, scrollViewImg);
-                            sceneModified = true;
-                            Debug.Log($"[AutoSetup] Scene MapSelectionUI Assigned mapBackgroundImage -> Scroll View Image component");
-                        }
+                        bgImageField.SetValue(mapUI, bgImg);
+                        sceneModified = true;
+                        Debug.Log($"[AutoSetup] Scene MapSelectionUI Assigned mapBackgroundImage -> MapBackground Image component");
                     }
                 }
 
-                // Scale spacing and padding by 1.5x in active scene
+                var xMarkSpriteField = t.GetField("xMarkSprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (xMarkSpriteField != null && xMarkSprite != null)
+                {
+                    var currentXMarkSprite = xMarkSpriteField.GetValue(mapUI) as Sprite;
+                    if (currentXMarkSprite != xMarkSprite)
+                    {
+                        xMarkSpriteField.SetValue(mapUI, xMarkSprite);
+                        sceneModified = true;
+                        Debug.Log($"[AutoSetup] Scene MapSelectionUI Assigned xMarkSprite -> {xMarkSprite.name}");
+                    }
+                }
+
+                // Scale spacing and padding in active scene
                 var vSpacingField = t.GetField("verticalSpacing", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 if (vSpacingField != null && (float)vSpacingField.GetValue(mapUI) != 240f)
                 {

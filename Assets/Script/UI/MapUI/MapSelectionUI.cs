@@ -27,13 +27,14 @@ public class MapSelectionUI : MonoBehaviour
     [SerializeField] private Sprite coinSprite;
     [SerializeField] private Sprite boxSprite;
     [SerializeField] private Sprite potionSprite;
+    [SerializeField] private Sprite xMarkSprite;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject nodePrefab;
 
     [Header("Layout Settings")]
     [SerializeField] private float verticalSpacing = 160f;
-    [SerializeField] private float horizontalSpacing = 180f;
+    [SerializeField] private float horizontalSpacing = 270f;
     [SerializeField] private float mapPaddingTop = 100f;
     [SerializeField] private float mapPaddingBottom = 100f;
     [SerializeField] private float lineOffset = 60f;
@@ -152,8 +153,8 @@ public class MapSelectionUI : MonoBehaviour
             vp.anchorMin = Vector2.zero;
             vp.anchorMax = Vector2.one;
             vp.pivot = new Vector2(0.5f, 1f);
-            vp.offsetMin = Vector2.zero;
-            vp.offsetMax = Vector2.zero;
+            vp.offsetMin = new Vector2(0f, 80f);
+            vp.offsetMax = new Vector2(0f, -80f);
         }
 
         var mapFloors = GameManager.Instance.GetMapFloors();
@@ -284,7 +285,7 @@ public class MapSelectionUI : MonoBehaviour
                     Sprite symbolSprite = GetSpriteForTheme(nodeData.isBoss, nodeData.roomTheme);
 
                     nodeUI.Setup(f, n, nodeData.isBoss, nodeData.roomTheme,
-                        isCurrent, isVisited, isSelectable, symbolSprite, OnNodeSelected);
+                        isCurrent, isVisited, isSelectable, symbolSprite, xMarkSprite, OnNodeSelected);
 
                     _spawnedNodes.Add(nodeUI);
                 }
@@ -334,7 +335,7 @@ public class MapSelectionUI : MonoBehaviour
                         Sprite symbolSprite = GetSpriteForTheme(nodeData.isBoss, nodeData.roomTheme);
 
                         nodeUI.Setup(f, n, nodeData.isBoss, nodeData.roomTheme,
-                            isCurrent, isVisited, isSelectable, symbolSprite, OnNodeSelected);
+                            isCurrent, isVisited, isSelectable, symbolSprite, xMarkSprite, OnNodeSelected);
                     }
                     nodeUIIndex++;
                 }

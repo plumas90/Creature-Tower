@@ -29,6 +29,7 @@ public class MapRoomNodeUI : MonoBehaviour, IPointerClickHandler
         bool isVisited,
         bool isSelectable,
         Sprite symbolSprite,
+        Sprite xMarkSprite,
         Action<int, int> onClicked)
     {
         _floorIndex = floorIndex;
@@ -45,7 +46,7 @@ public class MapRoomNodeUI : MonoBehaviour, IPointerClickHandler
                 nodeButton.onClick.AddListener(HandleClick);
         }
 
-        // 오버레이
+        // 오버레이 (현재 있는 곳 표시 - x_mark_stamp_transparent)
         if (activeHighlight != null)
         {
             activeHighlight.SetActive(isCurrent);
@@ -54,14 +55,14 @@ public class MapRoomNodeUI : MonoBehaviour, IPointerClickHandler
                 Image highlightImage = activeHighlight.GetComponent<Image>();
                 if (highlightImage != null)
                 {
-                    if (symbolSprite != null)
+                    if (xMarkSprite != null)
                     {
                         highlightImage.enabled = true;
                         highlightImage.type = Image.Type.Simple;
-                        highlightImage.sprite = symbolSprite;
+                        highlightImage.sprite = xMarkSprite;
                         highlightImage.preserveAspect = true;
-                        highlightImage.color = new Color(1f, 0.9f, 0.1f, 0.5f); // Bright yellow highlight with alpha
-                        activeHighlight.transform.localScale = new Vector3(1.15f, 1.15f, 1f);
+                        highlightImage.color = Color.white; // 원본 이미지 색상 유지
+                        activeHighlight.transform.localScale = Vector3.one;
                     }
                     else
                     {
