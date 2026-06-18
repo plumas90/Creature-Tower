@@ -12,7 +12,7 @@ public class SetupGhostKnightPrefab
 
     static void DoSetup()
     {
-        if (EditorPrefs.GetBool("SetupGhostKnightPrefabDone_RotationFixed", false))
+        if (EditorPrefs.GetBool("SetupGhostKnightPrefabDone_DecagonPattern", false))
             return;
 
         string bossPrefabPath = "Assets/Prefabs/Boss/GhostKnight/GhostKnight.prefab";
@@ -45,6 +45,16 @@ public class SetupGhostKnightPrefab
         if (so.swordSwingPeriod == 0f || so.swordSwingPeriod == 2f) so.swordSwingPeriod = 3f;
         if (so.swordRotationSpeed == 0f || so.swordRotationSpeed == 1f) so.swordRotationSpeed = 360f;
         if (so.swordSwingCount == 0 || so.swordSwingCount == 2) so.swordSwingCount = 3;
+
+        // Set default values for hexagon pattern
+        if (so.hexagonPatternRadius == 0f) so.hexagonPatternRadius = 4f;
+        if (so.hexagonSwordSpeed == 0f) so.hexagonSwordSpeed = 4f;
+        if (so.hexagonSwordRotationSpeed == 0f) so.hexagonSwordRotationSpeed = 360f;
+        if (so.hexagonSwordDamage == 0f) so.hexagonSwordDamage = 15f;
+        if (so.hexagonPatternCount == 0) so.hexagonPatternCount = 4;
+        if (so.hexagonWaveInterval == 0f) so.hexagonWaveInterval = 1.5f;
+        if (so.hexagonSwordScale == 0f) so.hexagonSwordScale = 1.5f;
+        so.hexagonVertexCount = 10;
 
         // 3. Assign Sprites to SO
         string sheetPath = "Assets/sprite/Boss/GhostKnight/ghost_knight_fix.png";
@@ -149,7 +159,7 @@ public class SetupGhostKnightPrefab
             }
 
             Debug.Log("GhostKnight prefab and SO setup completed automatically!");
-            EditorPrefs.SetBool("SetupGhostKnightPrefabDone_RotationFixed", true);
+            EditorPrefs.SetBool("SetupGhostKnightPrefabDone_DecagonPattern", true);
         }
 
         AssetDatabase.SaveAssets();

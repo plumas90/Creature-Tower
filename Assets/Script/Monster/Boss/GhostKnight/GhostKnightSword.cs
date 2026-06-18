@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class GhostKnightSword : MonoBehaviour
 {
+    public enum SwordMovementMode { Pendulum, LinearInward }
+    private SwordMovementMode movementMode = SwordMovementMode.Pendulum;
+
     private Vector3 center;
     private float radius;
     private bool startOnLeft;
@@ -13,10 +16,14 @@ public class GhostKnightSword : MonoBehaviour
     private int maxSwings;
     private bool isInitialized = false;
 
+    private Vector3 startPoint;
+    private float linearSpeed;
+
     public bool IsFinished { get; private set; } = false;
 
     public void Initialize(Vector3 centerPoint, float r, bool startLeft, float dmg, float prd, float rotSpd, float delaySec, int swings)
     {
+        movementMode = SwordMovementMode.Pendulum;
         center = centerPoint;
         radius = r;
         startOnLeft = startLeft;
@@ -43,6 +50,32 @@ public class GhostKnightSword : MonoBehaviour
         UpdatePosition(0f);
     }
 
+    public void InitializeLinearInward(Vector3 centerPoint, Vector3 spawnPoint, float dmg, float speedVal, float rotSpd, float delaySec, bool flipSprite)
+    {
+        movementMode = SwordMovementMode.LinearInward;
+        center = centerPoint;
+        startPoint = spawnPoint;
+        damage = dmg;
+        linearSpeed = speedVal;
+        selfRotationSpeed = rotSpd;
+        startDelay = delaySec;
+        startTime = Time.time;
+        IsFinished = false;
+        isInitialized = true;
+
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr == null)
+        {
+            sr = GetComponentInChildren<SpriteRenderer>();
+        }
+        if (sr != null)
+        {
+            sr.flipX = flipSprite;
+        }
+
+        transform.position = startPoint;
+    }
+
     private void Update()
     {
         if (!isInitialized || IsFinished) return;
@@ -51,24 +84,46 @@ public class GhostKnightSword : MonoBehaviour
         if (elapsed < startDelay)
         {
             // Stay at the starting position and do not rotate or move
-            UpdatePosition(0f);
+            if (movementMode == SwordMovementMode.LinearInward)
+            {
+                transform.position = startPoint;
+            }
+            else
+            {
+                UpdatePosition(0f);
+            }
             return;
         }
 
         float activeElapsed = elapsed - startDelay;
-        float totalActiveDuration = maxSwings * (swingPeriod / 2f);
 
-        if (activeElapsed >= totalActiveDuration)
+        if (movementMode == SwordMovementMode.LinearInward)
         {
-            activeElapsed = totalActiveDuration;
-            UpdatePosition(activeElapsed);
-            IsFinished = true;
-            return;
-        }
+            transform.position = Vector3.MoveTowards(transform.position, center, linearSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.forward, selfRotationSpeed * Time.deltaTime);
 
-        // Start moving and rotating
-        UpdatePosition(activeElapsed);
-        transform.Rotate(Vector3.forward, selfRotationSpeed * Time.deltaTime);
+            if (Vector3.Distance(transform.position, center) < 0.02f)
+            {
+                IsFinished = true;
+                Destroy(gameObject);
+            }
+        }
+        else
+        {
+            float totalActiveDuration = maxSwings * (swingPeriod / 2f);
+
+            if (activeElapsed >= totalActiveDuration)
+            {
+                activeElapsed = totalActiveDuration;
+                UpdatePosition(activeElapsed);
+                IsFinished = true;
+                return;
+            }
+
+            // Start moving and rotating
+            UpdatePosition(activeElapsed);
+            transform.Rotate(Vector3.forward, selfRotationSpeed * Time.deltaTime);
+        }
     }
 
     private void UpdatePosition(float activeElapsed)

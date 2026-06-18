@@ -68,10 +68,29 @@ public class GhostKnight : BossBase
             new BossSequenceNode(
                 new BossConditionNode(() => live && !wait),
                 new BTTask_GhostKnightSwordPattern(this),
+                new BTTask_Wait(this, 3f),
+                new BTTask_GhostKnightHexagonPattern(this),
                 new BTTask_Wait(this, 3f)
             ),
             new BossActionNode(() => BossBTState.Running)
         );
+    }
+
+    public void SetVisibility(bool visible)
+    {
+        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            if (renderers[i] != null)
+                renderers[i].enabled = visible;
+        }
+
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i] != null)
+                colliders[i].enabled = visible;
+        }
     }
 
     // =========================================================

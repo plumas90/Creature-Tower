@@ -36,3 +36,11 @@ MonoBehaviour:
   swordSwingPeriod: 4.5
   swordRotationSpeed: 360
   swordSwingCount: 3
+  hexagonPatternRadius: 5.5
+  hexagonSwordSpeed: 2
+  hexagonSwordRotationSpeed: 720
+  hexagonSwordDamage: 15
+  hexagonPatternCount: 4
+  hexagonWaveInterval: 3
+  hexagonSwordScale: 1.25
+  hexagonVertexCount: 10
