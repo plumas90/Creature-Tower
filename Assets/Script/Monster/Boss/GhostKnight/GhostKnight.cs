@@ -232,7 +232,10 @@ public class GhostKnight : BossBase
                 Vector3 offset = localOffsets[i];
                 Vector3 spawnPos = basePos + offset;
                 GameObject swordObj = Instantiate(ghostKnightSO.swordPrefab, spawnPos, Quaternion.identity);
-                swordObj.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+
+                bool flipSprite = offset.x > 0f;
+                float scaleX = flipSprite ? -1.5f : 1.5f;
+                swordObj.transform.localScale = new Vector3(scaleX, 1.5f, 1f);
 
                 GhostKnightSword sword = swordObj.GetComponent<GhostKnightSword>();
                 if (sword == null)
@@ -240,10 +243,11 @@ public class GhostKnight : BossBase
                     sword = swordObj.AddComponent<GhostKnightSword>();
                 }
 
-                bool flipSprite = offset.x > 0f;
-                // Dummy center far away to prevent self-destruction
+                // Symmetrical rotation: right side rotates clockwise (-720), left side rotates counter-clockwise (720)
+                float rotSpeed = flipSprite ? -720f : 720f;
+                // Pass false for flipSprite here since we already flipped via localScale X to prevent double-flipping
                 Vector3 dummyCenter = spawnPos + Vector3.up * 1000f;
-                sword.InitializeLinearInward(dummyCenter, spawnPos, 0f, 0f, 720f, 0f, flipSprite);
+                sword.InitializeLinearInward(dummyCenter, spawnPos, 0f, 0f, rotSpeed, 0f, false);
 
                 introSwords.Add(swordObj);
             }

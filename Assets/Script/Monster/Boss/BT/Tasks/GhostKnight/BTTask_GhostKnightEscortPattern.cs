@@ -21,6 +21,7 @@ public class BTTask_GhostKnightEscortPattern : BTTask
 
     private readonly List<GhostKnightSword> activeSwords = new List<GhostKnightSword>();
     private readonly List<Vector3> swordOffsets = new List<Vector3>();
+    private bool armStopWarningStarted;
 
     public BTTask_GhostKnightEscortPattern(BossBase boss) : base(boss)
     {
@@ -69,6 +70,7 @@ public class BTTask_GhostKnightEscortPattern : BTTask
                 UpdateSwordPositions();
                 if (Time.time - timer >= so.escortWarningDuration)
                 {
+                    armStopWarningStarted = false;
                     currentState = EscortState.Moving;
                 }
                 break;
@@ -77,6 +79,19 @@ public class BTTask_GhostKnightEscortPattern : BTTask
                 // Move boss
                 boss.transform.position = Vector3.MoveTowards(boss.transform.position, endPos, so.escortBossSpeed * Time.deltaTime);
                 UpdateSwordPositions();
+
+                // Trigger arm animation 1.0s before arrival to warn player
+                float distance = Vector3.Distance(boss.transform.position, endPos);
+                float speed = so.escortBossSpeed;
+                float remainingTime = speed > 0f ? distance / speed : 0f;
+                if (remainingTime <= 1.0f && !armStopWarningStarted)
+                {
+                    armStopWarningStarted = true;
+                    if (boss is GhostKnight gk)
+                    {
+                        gk.StartRotateArmUp(remainingTime);
+                    }
+                }
 
                 // Check arrival
                 if (Vector3.Distance(boss.transform.position, endPos) < 0.05f)
@@ -113,11 +128,16 @@ public class BTTask_GhostKnightEscortPattern : BTTask
         Debug.Log("[BTTask_GhostKnightEscortPattern] Cleaning up escort pattern.");
         DestroySwords();
 
-        // Return boss to its original spawn position
-        Vector3 spawnPos = boss.transform.position;
         if (boss is GhostKnight gk)
         {
-            spawnPos = gk.SpawnPosition;
+            gk.ResetArm();
+        }
+
+        // Return boss to its original spawn position
+        Vector3 spawnPos = boss.transform.position;
+        if (boss is GhostKnight gk2)
+        {
+            spawnPos = gk2.SpawnPosition;
         }
         else if (boss.StageOwner != null)
         {
@@ -128,6 +148,11 @@ public class BTTask_GhostKnightEscortPattern : BTTask
 
     private void SetupEscortMove(GhostKnightSO so)
     {
+        if (boss is GhostKnight gkRef)
+        {
+            gkRef.ResetArm();
+        }
+
         Bounds bounds = boss.StageOwner != null ? boss.StageOwner.GetZoneBounds() : new Bounds(boss.transform.position, new Vector3(10f, 10f, 0f));
         
         float padding = so.escortMapPadding <= 0f ? 1.5f : so.escortMapPadding;

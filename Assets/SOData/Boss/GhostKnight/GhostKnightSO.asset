@@ -68,5 +68,5 @@ MonoBehaviour:
   escortSwordDamage: 15
   escortWarningDuration: 1
   escortTransitionDuration: 0.5
-  escortMapPadding: 1.5
+  escortMapPadding: 2
   escortSwordScale: 1.5

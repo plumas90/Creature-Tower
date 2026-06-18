@@ -12,7 +12,7 @@ public class SetupGhostKnightPrefab
 
     static void DoSetup()
     {
-        if (EditorPrefs.GetBool("SetupGhostKnightPrefabDone_Pattern5Scale", false))
+        if (EditorPrefs.GetBool("SetupGhostKnightPrefabDone_Pattern5Padding2", false))
             return;
 
         string bossPrefabPath = "Assets/Prefabs/Boss/GhostKnight/GhostKnight.prefab";
@@ -85,7 +85,7 @@ public class SetupGhostKnightPrefab
         if (so.escortSwordDamage == 0f) so.escortSwordDamage = 15f;
         if (so.escortWarningDuration == 0f) so.escortWarningDuration = 1.0f;
         if (so.escortTransitionDuration == 0f) so.escortTransitionDuration = 0.5f;
-        if (so.escortMapPadding == 0f) so.escortMapPadding = 1.5f;
+        if (so.escortMapPadding == 0f || so.escortMapPadding == 1.5f) so.escortMapPadding = 2.0f;
         if (so.escortSwordScale == 0f) so.escortSwordScale = 1.5f;
 
         // 3. Assign Sprites to SO
@@ -191,7 +191,7 @@ public class SetupGhostKnightPrefab
             }
 
             Debug.Log("GhostKnight prefab and SO setup completed automatically!");
-            EditorPrefs.SetBool("SetupGhostKnightPrefabDone_Pattern5Scale", true);
+            EditorPrefs.SetBool("SetupGhostKnightPrefabDone_Pattern5Padding2", true);
         }
 
         AssetDatabase.SaveAssets();

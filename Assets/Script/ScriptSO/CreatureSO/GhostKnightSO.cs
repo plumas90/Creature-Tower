@@ -128,7 +128,7 @@ public class GhostKnightSO : EnemySO
     public float escortTransitionDuration = 0.5f;
 
     [Tooltip("에스코트 패턴 맵 테두리 안전 거리 (패딩)")]
-    public float escortMapPadding = 1.5f;
+    public float escortMapPadding = 2.0f;
 
     [Tooltip("에스코트 패턴 검의 XY 스케일 값")]
     public float escortSwordScale = 1.5f;
