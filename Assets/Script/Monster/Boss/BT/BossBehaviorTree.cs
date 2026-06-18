@@ -224,3 +224,62 @@ public sealed class BossRandomChanceNode : BossBTNode
         }
     }
 }
+
+public sealed class BossRandomNonConsecutiveSelectorNode : BossBTNode
+{
+    private readonly List<BossBTNode> children;
+    private int currentChildIndex = -1;
+    private int lastChosenIndex = -1;
+
+    public BossRandomNonConsecutiveSelectorNode(params BossBTNode[] nodes)
+    {
+        children = new List<BossBTNode>(nodes);
+    }
+
+    public override BossBTState Tick()
+    {
+        if (children.Count == 0)
+            return BossBTState.Failure;
+
+        if (children.Count == 1)
+        {
+            return children[0].Tick();
+        }
+
+        // If no child is currently running, select a new one
+        if (currentChildIndex == -1)
+        {
+            int nextIndex;
+            do
+            {
+                nextIndex = UnityEngine.Random.Range(0, children.Count);
+            } while (nextIndex == lastChosenIndex);
+
+            currentChildIndex = nextIndex;
+            lastChosenIndex = nextIndex;
+
+            // Reset the chosen child before ticking it the first time
+            children[currentChildIndex].Reset();
+        }
+
+        BossBTState state = children[currentChildIndex].Tick();
+
+        // If the child finishes, clear currentChildIndex so a new one is selected on the next activation
+        if (state == BossBTState.Success || state == BossBTState.Failure)
+        {
+            currentChildIndex = -1;
+        }
+
+        return state;
+    }
+
+    public override void Reset()
+    {
+        if (currentChildIndex != -1 && currentChildIndex < children.Count)
+        {
+            children[currentChildIndex].Reset();
+        }
+        currentChildIndex = -1;
+    }
+}
+

@@ -67,10 +67,14 @@ public class GhostKnight : BossBase
         return new BossSelectorNode(
             new BossSequenceNode(
                 new BossConditionNode(() => live && !wait),
-                new BTTask_GhostKnightSwordPattern(this),
-                new BTTask_Wait(this, 3f),
-                new BTTask_GhostKnightHexagonPattern(this),
-                new BTTask_Wait(this, 3f)
+                new BossRandomNonConsecutiveSelectorNode(
+                    new BTTask_GhostKnightSwordPattern(this),
+                    new BTTask_GhostKnightHexagonPattern(this),
+                    new BTTask_GhostKnightTargetedPattern(this, BTTask_GhostKnightTargetedPattern.TargetedPatternType.Pattern3),
+                    new BTTask_GhostKnightTargetedPattern(this, BTTask_GhostKnightTargetedPattern.TargetedPatternType.Pattern4),
+                    new BTTask_GhostKnightEscortPattern(this)
+                ),
+                new BTTask_GhostKnightWait(this)
             ),
             new BossActionNode(() => BossBTState.Running)
         );

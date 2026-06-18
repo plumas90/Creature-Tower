@@ -7,6 +7,7 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
     private int maxWaves;
     private float lastWaveSpawnTime;
     private const float START_DELAY = 2.0f; // 2 seconds delay before movement
+    private int previousSafeIndex = -1;
 
     private readonly List<GhostKnightSword> activeSwords = new List<GhostKnightSword>();
 
@@ -17,6 +18,7 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
     protected override void OnEnter()
     {
         activeSwords.Clear();
+        previousSafeIndex = -1;
 
         GhostKnightSO so = boss.MainSO as GhostKnightSO;
         if (so == null)
@@ -58,7 +60,7 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
         maxWaves = so.hexagonPatternCount;
         lastWaveSpawnTime = Time.time;
 
-        SpawnWave(center, so);
+        SpawnWave(center, so, 0);
     }
 
     protected override BossBTState OnTick()
@@ -82,6 +84,17 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
             center = gk.SpawnPosition;
         }
 
+        // Check if player has escaped the pattern radius (radius + 0.5f)
+        if (boss.Player != null)
+        {
+            float playerDist = Vector3.Distance(boss.Player.transform.position, center);
+            if (playerDist > so.hexagonPatternRadius + 0.5f)
+            {
+                Debug.Log($"[BTTask_GhostKnightHexagonPattern] Player escaped pattern radius (dist: {playerDist:F2} > {so.hexagonPatternRadius + 0.5f:F2}). Early terminating task.");
+                return BossBTState.Success;
+            }
+        }
+
         activeSwords.RemoveAll(s => s == null);
 
         // Continuous wave spawning at regular intervals
@@ -89,7 +102,7 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
         {
             if (Time.time - lastWaveSpawnTime >= so.hexagonWaveInterval)
             {
-                SpawnWave(center, so);
+                SpawnWave(center, so, currentWave);
                 currentWave++;
                 lastWaveSpawnTime = Time.time;
             }
@@ -123,7 +136,43 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
         activeSwords.Clear();
     }
 
-    private void SpawnWave(Vector3 center, GhostKnightSO so)
+    private int ChooseSafeIndex(int waveIndex, int totalWaves, int vertexCount, int prevSafeIndex)
+    {
+        bool isLastWave = (waveIndex == totalWaves - 1);
+        List<int> candidates = new List<int>();
+
+        for (int i = 0; i < vertexCount; i++)
+        {
+            // Last wave constraint: cannot be 0 (12 o'clock)
+            if (isLastWave && i == 0)
+                continue;
+
+            // Distance constraint from 2nd wave onwards
+            if (waveIndex > 0 && prevSafeIndex != -1)
+            {
+                int diff = Mathf.Abs(i - prevSafeIndex);
+                int dist = Mathf.Min(diff, vertexCount - diff);
+                if (dist > 3)
+                    continue;
+            }
+
+            candidates.Add(i);
+        }
+
+        // Fallback in case candidates list is empty (should not happen normally)
+        if (candidates.Count == 0)
+        {
+            for (int i = 0; i < vertexCount; i++)
+            {
+                if (isLastWave && i == 0) continue;
+                candidates.Add(i);
+            }
+        }
+
+        return candidates[Random.Range(0, candidates.Count)];
+    }
+
+    private void SpawnWave(Vector3 center, GhostKnightSO so, int waveIndex)
     {
         if (so.swordPrefab == null)
         {
@@ -132,8 +181,10 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
         }
 
         int vertexCount = so.hexagonVertexCount <= 0 ? 10 : so.hexagonVertexCount;
-        // Choose one index from 0 to vertexCount - 1 to omit (fully randomized safe zone)
-        int safeIndex = Random.Range(0, vertexCount);
+        
+        int safeIndex = ChooseSafeIndex(waveIndex, maxWaves, vertexCount, previousSafeIndex);
+        previousSafeIndex = safeIndex;
+
         float radius = so.hexagonPatternRadius;
 
         for (int i = 0; i < vertexCount; i++)
@@ -164,6 +215,6 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
             activeSwords.Add(sword);
         }
 
-        Debug.Log($"[BTTask_GhostKnightHexagonPattern] Spawning Wave {currentWave}/{maxWaves} (N={vertexCount}) with safe index {safeIndex}");
+        Debug.Log($"[BTTask_GhostKnightHexagonPattern] Spawning Wave {waveIndex + 1}/{maxWaves} (N={vertexCount}) with safe index {safeIndex}");
     }
 }

@@ -12,7 +12,7 @@ public class SetupGhostKnightPrefab
 
     static void DoSetup()
     {
-        if (EditorPrefs.GetBool("SetupGhostKnightPrefabDone_DecagonPattern", false))
+        if (EditorPrefs.GetBool("SetupGhostKnightPrefabDone_Pattern5Scale", false))
             return;
 
         string bossPrefabPath = "Assets/Prefabs/Boss/GhostKnight/GhostKnight.prefab";
@@ -55,6 +55,38 @@ public class SetupGhostKnightPrefab
         if (so.hexagonWaveInterval == 0f) so.hexagonWaveInterval = 1.5f;
         if (so.hexagonSwordScale == 0f) so.hexagonSwordScale = 1.5f;
         so.hexagonVertexCount = 10;
+
+        // Set default values for targeted pattern (Pattern 3)
+        if (so.targetedPatternRadius == 0f) so.targetedPatternRadius = 3f;
+        if (so.targetedSwordLaunchDelay == 0f) so.targetedSwordLaunchDelay = 1.5f;
+        if (so.targetedSwordSpeed == 0f) so.targetedSwordSpeed = 8f;
+        if (so.targetedSwordDamage == 0f) so.targetedSwordDamage = 15f;
+        if (so.targetedSwordCount == 0) so.targetedSwordCount = 3;
+        if (so.targetedAngleStep == 0f) so.targetedAngleStep = 10f;
+        if (so.targetedPatternCount == 0) so.targetedPatternCount = 3;
+        if (so.targetedWaveInterval == 0f) so.targetedWaveInterval = 2.0f;
+
+        // Set default values for targeted pattern 4 (Pattern 4)
+        if (so.targetedPatternRadius4 == 0f) so.targetedPatternRadius4 = 3f;
+        if (so.targetedSwordLaunchDelay4 == 0f) so.targetedSwordLaunchDelay4 = 1.5f;
+        if (so.targetedSwordSpeed4 == 0f) so.targetedSwordSpeed4 = 8f;
+        if (so.targetedSwordDamage4 == 0f) so.targetedSwordDamage4 = 15f;
+        if (so.targetedSwordCount4 == 0) so.targetedSwordCount4 = 3;
+        if (so.targetedAngleStep4 == 0f) so.targetedAngleStep4 = 10f;
+        if (so.targetedPatternCount4 == 0) so.targetedPatternCount4 = 3;
+        if (so.targetedWaveInterval4 == 0f) so.targetedWaveInterval4 = 2.0f;
+
+        // Set default values for global cooldown and escort pattern (Pattern 5)
+        if (so.globalCooldown == 0f) so.globalCooldown = 2.0f;
+        if (so.escortPatternRadius == 0f) so.escortPatternRadius = 3.5f;
+        if (so.escortSwordCount == 0) so.escortSwordCount = 8;
+        if (so.escortBossSpeed == 0f) so.escortBossSpeed = 3.5f;
+        if (so.escortMoveCount == 0) so.escortMoveCount = 3;
+        if (so.escortSwordDamage == 0f) so.escortSwordDamage = 15f;
+        if (so.escortWarningDuration == 0f) so.escortWarningDuration = 1.0f;
+        if (so.escortTransitionDuration == 0f) so.escortTransitionDuration = 0.5f;
+        if (so.escortMapPadding == 0f) so.escortMapPadding = 1.5f;
+        if (so.escortSwordScale == 0f) so.escortSwordScale = 1.5f;
 
         // 3. Assign Sprites to SO
         string sheetPath = "Assets/sprite/Boss/GhostKnight/ghost_knight_fix.png";
@@ -159,7 +191,7 @@ public class SetupGhostKnightPrefab
             }
 
             Debug.Log("GhostKnight prefab and SO setup completed automatically!");
-            EditorPrefs.SetBool("SetupGhostKnightPrefabDone_DecagonPattern", true);
+            EditorPrefs.SetBool("SetupGhostKnightPrefabDone_Pattern5Scale", true);
         }
 
         AssetDatabase.SaveAssets();

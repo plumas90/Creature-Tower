@@ -44,3 +44,29 @@ MonoBehaviour:
   hexagonWaveInterval: 3
   hexagonSwordScale: 1.25
   hexagonVertexCount: 10
+  targetedPatternRadius: 5
+  targetedSwordLaunchDelay: 0.7
+  targetedSwordSpeed: 8
+  targetedSwordDamage: 15
+  targetedSwordCount: 10
+  targetedAngleStep: 10
+  targetedPatternCount: 5
+  targetedWaveInterval: 2
+  targetedPatternRadius4: 3
+  targetedSwordLaunchDelay4: 0.5
+  targetedSwordSpeed4: 5
+  targetedSwordDamage4: 15
+  targetedSwordCount4: 1
+  targetedAngleStep4: 10
+  targetedPatternCount4: 15
+  targetedWaveInterval4: 0.5
+  globalCooldown: 2
+  escortPatternRadius: 4
+  escortSwordCount: 15
+  escortBossSpeed: 2
+  escortMoveCount: 3
+  escortSwordDamage: 15
+  escortWarningDuration: 1
+  escortTransitionDuration: 0.5
+  escortMapPadding: 1.5
+  escortSwordScale: 1.5

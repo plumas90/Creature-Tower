@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GhostKnightSword : MonoBehaviour
 {
-    public enum SwordMovementMode { Pendulum, LinearInward }
+    public enum SwordMovementMode { Pendulum, LinearInward, TargetedLaunch }
     private SwordMovementMode movementMode = SwordMovementMode.Pendulum;
 
     private Vector3 center;
@@ -18,6 +18,7 @@ public class GhostKnightSword : MonoBehaviour
 
     private Vector3 startPoint;
     private float linearSpeed;
+    private Vector3 launchDirection;
 
     public bool IsFinished { get; private set; } = false;
 
@@ -76,6 +77,31 @@ public class GhostKnightSword : MonoBehaviour
         transform.position = startPoint;
     }
 
+    public void InitializeTargetedLaunch(Vector3 spawnPoint, Vector3 direction, float dmg, float speedVal, float delaySec)
+    {
+        movementMode = SwordMovementMode.TargetedLaunch;
+        startPoint = spawnPoint;
+        launchDirection = direction.normalized;
+        damage = dmg;
+        linearSpeed = speedVal;
+        startDelay = delaySec;
+        startTime = Time.time;
+        IsFinished = false;
+        isInitialized = true;
+
+        // Set rotation so that "top-right" (45 degrees on the sprite) faces the launchDirection
+        float targetAngle = Mathf.Atan2(launchDirection.y, launchDirection.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, targetAngle - 45f);
+
+        transform.position = startPoint;
+    }
+
+    public void UpdateStartPoint(Vector3 pos)
+    {
+        startPoint = pos;
+        transform.position = pos;
+    }
+
     private void Update()
     {
         if (!isInitialized || IsFinished) return;
@@ -84,7 +110,7 @@ public class GhostKnightSword : MonoBehaviour
         if (elapsed < startDelay)
         {
             // Stay at the starting position and do not rotate or move
-            if (movementMode == SwordMovementMode.LinearInward)
+            if (movementMode == SwordMovementMode.LinearInward || movementMode == SwordMovementMode.TargetedLaunch)
             {
                 transform.position = startPoint;
             }
@@ -103,6 +129,17 @@ public class GhostKnightSword : MonoBehaviour
             transform.Rotate(Vector3.forward, selfRotationSpeed * Time.deltaTime);
 
             if (Vector3.Distance(transform.position, center) < 0.02f)
+            {
+                IsFinished = true;
+                Destroy(gameObject);
+            }
+        }
+        else if (movementMode == SwordMovementMode.TargetedLaunch)
+        {
+            transform.position += launchDirection * (linearSpeed * Time.deltaTime);
+            
+            // Self-destruct if it flies too far (e.g. 20 units away from startPoint) to prevent memory leak
+            if (Vector3.Distance(transform.position, startPoint) > 20f)
             {
                 IsFinished = true;
                 Destroy(gameObject);
