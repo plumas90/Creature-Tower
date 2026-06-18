@@ -20,6 +20,11 @@ public class BTTask_GhostKnightHexagonPattern : BTTask
         activeSwords.Clear();
         previousSafeIndex = -1;
 
+        if (boss is GhostKnight gkRef)
+        {
+            gkRef.ResetArm();
+        }
+
         GhostKnightSO so = boss.MainSO as GhostKnightSO;
         if (so == null)
         {

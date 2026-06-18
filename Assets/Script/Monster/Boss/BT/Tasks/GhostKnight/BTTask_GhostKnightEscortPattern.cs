@@ -32,6 +32,11 @@ public class BTTask_GhostKnightEscortPattern : BTTask
         swordOffsets.Clear();
         currentMove = 0;
 
+        if (boss is GhostKnight gkRef)
+        {
+            gkRef.ResetArm();
+        }
+
         GhostKnightSO so = boss.MainSO as GhostKnightSO;
         if (so == null)
         {

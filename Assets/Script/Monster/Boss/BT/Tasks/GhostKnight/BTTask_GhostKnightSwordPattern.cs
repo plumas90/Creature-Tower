@@ -15,6 +15,11 @@ public class BTTask_GhostKnightSwordPattern : BTTask
     {
         activeSwords.Clear();
 
+        if (boss is GhostKnight gkRef)
+        {
+            gkRef.StartRotateArmDown(1.0f);
+        }
+
         GhostKnightSO so = boss.MainSO as GhostKnightSO;
         if (so == null)
         {

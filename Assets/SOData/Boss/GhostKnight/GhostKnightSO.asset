@@ -17,7 +17,7 @@ MonoBehaviour:
   hp: 1200
   speed: 3
   bossCount: 1
-  IntroAnimationTime: 3
+  IntroAnimationTime: 5
   bossPatternTime: 0
   btChaseRange: 100
   btStopDistance: 0.6
