@@ -702,28 +702,22 @@ public class PlayerStatControl : MonoBehaviour
         //}
     }
 
-    public void StartKnockback(Vector3 direction, float distance)
+    /// <summary>
+    /// 플레이어를 direction 방향으로 force 크기만큼 즉시 밀어낸다.
+    /// AddForce(Impulse) 방식을 사용하여 벽 충돌을 유지하며 자연스럽게 밀린다.
+    /// </summary>
+    public void StartKnockback(Vector3 direction, float force)
     {
-        StartCoroutine(Knockback(direction, distance));
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb == null) return;
+        rb.AddForce((Vector2)direction.normalized * force, ForceMode2D.Impulse);
     }
 
-    //���� ���Ͽ� �˹� �߰��� - ��α�
-    public IEnumerator Knockback(Vector3 direction, float distance)
+    // 하위 호환성 유지: 코루틴 방식이 필요한 경우 (현재 미사용)
+    public IEnumerator Knockback(Vector3 direction, float force)
     {
-        Vector3 startPosition = transform.position;
-        Vector3 targetPosition = startPosition + direction * distance;
-
-        float elapsedTime = 0f;
-
-        while (elapsedTime < 0.1f)
-        {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / 0.1f);
-            elapsedTime += Time.deltaTime;
-            yield return null; // 1������ ���
-        }
-
-        // ���� ��ġ�� ����
-        transform.position = targetPosition;
+        StartKnockback(direction, force);
+        yield break;
     }
     public void SetStatusArray() // ���� �迭ȭ
     {

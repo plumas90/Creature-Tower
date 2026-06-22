@@ -438,8 +438,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be86580377c2cb4e9eec126d3ec6294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rootPosition: {x: 0, y: -8}
-  rootSize: {x: 420, y: 100}
+  barBorderSprite: {fileID: -8830986218231268909, guid: 39d6d3d1ac0777d2d9f529b060629d8d, type: 3}
+  barFillSprite: {fileID: -6138997328160145284, guid: 39d6d3d1ac0777d2d9f529b060629d8d, type: 3}
+  bossSymbolSprite: {fileID: 1132326668646858990, guid: 76b05c60c6bf53c268eba967fc2d0d5f, type: 3}
+  customFont: {fileID: 11400000, guid: 29bf7b60dd66c9b45b9140d95a349ea2, type: 2}
 --- !u!1 &7489600373378699338
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,113 +1,104 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 2.5D 점프형 슬라임 몬스터 클래스.
-/// - 플레이어를 향해 천천히 다가오다가 주기적으로 높이 뛰어오릅니다.
-/// - 점프하여 공중에 떠 있는 동안에는 콜리더를 비활성화하여 플레이어 총알이 통과하고, 플레이어에게도 닿지 않습니다 (무적 및 충돌 무시).
-/// - 2.5D 비주얼 구현을 위해 슬라임 본체 이미지가 있는 Visual 트랜스폼만 로컬 Y축 위로 상승하며, 바닥에는 Shadow(그림자)가 남습니다.
-/// - 공중에 높이 떠오를수록 그림자의 스케일이 작아지는 연출이 포함되어 있습니다.
-/// - 지면(그림자 위치)으로 다시 내려와 착지하면 콜리더를 켜서 피격 및 몸빵 공격이 가능하게 전환됩니다.
+/// 2.5D 점프형 슬라임 몬스터.
+///
+/// [충돌 구조]
+/// - 기존 CircleCollider2D → isTrigger=true : 물리 밀침 차단, OnTriggerEnter2D로 접촉 데미지 처리
+/// - _wallCollider (동적 추가, isTrigger=false) : Wall/Ground 레이어와만 물리 충돌 → 벽 통과 방지
+///   Player/Creatuer 레이어는 excludeLayers로 제외
+/// - Physics2D Layer Matrix에서 Player↔Creatuer 물리 충돌 비활성화 (이중 보호)
+///
+/// [점프 동작]
+/// - 점프 중(invincibility=true, IsPassThroughBullets=true): 총알 통과, 접촉 데미지 차단
+/// - 착지 후: 무적 해제, 접촉 데미지 재활성화
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class SlimeEnemy : EnemyBase
 {
-    [Header("Slime Visual Elements")]
-    [Tooltip("슬라임의 비주얼(스프라이트, 애니메이터 등)이 들어있는 자식 트랜스폼입니다.")]
+    [Header("Visual Elements")]
+    [Tooltip("비주얼(스프라이트)이 있는 자식 트랜스폼")]
     [SerializeField] private Transform visualTransform;
 
-    [Tooltip("슬라임의 그림자 스프라이트가 들어있는 자식 트랜스폼입니다.")]
+    [Tooltip("그림자 스프라이트 자식 트랜스폼")]
     [SerializeField] private Transform shadowTransform;
 
-    [Header("Slime Jump Attack Settings")]
-    [Tooltip("점프를 뛰는 쿨타임 주기 (초) 입니다.")]
+    [Header("Jump Settings")]
+    [Tooltip("점프 쿨타임 (초)")]
     [SerializeField] private float jumpInterval = 3.5f;
 
-    [Tooltip("점프 시 떠오르는 최대 높이(Y축) 입니다.")]
+    [Tooltip("최대 점프 높이 (로컬 Y축)")]
     [SerializeField] private float jumpHeight = 2.2f;
 
-    [Tooltip("공중에 머무는 전체 시간 (초) 입니다.")]
+    [Tooltip("체공 시간 (초)")]
     [SerializeField] private float jumpDuration = 0.9f;
 
-    [Tooltip("점프 돌진 시 기본 이동 속도(speed)에 곱해질 속도 배율입니다.")]
+    [Tooltip("점프 시 이동속도 배율")]
     [SerializeField] private float jumpSpeedMultiplier = 1.8f;
 
-    [Tooltip("점프 도약 직전 제자리에서 찌부러지며 멈춰있는 선딜레이 시간입니다.")]
+    [Tooltip("도약 전 선딜레이 (초)")]
     [SerializeField] private float jumpDelay = 0.4f;
 
-    [Tooltip("착지 직후 제자리에서 멍때리며 멈춰있는 후딜레이 시간입니다.")]
+    [Tooltip("착지 후 후딜레이 (초)")]
     [SerializeField] private float landDelay = 0.5f;
 
-    [Tooltip("플레이어가 이 거리 안으로 들어오면 점프를 시작합니다.")]
+    [Tooltip("점프 트리거 사거리")]
     [SerializeField] private float jumpTriggerRange = 7.0f;
 
-    // 내부 상태 제어 변수
-    private bool _isJumping = false;
-    private float _jumpTimer;
-    private Collider2D[] _myColliders;
-    private Vector3 _initialVisualScale;
-    private Vector3 _initialShadowScale;
-    private Coroutine _jumpCoroutine;
-    private float _keepDistance = 4.0f;
-
-    private Animator _animator;
-    private SpriteRenderer _visualSR;
-    private static readonly int AnimIsWalk = Animator.StringToHash("IsWalking");
-
-    // 슬라임 커스텀 스프라이트 애니메이션 변수
-    [Header("Slime Sprites (Inspector Assigned)")]
+    [Header("Sprite Animation")]
     [SerializeField] private Sprite[] idleSprites = new Sprite[4];
     [SerializeField] private Sprite[] jumpSprites = new Sprite[4];
     [SerializeField] private Sprite holdSprite;
     [SerializeField] private Sprite[] downSprites = new Sprite[3];
 
-    private Coroutine _idleAnimationCoroutine;
-    private int _currentIdleFrame = 0;
-    private float _idleFrameRate = 0.15f;
+    // ─── 내부 상태 ───────────────────────────────────────────────
+    private bool _isJumping;
+    private float _jumpTimer;
+    private CircleCollider2D _wallCollider;
+    private Vector3 _initialVisualScale;
+    private Vector3 _initialShadowScale;
+    private Coroutine _jumpCoroutine;
+    private Coroutine _idleAnimCoroutine;
+    private readonly float _keepDistance = 4.0f;
 
+    private Animator _animator;
+    private SpriteRenderer _visualSR;
+    private int _currentIdleFrame;
+    private readonly float _idleFrameRate = 0.15f;
+
+    // ─── 초기화 ─────────────────────────────────────────────────
     protected override void Start()
     {
         base.Start();
 
-        // 컴포넌트 및 자식 탐색 방어 코드
         _animator = GetComponentInChildren<Animator>();
-        _myColliders = GetComponents<Collider2D>();
 
+        // Visual 트랜스폼 탐색
         if (visualTransform == null)
         {
             visualTransform = transform.Find("Visual");
             if (visualTransform == null)
             {
-                // 차선책으로 자기 자신 밑에서 SpriteRenderer를 가진 첫 번째 자식을 찾음
                 SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
-                if (sr != null && sr.transform != transform)
-                {
-                    visualTransform = sr.transform;
-                }
-                else
-                {
-                    visualTransform = transform;
-                    Debug.LogWarning($"[SlimeEnemy] '{name}'에 Visual 트랜스폼이 할당되지 않아 본체를 움직입니다. 2.5D 점프 연출이 부자연스러울 수 있습니다.");
-                }
+                visualTransform = (sr != null && sr.transform != transform) ? sr.transform : transform;
             }
         }
-
         if (visualTransform != null)
         {
             _visualSR = visualTransform.GetComponent<SpriteRenderer>();
             _initialVisualScale = visualTransform.localScale;
         }
 
+        // Shadow 트랜스폼 탐색
         if (shadowTransform == null)
         {
             shadowTransform = transform.Find("Shadow");
             if (shadowTransform == null)
             {
-                // 이름에 "shadow"가 들어간 자식을 탐색
                 foreach (Transform child in GetComponentsInChildren<Transform>())
                 {
-                    if (child.name.ToLower().Contains("shadow") && child != transform)
+                    if (child != transform && child.name.ToLower().Contains("shadow"))
                     {
                         shadowTransform = child;
                         break;
@@ -115,44 +106,52 @@ public class SlimeEnemy : EnemyBase
                 }
             }
         }
-
         if (shadowTransform != null)
-        {
             _initialShadowScale = shadowTransform.localScale;
-        }
 
-        // 점프 타이머 무작위 초기화 (생성 직후 동시에 다 뛰는 현상 방지)
+        // 점프 타이머 랜덤 초기화 (동시 점프 방지)
         _jumpTimer = Random.Range(1.0f, jumpInterval);
 
-
-        // 기존 Animator가 스프라이트를 덮어씌우는 것을 방지하기 위해 비활성화
-        if (_animator != null)
+        // ── 충돌 설정 ───────────────────────────────────────────
+        // 1. 기존 루트 콜라이더 전부 Trigger로 전환 → 물리 밀침 차단
+        foreach (var c in GetComponents<Collider2D>())
         {
-            _animator.enabled = false;
+            if (c != null) c.isTrigger = true;
         }
 
-        // Idle 애니메이션 시작
-        _idleAnimationCoroutine = StartCoroutine(CoIdleAnimation());
+        // 2. 벽 전용 물리 콜라이더 추가
+        //    - includeLayers: Wall|Ground 와만 충돌
+        //    - excludeLayers: Player|Creatuer 명시 제외 (이중 보호)
+        _wallCollider = gameObject.AddComponent<CircleCollider2D>();
+        _wallCollider.radius = 0.42f;
+        _wallCollider.isTrigger = false;
+        _wallCollider.includeLayers = LayerMask.GetMask("Wall", "Ground");
+        _wallCollider.excludeLayers = LayerMask.GetMask("Player", "Creatuer");
+
+        // 애니메이터 비활성화 (커스텀 프레임 애니메이션 사용)
+        if (_animator != null)
+            _animator.enabled = false;
+
+        _idleAnimCoroutine = StartCoroutine(CoIdleAnimation());
     }
 
-    // ─── AI 및 틱 관리 ──────────────────────────────────────────
+    // ─── AI 틱 ─────────────────────────────────────────────────
     protected override void OnTick()
     {
         if (Player == null)
         {
             ResolvePlayer();
             _rb2d.linearVelocity = Vector2.zero;
-            SetWalk(false);
             return;
         }
 
-        // 점프 중일 때는 OnTick의 기본 걷기 AI가 속도를 덮어쓰지 않도록 완전 차단
+        // 점프 중에는 OnTick이 속도를 덮어쓰지 않음
         if (_isJumping) return;
 
         float dist = Vector2.Distance(transform.position, Player.transform.position);
         Vector2 dir = (Player.transform.position - transform.position).normalized;
 
-        // 플레이어한테 점프 사거리/유지 거리 이상으로 다가가지 않음
+        // 유지 거리 이상이면 플레이어를 향해 이동
         if (dist > _keepDistance)
         {
             _rb2d.linearVelocity = dir * speed;
@@ -164,109 +163,94 @@ public class SlimeEnemy : EnemyBase
             SetWalk(false);
         }
 
-        // 비주얼 스프라이트 좌우 반전
+        // 스프라이트 좌우 반전
         if (_visualSR != null && Mathf.Abs(dir.x) > 0.01f)
-        {
             _visualSR.flipX = dir.x < 0f;
-        }
 
-        // 점프 타이머 갱신
+        // 점프 타이머
         _jumpTimer -= Time.deltaTime;
-
-        // 점프 트리거 조건: 타이머 완료 및 플레이어가 사거리 이내에 존재
         if (_jumpTimer <= 0f && dist <= jumpTriggerRange)
-        {
             _jumpCoroutine = StartCoroutine(JumpRoutine());
-        }
     }
 
-    // ─── 2.5D 점프 물리 및 연출 루틴 ──────────────────────────────────────
+    // ─── 점프 루틴 ──────────────────────────────────────────────
     private IEnumerator JumpRoutine()
     {
         _isJumping = true;
         _jumpTimer = jumpInterval;
 
-        // 1. 도약 준비 (선딜레이)
-        // 물리 속도 일시 정지 및 걷기 애니메이션 비활성화
+        // 1. 도약 전 선딜레이 (찌부러짐 연출)
         _rb2d.linearVelocity = Vector2.zero;
         SetWalk(false);
 
-        // 찌부러지는(Squish) 도약 준비 마이크로 애니메이션 연출 (비주얼 극대화)
         float elapsed = 0f;
-        int lastJumpFrameIndex = -1;
+        int lastJumpFrame = -1;
         while (elapsed < jumpDelay)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / jumpDelay;
 
-            // 점프 준비 스프라이트 갱신 (jump1 ~ jump4)
             int frameIndex = Mathf.Clamp(Mathf.FloorToInt(t * 4f), 0, 3);
-            if (frameIndex != lastJumpFrameIndex && _visualSR != null && jumpSprites[frameIndex] != null)
+            if (frameIndex != lastJumpFrame && _visualSR != null && jumpSprites.Length > frameIndex && jumpSprites[frameIndex] != null)
             {
                 _visualSR.sprite = jumpSprites[frameIndex];
-                lastJumpFrameIndex = frameIndex;
+                lastJumpFrame = frameIndex;
             }
 
-            // 로컬 Y는 누르고, X/Z는 퍼지게 스케일 보정
             if (visualTransform != null)
             {
                 visualTransform.localScale = new Vector3(
                     _initialVisualScale.x * (1f + 0.2f * t),
                     _initialVisualScale.y * (1f - 0.25f * t),
-                    _initialVisualScale.z
-                );
+                    _initialVisualScale.z);
             }
             yield return null;
         }
 
-        // 스케일 복원
         if (visualTransform != null)
-        {
             visualTransform.localScale = _initialVisualScale;
-        }
 
-        // 2. 점프 도약 (공중 상태 시작 - 플레이어 충돌 무시 및 총알 통과)
-        IgnorePlayerCollision(true);
-        invincibility = true;
-        IsPassThroughBullets = true;
+        // 2. 도약 시작: 무적 + 총알통과 ON
+        SetJumpState(true);
 
-        Vector2 jumpDir = (Player.transform.position - transform.position).normalized;
+        Vector2 jumpDir = Player != null
+            ? (Player.transform.position - transform.position).normalized
+            : Vector2.up;
 
-        // 3. 체공 및 돌진 (포물선 궤적 운동)
+        // 3. 체공 + 돌진 (포물선 궤적)
         float jumpTime = 0f;
-        int lastDownFrameIndex = -1;
+        int lastDownFrame = -1;
         while (jumpTime < jumpDuration)
         {
             jumpTime += Time.deltaTime;
             float t = jumpTime / jumpDuration;
 
-            // 수평 돌격 이동 속도 적용
             _rb2d.linearVelocity = jumpDir * (speed * jumpSpeedMultiplier);
 
-            // 2.5D 공중 상승 포물선 계산: y = 4 * H * t * (1 - t)
+            // 포물선 높이: y = 4H·t·(1-t)
             float currentHeight = 4f * jumpHeight * t * (1f - t);
 
+            // 스프라이트 프레임 갱신
             if (_visualSR != null)
             {
                 if (t < 0.3f)
                 {
-                    // 상승 중: 도약 마지막 프레임인 jump4 유지 (30% 할당)
-                    if (jumpSprites[3] != null) _visualSR.sprite = jumpSprites[3];
+                    if (jumpSprites.Length > 3 && jumpSprites[3] != null)
+                        _visualSR.sprite = jumpSprites[3];
                 }
-                else if (t >= 0.3f && t < 0.85f)
+                else if (t < 0.85f)
                 {
-                    // 공중 정점: hold 스프라이트 (지속 시간을 55%로 대폭 확대)
-                    if (holdSprite != null) _visualSR.sprite = holdSprite;
+                    if (holdSprite != null)
+                        _visualSR.sprite = holdSprite;
                 }
                 else
                 {
-                    // 떨어지기 시작: down1 ~ down3 순차 재생 (착지 직전 15% 짧고 강하게 낙하 연출)
                     float t2 = (t - 0.85f) / 0.15f;
-                    int downIndex = Mathf.Clamp(Mathf.FloorToInt(t2 * 3f), 0, 2);
-                    if (downIndex != lastDownFrameIndex && downSprites[downIndex] != null)
+                    int downIdx = Mathf.Clamp(Mathf.FloorToInt(t2 * 3f), 0, 2);
+                    if (downIdx != lastDownFrame && downSprites.Length > downIdx && downSprites[downIdx] != null)
                     {
-                        _visualSR.sprite = downSprites[downIndex];
-                        lastDownFrameIndex = downIndex;
+                        _visualSR.sprite = downSprites[downIdx];
+                        lastDownFrame = downIdx;
                     }
                 }
             }
@@ -274,142 +258,108 @@ public class SlimeEnemy : EnemyBase
             if (visualTransform != null)
             {
                 visualTransform.localPosition = new Vector3(0f, currentHeight, 0f);
-                
-                // 공중에서 위아래로 살짝 늘어나는(Stretch) 연출
-                float stretchAmount = Mathf.Sin(t * Mathf.PI) * 0.15f;
-                visualTransform.localScale = new Vector3(
-                    _initialVisualScale.x * (1f - stretchAmount),
-                    _initialVisualScale.y * (1f + stretchAmount),
-                    _initialVisualScale.z
-                );
 
-                // 공중 이동 방향에 따른 비주얼 반전 유지
+                float stretch = Mathf.Sin(t * Mathf.PI) * 0.15f;
+                visualTransform.localScale = new Vector3(
+                    _initialVisualScale.x * (1f - stretch),
+                    _initialVisualScale.y * (1f + stretch),
+                    _initialVisualScale.z);
+
                 if (_visualSR != null && Mathf.Abs(_rb2d.linearVelocity.x) > 0.01f)
-                {
                     _visualSR.flipX = _rb2d.linearVelocity.x < 0f;
-                }
             }
 
-            // 공중으로 뜰수록 그림자 스케일 축소 연출
+            // 그림자 크기 축소
             if (shadowTransform != null)
             {
-                float shadowScaleFactor = 1f - (currentHeight / jumpHeight) * 0.35f;
-                shadowTransform.localScale = _initialShadowScale * shadowScaleFactor;
+                float shadowScale = 1f - (currentHeight / jumpHeight) * 0.35f;
+                shadowTransform.localScale = _initialShadowScale * shadowScale;
             }
 
             yield return null;
         }
 
-        // 4. 착지
-        // 비주얼 위치 및 그림자 스케일 강제 원복
+        // 4. 착지: 비주얼 원복
         if (visualTransform != null)
         {
             visualTransform.localPosition = Vector3.zero;
             visualTransform.localScale = _initialVisualScale;
         }
         if (shadowTransform != null)
-        {
             shadowTransform.localScale = _initialShadowScale;
-        }
 
-        // 착지 충격에 의한 짧은 좌우 찌부러짐 튕김 연출
+        // 착지 충격 바운스 연출
         elapsed = 0f;
-        float landBounceTime = 0.15f;
+        const float landBounceTime = 0.15f;
         while (elapsed < landBounceTime)
         {
             elapsed += Time.deltaTime;
-            float t = elapsed / landBounceTime;
-            float bounce = Mathf.Sin(t * Mathf.PI) * 0.12f;
+            float bounce = Mathf.Sin((elapsed / landBounceTime) * Mathf.PI) * 0.12f;
             if (visualTransform != null)
             {
                 visualTransform.localScale = new Vector3(
                     _initialVisualScale.x * (1f + bounce),
                     _initialVisualScale.y * (1f - bounce),
-                    _initialVisualScale.z
-                );
+                    _initialVisualScale.z);
             }
             yield return null;
         }
         if (visualTransform != null)
-        {
             visualTransform.localScale = _initialVisualScale;
-        }
 
-        // 속도 초기화 및 물리 충돌 / 피격 복원
+        // 속도 초기화 + 무적/총알통과 OFF
         _rb2d.linearVelocity = Vector2.zero;
-        IgnorePlayerCollision(false);
-        invincibility = false;
-        IsPassThroughBullets = false;
+        SetJumpState(false);
 
-        // 5. 착지 후 딜레이 (착지 후 휴식/멍때리기)
+        // 5. 착지 후 딜레이
         yield return new WaitForSeconds(landDelay);
 
         _isJumping = false;
     }
 
-    /// <summary>
-    /// 점프 시 플레이어와의 물리적 충돌만 무시하여 몸통 박치기가 뚫리도록 처리합니다. (벽은 통과하지 못함)
-    /// </summary>
-    private void IgnorePlayerCollision(bool ignore)
+    /// <summary>점프 상태 토글: 무적 + 총알 통과 ON/OFF</summary>
+    private void SetJumpState(bool isAirborne)
     {
-        if (Player == null) return;
-        Collider2D playerCol = Player.GetComponent<Collider2D>();
-        if (playerCol == null) return;
-
-        if (_myColliders == null)
-            _myColliders = GetComponents<Collider2D>();
-
-        foreach (var col in _myColliders)
-        {
-            if (col != null)
-            {
-                Physics2D.IgnoreCollision(col, playerCol, ignore);
-            }
-        }
+        invincibility = isAirborne;
+        IsPassThroughBullets = isAirborne;
     }
 
     private void SetWalk(bool value)
     {
         if (_animator == null) return;
-        _animator.SetBool(AnimIsWalk, value);
+        _animator.SetBool(Animator.StringToHash("IsWalking"), value);
     }
 
-    // ─── 사망 시 예외 처리 ─────────────────────────────────────────
+    // ─── 사망 처리 ───────────────────────────────────────────────
     protected override void Die()
     {
-        if (_idleAnimationCoroutine != null)
-        {
-            StopCoroutine(_idleAnimationCoroutine);
-        }
-        if (_jumpCoroutine != null)
-        {
-            StopCoroutine(_jumpCoroutine);
-        }
+        if (_idleAnimCoroutine != null) StopCoroutine(_idleAnimCoroutine);
+        if (_jumpCoroutine != null)    StopCoroutine(_jumpCoroutine);
 
-        // 사망 시 비주얼 원복 및 물리 복구
         if (visualTransform != null)
         {
             visualTransform.localPosition = Vector3.zero;
             visualTransform.localScale = _initialVisualScale;
         }
         if (shadowTransform != null)
-        {
             shadowTransform.localScale = _initialShadowScale;
-        }
 
         _rb2d.linearVelocity = Vector2.zero;
-        IgnorePlayerCollision(false);
         invincibility = false;
+        IsPassThroughBullets = false;
         SetWalk(false);
 
         base.Die();
     }
 
+    // ─── Idle 애니메이션 ─────────────────────────────────────────
     private IEnumerator CoIdleAnimation()
     {
         while (!isDead)
         {
-            if (!_isJumping && _visualSR != null && idleSprites != null && idleSprites.Length > 0 && idleSprites[0] != null)
+            if (!_isJumping && _visualSR != null
+                && idleSprites != null && idleSprites.Length > 0
+                && idleSprites[0] != null)
             {
                 _visualSR.sprite = idleSprites[_currentIdleFrame];
                 _currentIdleFrame = (_currentIdleFrame + 1) % idleSprites.Length;

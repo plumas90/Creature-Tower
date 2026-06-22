@@ -18,7 +18,7 @@ public class ResultBox : MonoBehaviour
     public SpriteRenderer boxSpriteRenderer; // 자식 오브젝트 (Box)의 SpriteRenderer
 
     [Header("Push Back")]
-    public float pushForce = 1.5f;
+    public float pushForce = 15f; // AddForce(Impulse) 크기 (이전 transform.Lerp 방식의 속도 15u/s와 동일 체감)
 
     private bool isOpened = false;
 
