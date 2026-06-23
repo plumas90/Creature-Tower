@@ -127,7 +127,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.91015625, y: 0.6875}
+    oldSize: {x: 0.9140625, y: 0.6875}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -150,7 +150,7 @@ MonoBehaviour:
   isRareBox: 0
   forceDNA: 0
   coinDropChance: 0
-  dnaPrefab: {fileID: 8870403881017627220, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
+  dnaPrefab: {fileID: 8585431163312649077, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
   closedSprite: {fileID: 67960899086109811, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   openedSprite: {fileID: -5092357024114813943, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   openingSprites:
