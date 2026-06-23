@@ -27,8 +27,12 @@ public class TopDownMoveBase : MonoBehaviour
         _controller.OnLookEvent += MousePos;
     }
 
+    [HideInInspector] public bool isKnockback = false;
+
     private void FixedUpdate()
     {
+        if (isKnockback) return; // 넉백 중에는 이동 속도 강제 지정을 건너뜀
+
         if (!isRoll)
         {
             ApplyMovment(_movemewtDirection);
@@ -37,6 +41,23 @@ public class TopDownMoveBase : MonoBehaviour
         {
             ApplyRolling(mousePos);
         }
+    }
+
+    public void ApplyKnockback(Vector2 direction, float force, float duration)
+    {
+        if (_rigidbody2D == null) _rigidbody2D = GetComponent<Rigidbody2D>();
+        
+        isKnockback = true;
+        _rigidbody2D.linearVelocity = Vector2.zero; // 이전 움직임 속도 리셋
+        _rigidbody2D.AddForce(direction.normalized * force, ForceMode2D.Impulse);
+        
+        CancelInvoke("EndKnockback");
+        Invoke("EndKnockback", duration);
+    }
+
+    private void EndKnockback()
+    {
+        isKnockback = false;
     }
 
     private void Move(Vector2 direction)

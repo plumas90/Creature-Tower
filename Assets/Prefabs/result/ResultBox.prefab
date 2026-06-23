@@ -163,4 +163,5 @@ MonoBehaviour:
   - {fileID: -5977299981065048059, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   animationFps: 12
   boxSpriteRenderer: {fileID: 2271506146400865569}
-  pushForce: 15
+  pushForce: 5
+  rareDnaChance: 0.01

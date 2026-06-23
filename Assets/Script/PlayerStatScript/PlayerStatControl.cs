@@ -704,13 +704,21 @@ public class PlayerStatControl : MonoBehaviour
 
     /// <summary>
     /// 플레이어를 direction 방향으로 force 크기만큼 즉시 밀어낸다.
-    /// AddForce(Impulse) 방식을 사용하여 벽 충돌을 유지하며 자연스럽게 밀린다.
+    /// TopDownMoveBase 컴포넌트가 있을 경우 이동 덮어쓰기를 일시 정지하고 물리력을 가합니다.
     /// </summary>
     public void StartKnockback(Vector3 direction, float force)
     {
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb == null) return;
-        rb.AddForce((Vector2)direction.normalized * force, ForceMode2D.Impulse);
+        TopDownMoveBase moveBase = GetComponent<TopDownMoveBase>();
+        if (moveBase != null)
+        {
+            moveBase.ApplyKnockback((Vector2)direction, force, 0.25f);
+        }
+        else
+        {
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            if (rb == null) return;
+            rb.AddForce((Vector2)direction.normalized * force, ForceMode2D.Impulse);
+        }
     }
 
     // 하위 호환성 유지: 코루틴 방식이 필요한 경우 (현재 미사용)

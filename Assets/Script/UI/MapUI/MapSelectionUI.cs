@@ -421,26 +421,42 @@ public class MapSelectionUI : MonoBehaviour
 
         int currentFloorIndex = GameManager.Instance.GetCurrentMapFloorIndex();
 
-        float contentHeight = scrollRect.content.rect.height;
+        // contentHeight를 레이아웃의 실제 높이 계산값으로 직접 대체하여 레이아웃 리빌드 지연 문제를 원천 방지
+        float contentHeight = mapPaddingBottom + (mapFloors.Count * verticalSpacing) + mapPaddingTop;
         float viewportHeight = scrollRect.viewport != null ? scrollRect.viewport.rect.height : 600f;
 
         // content pivot=(0.5,0) 기준: currentFloorIndex의 노드 y좌표
         float nodeY = mapPaddingBottom + (currentFloorIndex * verticalSpacing);
 
         // 현재 층이 뷰포트 하단 1/4 지점에 오도록 스크롤 위치 계산
-        // scrollY: content가 viewport 아래로 얼마나 이동했는지 (양수 = 위로 스크롤)
-        // 즉, content.anchoredPosition.y = scrollY (pivot=bottom이므로 양수로 위로 올라감)
-        //
-        // viewport 안에서 nodeY가 viewportHeight * 0.25 지점에 오도록:
-        // nodeY - scrollY = viewportHeight * 0.25
-        // scrollY = nodeY - viewportHeight * 0.25
         float scrollY = nodeY - viewportHeight * 0.25f;
 
         float maxScrollY = Mathf.Max(0f, contentHeight - viewportHeight);
         scrollY = Mathf.Clamp(scrollY, 0f, maxScrollY);
 
+        // 이전 스크롤 관성(velocity) 초기화
+        scrollRect.velocity = Vector2.zero;
+
+        // anchoredPosition 지정
         scrollRect.content.anchoredPosition = new Vector2(0f, scrollY);
 
-        Debug.Log($"[MapSelectionUI] ScrollToFloor {currentFloorIndex}: nodeY={nodeY}, contentH={contentHeight}, viewportH={viewportHeight}, scrollY={scrollY}");
+        // verticalNormalizedPosition 지정하여 스크롤바 컴포넌트 위치 동기화
+        float normVal = 0f;
+        if (maxScrollY > 0f)
+        {
+            normVal = Mathf.Clamp01(scrollY / maxScrollY);
+        }
+        scrollRect.verticalNormalizedPosition = normVal;
+
+        // 스크롤바 컴포넌트가 직접 연결되어 있는 경우 강제 갱신
+        if (scrollRect.verticalScrollbar != null)
+        {
+            scrollRect.verticalScrollbar.value = normVal;
+        }
+
+        // 레이아웃 변경 즉시 동기화
+        Canvas.ForceUpdateCanvases();
+
+        Debug.Log($"[MapSelectionUI] ScrollToFloor {currentFloorIndex}: nodeY={nodeY}, contentH={contentHeight}, viewportH={viewportHeight}, scrollY={scrollY}, normalizedPos={normVal}");
     }
 }
