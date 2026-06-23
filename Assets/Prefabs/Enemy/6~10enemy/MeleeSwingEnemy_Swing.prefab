@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.35, y: -0.15, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9097170526864886758}
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 100001
   m_SortingLayer: 3
   m_SortingOrder: 1001
-  m_Sprite: {fileID: 1065988620, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
+  m_Sprite: {fileID: 5469989279166431894, guid: 868cd81577925c1578cb9d95adde632c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -127,7 +127,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.4375, y: 0.25}
+    oldSize: {x: 0.56, y: 0.58}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -135,10 +135,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.21875, y: 0.125}
-      - {x: -0.21875, y: -0.125}
-      - {x: 0.21875, y: -0.125}
-      - {x: 0.21875, y: 0.125}
+    - - {x: -0.31010705, y: -0.2581247}
+      - {x: -0.2448273, y: -0.32343438}
+      - {x: 0.30219203, y: 0.1315371}
+      - {x: 0.15016733, y: 0.32358843}
   m_UseDelaunayMesh: 0
 --- !u!114 &4349679715799656571
 MonoBehaviour:
@@ -179,7 +179,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.8, y: 0, z: 0}
-  m_LocalScale: {x: 1.6, y: 1.2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9097170526864886758}
@@ -228,7 +228,7 @@ SpriteRenderer:
   m_SortingLayerID: 100001
   m_SortingLayer: 3
   m_SortingOrder: 1002
-  m_Sprite: {fileID: 1065988620, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
+  m_Sprite: {fileID: 5469989279166431894, guid: 868cd81577925c1578cb9d95adde632c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -425,3 +425,4 @@ MonoBehaviour:
   weaponDefaultVisual: {fileID: 1000001}
   weaponWarningVisual: {fileID: 0}
   weaponSwingVisual: {fileID: 2000001}
+  weaponSpriteAngleOffset: 45

@@ -20,6 +20,9 @@ public class MeleeSwingEnemy : EnemyBase
     [Tooltip("실제 타격 시 가해지는 궤적/타격 비주얼 (데미지 순간 ON)")]
     public GameObject weaponSwingVisual;
 
+    [Tooltip("무기 스프라이트 원본이 기본적으로 기울어진 각도 (우측 상단 대각선 스프라이트인 경우 보통 45f)")]
+    [SerializeField] private float weaponSpriteAngleOffset = 45f;
+
     private MeleeSwingEnemySO _swingSO;
 
     private Animator _animator;
@@ -245,6 +248,9 @@ public class MeleeSwingEnemy : EnemyBase
             }
         }
 
+        // 조준 진행 각도에서 무기 자체의 스프라이트 기울기 오프셋을 빼서 보정
+        float adjustedAngle = angle - weaponSpriteAngleOffset;
+
         // 평상시 무기 위치의 오프셋 크기를 스윙/공격 회전 반경으로 활용
         float swingRadius = _originalWeaponLocalPos.magnitude;
         if (swingRadius < 0.15f) swingRadius = 0.6f; // 너무 작을 시 기본 연출용 반지름 설정
@@ -274,9 +280,10 @@ public class MeleeSwingEnemy : EnemyBase
             if (weaponDefaultVisual != null)
             {
                 float startAngle = angle + 70f;
+                float adjustedStartAngle = startAngle - weaponSpriteAngleOffset;
                 Vector3 prepPos = Quaternion.Euler(0f, 0f, startAngle) * Vector3.right * swingRadius;
                 weaponDefaultVisual.transform.localPosition = prepPos;
-                weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, startAngle);
+                weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedStartAngle);
             }
         }
         else
@@ -293,7 +300,7 @@ public class MeleeSwingEnemy : EnemyBase
             if (weaponDefaultVisual != null)
             {
                 weaponDefaultVisual.transform.localPosition = -dir * 0.4f;
-                weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
+                weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedAngle);
             }
         }
 
@@ -312,7 +319,8 @@ public class MeleeSwingEnemy : EnemyBase
                 weaponSwingVisual.SetActive(true);
                 Vector3 prepPos = Quaternion.Euler(0f, 0f, startAngleVal) * Vector3.right * swingRadius;
                 weaponSwingVisual.transform.localPosition = prepPos;
-                weaponSwingVisual.transform.localRotation = Quaternion.Euler(0f, 0f, startAngleVal);
+                float adjustedStartAngleVal = startAngleVal - weaponSpriteAngleOffset;
+                weaponSwingVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedStartAngleVal);
             }
 
             if (_animator != null) _animator.SetTrigger(AnimAttack);
@@ -332,16 +340,17 @@ public class MeleeSwingEnemy : EnemyBase
                 float t = Mathf.Clamp01(elapsed / swingDuration);
                 float tEased = Mathf.Sin(t * Mathf.PI * 0.5f); // EaseOut 보간
                 float currentAngle = Mathf.Lerp(startAngleVal, endAngleVal, tEased);
+                float adjustedCurrentAngle = currentAngle - weaponSpriteAngleOffset;
 
                 if (weaponDefaultVisual != null)
                 {
-                    weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, currentAngle);
+                    weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedCurrentAngle);
                     Vector3 pos = Quaternion.Euler(0f, 0f, currentAngle) * Vector3.right * swingRadius;
                     weaponDefaultVisual.transform.localPosition = pos;
                 }
                 if (weaponSwingVisual != null)
                 {
-                    weaponSwingVisual.transform.localRotation = Quaternion.Euler(0f, 0f, currentAngle);
+                    weaponSwingVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedCurrentAngle);
                     Vector3 pos = Quaternion.Euler(0f, 0f, currentAngle) * Vector3.right * swingRadius;
                     weaponSwingVisual.transform.localPosition = pos;
                 }
@@ -414,7 +423,7 @@ public class MeleeSwingEnemy : EnemyBase
                 if (weaponDefaultVisual != null)
                 {
                     weaponDefaultVisual.transform.localPosition = Vector3.Lerp(startPos, endPos, tEased);
-                    weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
+                    weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedAngle);
                 }
                 yield return null;
             }
@@ -438,7 +447,7 @@ public class MeleeSwingEnemy : EnemyBase
             elapsed = 0f;
 
             Vector3 lastPos = weaponDefaultVisual != null ? weaponDefaultVisual.transform.localPosition : endPos;
-            Quaternion lastRot = weaponDefaultVisual != null ? weaponDefaultVisual.transform.localRotation : Quaternion.Euler(0f, 0f, angle);
+            Quaternion lastRot = weaponDefaultVisual != null ? weaponDefaultVisual.transform.localRotation : Quaternion.Euler(0f, 0f, adjustedAngle);
 
             Vector3 targetLocalPos = _originalWeaponLocalPos;
             if (_sr != null && _sr.flipX)

@@ -6148,6 +6148,9 @@ MonoBehaviour:
   pureCombatChance: 0.05
   maxRewardOverride: 4
   balanceScaleGimmickChance: 0.5
+  monsterTestMode: 0
+  testGroup: {fileID: 0}
+  testMonsterList: []
   monsterGroup: {fileID: 11400000, guid: 5b206c3a8c8e404b9c1d10200e4c0001, type: 2}
   availableMonsterGroups:
   - {fileID: 11400000, guid: 5b206c3a8c8e404b9c1d10200e4c0001, type: 2}

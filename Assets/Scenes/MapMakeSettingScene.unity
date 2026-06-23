@@ -10447,13 +10447,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: testGroup
+      value: 
+      objectReference: {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f08, type: 2}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: testMonster
+      value: 
+      objectReference: {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f08, type: 2}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: monsterGroup
+      value: 
+      objectReference: {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f08, type: 2}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: monsterTestMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: availableMonsterGroups.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: 'availableMonsterGroups.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f08, type: 2}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: 'availableMonsterGroups.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 5b206c3a8c8e404b9c1d10200e4c0001, type: 2}
     - target: {fileID: 7307526814741317659, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
       propertyPath: m_Name
       value: NormalStageBases
       objectReference: {fileID: 0}
     - target: {fileID: 7307526814741317659, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
