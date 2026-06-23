@@ -1044,7 +1044,7 @@ MonoBehaviour:
   isRareBox: 0
   forceDNA: 0
   coinDropChance: 0.3
-  dnaPrefab: {fileID: 262557969461933222, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
+  dnaPrefab: {fileID: 8870403881017627220, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
   closedSprite: {fileID: 67960899086109811, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   openedSprite: {fileID: -5092357024114813943, guid: 886a2c0f98216dd0a9707e4ca93497d1, type: 3}
   openingSprites:
@@ -2844,7 +2844,7 @@ MonoBehaviour:
   roomNumber: 0
   botDoor: {fileID: 2948946626963168413}
   topDoor: {fileID: 4607652504058677959}
-  bossPrefab: {fileID: 4364439344171702242, guid: 7cd0e882c765a054b8d07942c2593c53, type: 3}
+  bossPrefab: {fileID: 771134869951770689, guid: 7cd0e882c765a054b8d07942c2593c53, type: 3}
   bossOBJ: {fileID: 0}
   BossBase: {fileID: 0}
   randomHealPoint: {fileID: 4070102601822665472}
