@@ -11,9 +11,34 @@ public class EnemyBase : CreatureBase
 {
     // 접촉 데미지 무적/쿨타임은 PlayerStatControl.TryApplyContactDamage() 에서 일원화 관리
 
-    // ──────────────────── 스테이지 연결 ────────────────────
+    // ──────────────────────────────────────────────────────────
     /// <summary>이 몬스터가 속한 NormalStage. 사망 시 카운트 차감에 사용.</summary>
     [HideInInspector] public NormalStage ownerStage;
+
+    // ──────────────────── Context Steering ────────────────────
+    [Header("Context Steering (군집 경로 회피)")]
+    [Tooltip("체크 시 주변 몬스터/벽을 감지해 자연스럽게 돌아서 접근합니다. 덕덕거림 없음.")]
+    [SerializeField] protected bool useContextSteering = true;
+
+    [Tooltip("방향 후보 수. 8이면 45도 간격, 16이면 22.5도 간격.")]
+    [SerializeField] protected int steerRayCount = 8;
+
+    [Tooltip("장애물 감지 거리. 이 반경 안에 다른 몬스터나 벽이 있으면 피해서 접근.")]
+    [SerializeField] protected float steerRayLength = 1.5f;
+
+    [Tooltip("방향 전환 부드러움. 클수록 빠르게 방향 변경.")]
+    [SerializeField] protected float steerSmoothSpeed = 10f;
+
+    [Tooltip("벽/지형 레이어 마스크. Wall, Ground 레이어를 설정하면 벽도 피합니다. 없이도 몬스터 간 회피는 동작.")]
+    [SerializeField] protected LayerMask steerObstacleMask;
+
+    // 이전 프레임 스티어링 방향 캐시 (부드러운 전환용)
+    private Vector2 _steerDir;
+    private bool _steerDirInit;
+
+    // OverlapCircle 결과 버퍼 (static: 메인 스레드 직렬 실행 보장되므로 공유 안전)
+    private static readonly Collider2D[] _steerBuffer = new Collider2D[8];
+
 
     // =========================================================
     // Unity 생명주기
@@ -125,6 +150,81 @@ public class EnemyBase : CreatureBase
 
     /// <summary>StatSet 완료 직후 파생 클래스 훅.</summary>
     protected virtual void OnStatSetDone() { }
+
+    // =========================================================
+    // Context Steering
+    // =========================================================
+
+    /// <summary>
+    /// Context Steering: desiredDir 방향으로 가고 싶지만
+    /// 주변 몬스터나 벽이 있으면 자연스럽게 돌아서 접근한다.
+    /// 힘을 합산하지 않고 가장 좋은 방향 1개를 선택 → 덕덕거림 없음.
+    /// </summary>
+    protected Vector2 ComputeContextSteering(Vector2 desiredDir)
+    {
+        if (!useContextSteering || steerRayCount < 2) return desiredDir;
+
+        // 스티어 방향 초기화
+        if (!_steerDirInit)
+        {
+            _steerDir = desiredDir;
+            _steerDirInit = true;
+        }
+
+        float angleStep = 360f / steerRayCount;
+        float bestScore = float.MinValue;
+        Vector2 bestDir = desiredDir;
+
+        for (int i = 0; i < steerRayCount; i++)
+        {
+            float rad = i * angleStep * Mathf.Deg2Rad;
+            Vector2 rayDir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+
+            // ① Interest: 목표 방향과 얼마나 일치하는가 (-1 ~ 1)
+            float interest = Vector2.Dot(rayDir, desiredDir);
+
+            // 완전 반대 방향(-0.2 미만)은 후보 제외
+            if (interest < -0.2f) continue;
+
+            // ② Danger: 이 방향에 벽이 있는가
+            float danger = 0f;
+            if (steerObstacleMask != 0)
+            {
+                RaycastHit2D wallHit = Physics2D.Raycast(
+                    (Vector2)transform.position, rayDir, steerRayLength, steerObstacleMask);
+                if (wallHit.collider != null)
+                    danger = Mathf.Max(danger, 1f - wallHit.distance / steerRayLength);
+            }
+
+            // ③ Danger: 이 방향에 다른 몬스터가 있는가
+            // (steerRayLength * 0.6f 앞 지점에 반경 0.45f 원 검사)
+            Vector2 probePos = (Vector2)transform.position + rayDir * steerRayLength * 0.6f;
+            int hitCount = Physics2D.OverlapCircleNonAlloc(probePos, 0.45f, _steerBuffer);
+            for (int j = 0; j < hitCount; j++)
+            {
+                Collider2D col = _steerBuffer[j];
+                if (col == null || col.gameObject == gameObject) continue;
+                EnemyBase other = col.GetComponentInParent<EnemyBase>();
+                if (other != null && !other.isDead)
+                {
+                    danger = Mathf.Max(danger, 0.9f);
+                    break;
+                }
+            }
+
+            // 점수 = 관심 - 위험
+            float score = interest - danger;
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestDir = rayDir;
+            }
+        }
+
+        // 방향을 부드럽게 Lerp → 덕덕거림 근절
+        _steerDir = Vector2.Lerp(_steerDir, bestDir, Time.deltaTime * steerSmoothSpeed).normalized;
+        return _steerDir;
+    }
 
     // =========================================================
     // AI 훅 (파생 클래스에서 override)

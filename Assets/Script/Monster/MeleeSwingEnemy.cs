@@ -23,6 +23,16 @@ public class MeleeSwingEnemy : EnemyBase
     [Tooltip("무기 스프라이트 원본이 기본적으로 기울어진 각도 (우측 상단 대각선 스프라이트인 경우 보통 45f)")]
     [SerializeField] private float weaponSpriteAngleOffset = 45f;
 
+    [Header("스윙(Swing) 공격 물리/시각 설정")]
+    [Tooltip("스윙 공격 시 회전 중심축을 몸 바깥쪽으로 밀어내는 오프셋 거리 (플레이어 방향으로 이동)")]
+    [SerializeField] private float swingPivotOffset = 0.4f;
+
+    [Tooltip("스윙 공격 시 휘두르는 반경(반지름)에 더해지는 추가 거리")]
+    [SerializeField] private float swingRadiusBonus = 0.3f;
+
+    [Tooltip("찌르기 공격 시 대기하는 오프셋 거리 (음수면 뒤로 당김, 양수면 앞으로 내밈, 기존 -0.4f에서 살짝 더 바깥인 -0.15f 기본값)")]
+    [SerializeField] private float thrustPrepOffset = -0.15f;
+
     private MeleeSwingEnemySO _swingSO;
 
     private Animator _animator;
@@ -106,21 +116,21 @@ public class MeleeSwingEnemy : EnemyBase
             _optimizedRange = Mathf.Max(offset + weaponLen * 0.5f, 1.2f);
 
             // 2. 무기 스프라이트 맞춤형 콜라이더 자동 피팅 (Auto-Collider Fitting)
-            Collider2D oldCollider = weaponDefaultVisual.GetComponent<Collider2D>();
-            BoxCollider2D boxCol = weaponDefaultVisual.GetComponent<BoxCollider2D>();
+            Collider2D existingCollider = weaponDefaultVisual.GetComponent<Collider2D>();
 
-            if (boxCol == null)
+            if (existingCollider == null)
             {
-                if (oldCollider != null)
-                {
-                    Destroy(oldCollider);
-                }
-                boxCol = weaponDefaultVisual.AddComponent<BoxCollider2D>();
+                // 기존 콜라이더가 없으면 새 BoxCollider2D 추가 및 스프라이트 크기 맞춤
+                BoxCollider2D boxCol = weaponDefaultVisual.AddComponent<BoxCollider2D>();
+                boxCol.size = localB.size;
+                boxCol.offset = localB.center;
+                boxCol.isTrigger = true;
             }
-
-            boxCol.size = localB.size;
-            boxCol.offset = localB.center;
-            boxCol.isTrigger = true;
+            else
+            {
+                // 이미 설정된 콜라이더(PolygonCollider2D, BoxCollider2D 등)가 있다면 그대로 유지
+                existingCollider.isTrigger = true;
+            }
         }
         else
         {
@@ -209,8 +219,9 @@ public class MeleeSwingEnemy : EnemyBase
 
         if (dist > range)
         {
-            // 사거리 밖: 플레이어를 향해 접근
-            _rb2d.linearVelocity = toPlayer * speed;
+            // 사거리 밖: Context Steering으로 주변 몬스터를 피해 자연스럽게 접근
+            Vector2 moveDir = ComputeContextSteering(toPlayer);
+            _rb2d.linearVelocity = moveDir * speed;
             SetWalk(true);
         }
         else
@@ -281,25 +292,35 @@ public class MeleeSwingEnemy : EnemyBase
             {
                 float startAngle = angle + 70f;
                 float adjustedStartAngle = startAngle - weaponSpriteAngleOffset;
-                Vector3 prepPos = Quaternion.Euler(0f, 0f, startAngle) * Vector3.right * swingRadius;
+                
+                // 프리팹 무기 세팅을 존중하기 위해 인위적인 Pivot Offset 및 Radius Bonus 제거
+                Vector3 centerPos = Vector3.zero;
+                float actualRadius = swingRadius;
+                
+                Vector3 prepPos = centerPos + Quaternion.Euler(0f, 0f, startAngle) * Vector3.right * actualRadius;
                 weaponDefaultVisual.transform.localPosition = prepPos;
                 weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedStartAngle);
             }
         }
         else
         {
-            // Thrust 타입: 붉은 예고선 ON. 무기는 조준선상의 뒤쪽으로 당겨 찌르기 대기 자세 취함
+            // Thrust 타입: 빨간선 예고 없앰 (weaponWarningVisual 비활성화)
             if (weaponWarningVisual != null)
             {
-                weaponWarningVisual.SetActive(true);
-                weaponWarningVisual.transform.localPosition = dir * (range * 0.6f);
-                weaponWarningVisual.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
+                weaponWarningVisual.SetActive(false);
             }
             if (weaponSwingVisual != null) weaponSwingVisual.SetActive(false);
 
+            // 플립 보정된 원래 무기 로컬 위치 계산
+            Vector3 targetLocalPos = _originalWeaponLocalPos;
+            if (_sr != null && _sr.flipX)
+            {
+                targetLocalPos.x = -Mathf.Abs(targetLocalPos.x);
+            }
+
             if (weaponDefaultVisual != null)
             {
-                weaponDefaultVisual.transform.localPosition = -dir * 0.4f;
+                weaponDefaultVisual.transform.localPosition = targetLocalPos + dir * thrustPrepOffset;
                 weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedAngle);
             }
         }
@@ -314,10 +335,14 @@ public class MeleeSwingEnemy : EnemyBase
             float startAngleVal = angle + 70f;
             float endAngleVal = angle - 70f;
 
+            // 프리팹 무기 세팅을 존중하기 위해 인위적인 Pivot Offset 및 Radius Bonus 제거
+            Vector3 centerPos = Vector3.zero;
+            float actualRadius = swingRadius;
+
             if (weaponSwingVisual != null)
             {
                 weaponSwingVisual.SetActive(true);
-                Vector3 prepPos = Quaternion.Euler(0f, 0f, startAngleVal) * Vector3.right * swingRadius;
+                Vector3 prepPos = centerPos + Quaternion.Euler(0f, 0f, startAngleVal) * Vector3.right * actualRadius;
                 weaponSwingVisual.transform.localPosition = prepPos;
                 float adjustedStartAngleVal = startAngleVal - weaponSpriteAngleOffset;
                 weaponSwingVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedStartAngleVal);
@@ -345,13 +370,13 @@ public class MeleeSwingEnemy : EnemyBase
                 if (weaponDefaultVisual != null)
                 {
                     weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedCurrentAngle);
-                    Vector3 pos = Quaternion.Euler(0f, 0f, currentAngle) * Vector3.right * swingRadius;
+                    Vector3 pos = centerPos + Quaternion.Euler(0f, 0f, currentAngle) * Vector3.right * actualRadius;
                     weaponDefaultVisual.transform.localPosition = pos;
                 }
                 if (weaponSwingVisual != null)
                 {
                     weaponSwingVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedCurrentAngle);
-                    Vector3 pos = Quaternion.Euler(0f, 0f, currentAngle) * Vector3.right * swingRadius;
+                    Vector3 pos = centerPos + Quaternion.Euler(0f, 0f, currentAngle) * Vector3.right * actualRadius;
                     weaponSwingVisual.transform.localPosition = pos;
                 }
                 yield return null;
@@ -402,11 +427,18 @@ public class MeleeSwingEnemy : EnemyBase
 
             if (_animator != null) _animator.SetTrigger(AnimAttack);
 
+            // 플립 보정된 원래 무기 로컬 위치 계산
+            Vector3 targetLocalPos = _originalWeaponLocalPos;
+            if (_sr != null && _sr.flipX)
+            {
+                targetLocalPos.x = -Mathf.Abs(targetLocalPos.x);
+            }
+
             // 찌르기(돌진): 0.08초 동안 뒤로 당긴 위치에서 전방 타격 지점까지 맹렬히 뻗어나가도록 Lerp 보간
             float thrustDuration = 0.08f;
             float elapsed = 0f;
-            Vector3 startPos = -dir * 0.4f;
-            Vector3 endPos = dir * (range * 0.8f);
+            Vector3 startPos = targetLocalPos + dir * thrustPrepOffset;
+            Vector3 endPos = targetLocalPos + dir * (range * 0.8f);
 
             // 찌르는 돌진 동안 물리 콜라이더 활성화
             if (_weaponTrigger != null)
@@ -449,11 +481,6 @@ public class MeleeSwingEnemy : EnemyBase
             Vector3 lastPos = weaponDefaultVisual != null ? weaponDefaultVisual.transform.localPosition : endPos;
             Quaternion lastRot = weaponDefaultVisual != null ? weaponDefaultVisual.transform.localRotation : Quaternion.Euler(0f, 0f, adjustedAngle);
 
-            Vector3 targetLocalPos = _originalWeaponLocalPos;
-            if (_sr != null && _sr.flipX)
-            {
-                targetLocalPos.x = -Mathf.Abs(targetLocalPos.x);
-            }
             Quaternion targetLocalRot = _originalWeaponLocalRot;
 
             while (elapsed < recoverDuration)

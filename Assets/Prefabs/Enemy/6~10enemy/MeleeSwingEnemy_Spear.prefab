@@ -253,7 +253,7 @@ GameObject:
   - component: {fileID: 3511116445718640128}
   - component: {fileID: 5714130217907053548}
   m_Layer: 9
-  m_Name: MeleeSwingEnemy_Basic
+  m_Name: MeleeSwingEnemy_Spear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

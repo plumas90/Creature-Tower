@@ -31,13 +31,16 @@ public class NormalMeleeEnemy : EnemyBase
             return;
         }
 
-        Vector2 dir = (Player.transform.position - transform.position).normalized;
+        Vector2 toPlayer = (Player.transform.position - transform.position).normalized;
 
-        _rb2d.linearVelocity = dir * speed;
+        // Context Steering: 주변 몬스터/벽을 피해 자연스럽게 접근
+        Vector2 moveDir = ComputeContextSteering(toPlayer);
 
-        // 좌우 반전
-        if (_sr != null && Mathf.Abs(dir.x) > 0.01f)
-            _sr.flipX = dir.x < 0f;
+        _rb2d.linearVelocity = moveDir * speed;
+
+        // 좌우 반전은 플레이어 방향 기준 유지 (이동 방향이 꺾여도 플레이어를 바라봄)
+        if (_sr != null && Mathf.Abs(toPlayer.x) > 0.01f)
+            _sr.flipX = toPlayer.x < 0f;
 
         SetWalk(true);
     }
