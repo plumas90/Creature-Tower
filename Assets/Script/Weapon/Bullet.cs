@@ -76,9 +76,9 @@ public class Bullet : MonoBehaviour
         _direction = transform.right;
         layerMask = 1 << LayerMask.NameToLayer("Wall");
 
-        if (spriteAngleOffset != 0f)
+        if (spriteAngleOffset != 0f && spriteRenderer != null)
         {
-            transform.rotation = Quaternion.Euler(0f, 0f, transform.eulerAngles.z + spriteAngleOffset);
+            spriteRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, spriteAngleOffset);
         }
     }
 
@@ -90,7 +90,7 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(_direction * BulletSpeed * Time.deltaTime, Space.World);
+        transform.Translate(Vector3.right * BulletSpeed * Time.deltaTime);
         ApplyYBasedSorting();
         
         if (autoFlipY && spriteRenderer != null)
@@ -98,7 +98,9 @@ public class Bullet : MonoBehaviour
             float zRot = transform.eulerAngles.z;
             spriteRenderer.flipY = (zRot > 90f && zRot < 270f);
         }
-
+ 
+        _direction = transform.right;
+ 
         time += Time.deltaTime;
         if (time>= BulletLifeTime) 
         {
@@ -178,19 +180,20 @@ public class Bullet : MonoBehaviour
         {
             if (canAngle)
             {
-                hit = Physics2D.Raycast(this.transform.position, _direction, BulletSpeed * BulletLifeTime, layerMask);
-                Debug.DrawRay(this.transform.position, _direction, UnityEngine.Color.red, 3f);
-
+                Vector3 curDir = transform.right;
+                hit = Physics2D.Raycast(this.transform.position, curDir, BulletSpeed * BulletLifeTime, layerMask);
+                Debug.DrawRay(this.transform.position, curDir, UnityEngine.Color.red, 3f);
+ 
                 if (!hit)
                 {
                     Destroy();
                     return;
                 }
-
-                Vector3 reflectVector = Vector3.Reflect(_direction, hit.normal).normalized;
+ 
+                Vector3 reflectVector = Vector3.Reflect(curDir, hit.normal).normalized;
                 float angle = Mathf.Atan2(reflectVector.y, reflectVector.x) * Mathf.Rad2Deg;
-
-                Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angle + spriteAngleOffset));
+ 
+                Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angle));
                 this.transform.rotation = rotation;
                 _direction = reflectVector;
             }
