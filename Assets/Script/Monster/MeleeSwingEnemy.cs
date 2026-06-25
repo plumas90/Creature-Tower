@@ -179,9 +179,21 @@ public class MeleeSwingEnemy : EnemyBase
             weaponDefaultVisual.SetActive(true);
             if (_hasCachedOriginalTransform)
             {
-                weaponDefaultVisual.transform.localPosition = _originalWeaponLocalPos;
+                // 몸체의 flipX 상태에 맞춰 무기의 localPosition X 좌표 보정
+                Vector3 targetPos = _originalWeaponLocalPos;
+                if (_sr != null && _sr.flipX)
+                {
+                    targetPos.x = -Mathf.Abs(targetPos.x);
+                }
+                weaponDefaultVisual.transform.localPosition = targetPos;
                 weaponDefaultVisual.transform.localRotation = _originalWeaponLocalRot;
                 weaponDefaultVisual.transform.localScale = _originalWeaponLocalScale;
+
+                SpriteRenderer defaultSr = weaponDefaultVisual.GetComponent<SpriteRenderer>();
+                if (defaultSr != null && _sr != null)
+                {
+                    defaultSr.flipX = _sr.flipX;
+                }
             }
         }
         if (weaponWarningVisual != null) weaponWarningVisual.SetActive(false);
@@ -217,17 +229,7 @@ public class MeleeSwingEnemy : EnemyBase
             return;
         }
  
-        // 2. 쿨타임 타이머 연산 (여기서 멈춤 - 쿨타임 동안은 플립 연산을 하지 않고 대기)
-        if (_cooldownTimer > 0f)
-        {
-            _cooldownTimer -= Time.deltaTime;
-            _rb2d.linearVelocity = Vector2.zero;
-            SetWalk(false);
-            if (shouldLog) Debug.Log($"[MeleeSwingEnemy] {name} OnTick() blocked by cooldown. Remaining: {_cooldownTimer}");
-            return;
-        }
- 
-        // 3. 방향 및 스프라이트 플립 & 무기 반전 보정
+        // 2. 방향 및 스프라이트 플립 & 무기 반전 보정 (쿨타임 중에도 동작하여 올바른 방향 조준 유지)
         Vector2 toPlayer = (Player.transform.position - transform.position).normalized;
  
         // 스프라이트 좌우 반전
@@ -246,6 +248,16 @@ public class MeleeSwingEnemy : EnemyBase
             {
                 defaultSr.flipX = _sr.flipX;
             }
+        }
+ 
+        // 3. 쿨타임 타이머 연산 (여기서 멈춤 - 이동/공격 시도는 차단되지만 방향은 위에서 갱신됨)
+        if (_cooldownTimer > 0f)
+        {
+            _cooldownTimer -= Time.deltaTime;
+            _rb2d.linearVelocity = Vector2.zero;
+            SetWalk(false);
+            if (shouldLog) Debug.Log($"[MeleeSwingEnemy] {name} OnTick() blocked by cooldown. Remaining: {_cooldownTimer}");
+            return;
         }
  
         // 4. 사거리 내 접근 및 공격 수행

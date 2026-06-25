@@ -29,5 +29,5 @@ MonoBehaviour:
   attackCooldown: 2
   attackWarningTime: 0.8
   swingPivotOffset: 0.4
-  swingRadiusBonus: 0.3
+  swingRadiusBonus: 0.1
   thrustPrepOffset: -0.15
