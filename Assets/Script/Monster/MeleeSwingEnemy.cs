@@ -44,6 +44,15 @@ public class MeleeSwingEnemy : EnemyBase
     private bool _isAttacking = false;
     private float _cooldownTimer = 0f;
 
+    [Header("Sprite Animation (Fallback if no Animator)")]
+    [SerializeField] private Sprite[] walkSprites;
+    [SerializeField] private Sprite idleSprite;
+    [SerializeField] private float walkFrameRate = 0.2f;
+
+    private int _currentWalkFrame = 0;
+    private float _walkAnimTimer = 0f;
+    private bool _isWalkingState = false;
+
     // 평상시 무기 트랜스폼 캐싱
     private Vector3 _originalWeaponLocalPos;
     private Quaternion _originalWeaponLocalRot;
@@ -66,6 +75,11 @@ public class MeleeSwingEnemy : EnemyBase
         InitializeWeaponBoundsAndCollider();
         ResetVisuals();
         InitWeaponTrigger();
+
+        if (idleSprite == null && _sr != null)
+        {
+            idleSprite = _sr.sprite;
+        }
     }
 
     public override void StatSet(EnemySO so = null)
@@ -82,6 +96,11 @@ public class MeleeSwingEnemy : EnemyBase
         InitializeWeaponBoundsAndCollider();
         ResetVisuals();
         InitWeaponTrigger();
+
+        if (idleSprite == null && _sr != null)
+        {
+            idleSprite = _sr.sprite;
+        }
     }
 
     private void CacheOriginalWeaponTransform()
@@ -174,6 +193,12 @@ public class MeleeSwingEnemy : EnemyBase
     // ─── AI ───────────────────────────────────────────────────
     protected override void OnTick()
     {
+        bool shouldLog = Time.frameCount % 60 == 0;
+        if (shouldLog)
+        {
+            Debug.Log($"[MeleeSwingEnemy] {name} OnTick() - live: {live}, isDead: {isDead}, player: {(Player != null ? Player.name : "null")}, isAttacking: {_isAttacking}, cooldownTimer: {_cooldownTimer}, speed: {speed}");
+        }
+
         if (Player == null)
         {
             ResolvePlayer();
@@ -183,7 +208,11 @@ public class MeleeSwingEnemy : EnemyBase
         }
 
         // 공격 액션(코루틴) 진행 중에는 OnTick 로직 차단
-        if (_isAttacking) return;
+        if (_isAttacking)
+        {
+            if (shouldLog) Debug.Log($"[MeleeSwingEnemy] {name} OnTick() blocked because _isAttacking is true.");
+            return;
+        }
 
         // 쿨타임 타이머 연산
         if (_cooldownTimer > 0f)
@@ -191,6 +220,7 @@ public class MeleeSwingEnemy : EnemyBase
             _cooldownTimer -= Time.deltaTime;
             _rb2d.linearVelocity = Vector2.zero;
             SetWalk(false);
+            if (shouldLog) Debug.Log($"[MeleeSwingEnemy] {name} OnTick() blocked by cooldown. Remaining: {_cooldownTimer}");
             return;
         }
 
@@ -216,6 +246,10 @@ public class MeleeSwingEnemy : EnemyBase
         }
 
         float range = _optimizedRange;
+        if (shouldLog)
+        {
+            Debug.Log($"[MeleeSwingEnemy] {name} - Distance to player: {dist}, Attack Range: {range}");
+        }
 
         if (dist > range)
         {
@@ -223,10 +257,15 @@ public class MeleeSwingEnemy : EnemyBase
             Vector2 moveDir = ComputeContextSteering(toPlayer);
             _rb2d.linearVelocity = moveDir * speed;
             SetWalk(true);
+            if (shouldLog)
+            {
+                Debug.Log($"[MeleeSwingEnemy] {name} moving to player. desiredDir: {toPlayer}, steerDir: {moveDir}, velocity: {_rb2d.linearVelocity}");
+            }
         }
         else
         {
             // 사거리 안: 정지하여 공격 루틴 시작
+            Debug.Log($"[MeleeSwingEnemy] {name} within range. Starting PerformAttackRoutine. Distance: {dist}, Range: {range}");
             StartCoroutine(PerformAttackRoutine());
         }
     }
@@ -234,6 +273,7 @@ public class MeleeSwingEnemy : EnemyBase
     // ─── 찌르기 & 휘두르기 공격 코루틴 ──────────────────────────────
     private IEnumerator PerformAttackRoutine()
     {
+        Debug.Log($"[MeleeSwingEnemy] {name} PerformAttackRoutine() started.");
         _isAttacking = true;
         _rb2d.linearVelocity = Vector2.zero;
         SetWalk(false);
@@ -243,6 +283,10 @@ public class MeleeSwingEnemy : EnemyBase
         float range = _swingSO != null ? _swingSO.attackRange : 1.6f;
         float warningTime = _swingSO != null ? _swingSO.attackWarningTime : 0.8f;
         bool isSwingType = _swingSO != null && _swingSO.attackType == MeleeAttackType.Swing;
+
+        float curPivotOffset = _swingSO != null ? _swingSO.swingPivotOffset : swingPivotOffset;
+        float curRadiusBonus = _swingSO != null ? _swingSO.swingRadiusBonus : swingRadiusBonus;
+        float curThrustPrepOffset = _swingSO != null ? _swingSO.thrustPrepOffset : thrustPrepOffset;
 
         Vector3 dir = Vector3.right;
         float angle = 0f;
@@ -293,9 +337,9 @@ public class MeleeSwingEnemy : EnemyBase
                 float startAngle = angle + 70f;
                 float adjustedStartAngle = startAngle - weaponSpriteAngleOffset;
                 
-                // 프리팹 무기 세팅을 존중하기 위해 인위적인 Pivot Offset 및 Radius Bonus 제거
-                Vector3 centerPos = Vector3.zero;
-                float actualRadius = swingRadius;
+                // SO에 기재된 Pivot Offset 및 Radius Bonus 반영하여 준비 위치 설정
+                Vector3 centerPos = dir * curPivotOffset;
+                float actualRadius = swingRadius + curRadiusBonus;
                 
                 Vector3 prepPos = centerPos + Quaternion.Euler(0f, 0f, startAngle) * Vector3.right * actualRadius;
                 weaponDefaultVisual.transform.localPosition = prepPos;
@@ -320,7 +364,7 @@ public class MeleeSwingEnemy : EnemyBase
 
             if (weaponDefaultVisual != null)
             {
-                weaponDefaultVisual.transform.localPosition = targetLocalPos + dir * thrustPrepOffset;
+                weaponDefaultVisual.transform.localPosition = targetLocalPos + dir * curThrustPrepOffset;
                 weaponDefaultVisual.transform.localRotation = Quaternion.Euler(0f, 0f, adjustedAngle);
             }
         }
@@ -335,9 +379,9 @@ public class MeleeSwingEnemy : EnemyBase
             float startAngleVal = angle + 70f;
             float endAngleVal = angle - 70f;
 
-            // 프리팹 무기 세팅을 존중하기 위해 인위적인 Pivot Offset 및 Radius Bonus 제거
-            Vector3 centerPos = Vector3.zero;
-            float actualRadius = swingRadius;
+            // SO에 기재된 Pivot Offset 및 Radius Bonus 반영
+            Vector3 centerPos = dir * curPivotOffset;
+            float actualRadius = swingRadius + curRadiusBonus;
 
             if (weaponSwingVisual != null)
             {
@@ -437,7 +481,7 @@ public class MeleeSwingEnemy : EnemyBase
             // 찌르기(돌진): 0.08초 동안 뒤로 당긴 위치에서 전방 타격 지점까지 맹렬히 뻗어나가도록 Lerp 보간
             float thrustDuration = 0.08f;
             float elapsed = 0f;
-            Vector3 startPos = targetLocalPos + dir * thrustPrepOffset;
+            Vector3 startPos = targetLocalPos + dir * curThrustPrepOffset;
             Vector3 endPos = targetLocalPos + dir * (range * 0.8f);
 
             // 찌르는 돌진 동안 물리 콜라이더 활성화
@@ -504,6 +548,7 @@ public class MeleeSwingEnemy : EnemyBase
         float cooldown = _swingSO != null ? _swingSO.attackCooldown : 2.0f;
         _cooldownTimer = cooldown;
         _isAttacking = false;
+        Debug.Log($"[MeleeSwingEnemy] {name} PerformAttackRoutine() finished. Cooldown set to: {cooldown}");
     }
 
     /// <summary>
@@ -546,7 +591,38 @@ public class MeleeSwingEnemy : EnemyBase
     // ─── 유틸 ─────────────────────────────────────────────────
     private void SetWalk(bool value)
     {
-        if (_animator == null) return;
-        _animator.SetBool(AnimIsWalk, value);
+        _isWalkingState = value;
+        if (_animator != null)
+        {
+            _animator.SetBool(AnimIsWalk, value);
+        }
+
+        if (_animator == null && _sr != null)
+        {
+            if (!value)
+            {
+                if (idleSprite != null)
+                {
+                    _sr.sprite = idleSprite;
+                }
+            }
+        }
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        // 걷기 애니메이션 처리 (애니메이터가 없고 walkSprites가 지정되어 있을 때)
+        if (_animator == null && _isWalkingState && walkSprites != null && walkSprites.Length > 0 && _sr != null)
+        {
+            _walkAnimTimer += Time.deltaTime;
+            if (_walkAnimTimer >= walkFrameRate)
+            {
+                _walkAnimTimer = 0f;
+                _currentWalkFrame = (_currentWalkFrame + 1) % walkSprites.Length;
+                _sr.sprite = walkSprites[_currentWalkFrame];
+            }
+        }
     }
 }

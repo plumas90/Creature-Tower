@@ -63,7 +63,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -200,10 +200,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: walk_robot_idle
+      name: walk_robot_walk5
       rect:
         serializedVersion: 2
-        x: 186
+        x: 192
         y: 5
         width: 34
         height: 59
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      walk_robot_idle: -3338483302852262541
       walk_robot_walk1: -2073566385283376946
       walk_robot_walk2: 6822458512010255455
       walk_robot_walk3: 8418071827486537181
       walk_robot_walk4: 427366070133864911
+      walk_robot_walk5: -3338483302852262541
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -39,6 +39,9 @@ public class EnemyBase : CreatureBase
     // OverlapCircle 결과 버퍼 (static: 메인 스레드 직렬 실행 보장되므로 공유 안전)
     private static readonly Collider2D[] _steerBuffer = new Collider2D[8];
 
+    // 몬스터 감지 레이어: 오직 'Creatuer' 레이어(9)에 속한 콜라이더만 탐색 (무기, 총알, 플레이어 등 제외)
+    private static readonly int _creatureLayerMask = 1 << 9;
+
 
     // =========================================================
     // Unity 생명주기
@@ -51,6 +54,7 @@ public class EnemyBase : CreatureBase
 
     protected virtual void Start()
     {
+        Debug.Log($"[EnemyBase] {name} Start() called. MainSO: {(MainSO != null ? MainSO.name : "null")}");
         ResolvePlayer();
 
         // 프리팹이나 인스펙터에 MainSO가 할당되어 있다면 자동 초기화
@@ -62,6 +66,7 @@ public class EnemyBase : CreatureBase
         {
             // SO가 없어도 일단 죽을 수는 있도록 임시 상태 부여 (문 열림 테스트용)
             isDead = false;
+            Debug.Log($"[EnemyBase] {name} Start() - MainSO is null. Starting SpawnDelayRoutine directly.");
             StartCoroutine(SpawnDelayRoutine());
         }
     }
@@ -81,6 +86,7 @@ public class EnemyBase : CreatureBase
     /// </summary>
     public virtual void StatSet(EnemySO so = null)
     {
+        Debug.Log($"[EnemyBase] {name} StatSet() called. so parameter: {(so != null ? so.name : "null")}");
         if (so != null)
             MainSO = so;
 
@@ -104,11 +110,13 @@ public class EnemyBase : CreatureBase
         OnStatSetDone();
 
         // 생성 연출: 1초 대기 후 활성화
+        Debug.Log($"[EnemyBase] {name} StatSet() - Starting SpawnDelayRoutine.");
         StartCoroutine(SpawnDelayRoutine());
     }
 
     private IEnumerator SpawnDelayRoutine()
     {
+        Debug.Log($"[EnemyBase] {name} SpawnDelayRoutine() started. Disabling colliders. live: {live}");
         // 소환 대기 동안 Collider2D 일시 비활성화하여 플레이어가 밀거나 끼이는 현상 방지
         Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
         foreach (var c in colliders)
@@ -131,15 +139,24 @@ public class EnemyBase : CreatureBase
 
         yield return new WaitForSeconds(1.0f);
 
-        if (isDead) yield break;
+        if (isDead)
+        {
+            Debug.Log($"[EnemyBase] {name} SpawnDelayRoutine() - Enemy died during delay. Breaking.");
+            yield break;
+        }
 
         live = true;
         invincibility = false;
+        Debug.Log($"[EnemyBase] {name} SpawnDelayRoutine() finished. live set to true. Re-enabling colliders.");
 
-        // 소환 완료 후 Collider2D 원복 활성화
+        // 소환 완료 후 Collider2D 원복 활성화 (무기 트리거 콜라이더는 제외)
         foreach (var c in colliders)
         {
-            if (c != null) c.enabled = true;
+            if (c != null)
+            {
+                if (c.GetComponent<EnemyWeaponTrigger>() != null) continue;
+                c.enabled = true;
+            }
         }
 
         foreach (var r in renderers)
@@ -199,13 +216,14 @@ public class EnemyBase : CreatureBase
             // ③ Danger: 이 방향에 다른 몬스터가 있는가
             // (steerRayLength * 0.6f 앞 지점에 반경 0.45f 원 검사)
             Vector2 probePos = (Vector2)transform.position + rayDir * steerRayLength * 0.6f;
-            int hitCount = Physics2D.OverlapCircleNonAlloc(probePos, 0.45f, _steerBuffer);
+            int hitCount = Physics2D.OverlapCircleNonAlloc(probePos, 0.45f, _steerBuffer, _creatureLayerMask);
             for (int j = 0; j < hitCount; j++)
             {
                 Collider2D col = _steerBuffer[j];
-                if (col == null || col.gameObject == gameObject) continue;
+                // 자기 자신 또는 자식 오브젝트에 속한 콜라이더는 완전 제외
+                if (col == null || col.transform.IsChildOf(transform)) continue;
                 EnemyBase other = col.GetComponentInParent<EnemyBase>();
-                if (other != null && !other.isDead)
+                if (other != null && other != this && !other.isDead)
                 {
                     danger = Mathf.Max(danger, 0.9f);
                     break;

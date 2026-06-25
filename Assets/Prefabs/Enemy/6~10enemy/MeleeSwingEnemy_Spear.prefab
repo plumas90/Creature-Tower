@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 1000001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.35, y: -0.15, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalPosition: {x: 0.263, y: -0.011, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9097170526864886758}
@@ -250,8 +250,8 @@ GameObject:
   - component: {fileID: 9097170526864886758}
   - component: {fileID: 1143014847169188698}
   - component: {fileID: 1268838496569854029}
-  - component: {fileID: 3511116445718640128}
   - component: {fileID: 5714130217907053548}
+  - component: {fileID: -8044974471678324628}
   m_Layer: 9
   m_Name: MeleeSwingEnemy_Spear
   m_TagString: Untagged
@@ -269,7 +269,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1000002}
@@ -320,8 +320,8 @@ SpriteRenderer:
   m_SortingLayerID: 100001
   m_SortingLayer: 3
   m_SortingOrder: 1000
-  m_Sprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
-  m_Color: {r: 1, g: 0.2, b: 0.2, a: 1}
+  m_Sprite: {fileID: -3338483302852262541, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -358,8 +358,56 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!58 &3511116445718640128
-CircleCollider2D:
+--- !u!114 &5714130217907053548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6646246831167701657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MainSO: {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f06, type: 2}
+  atk: 0
+  maxHp: 0
+  curHp: 0
+  speed: 0
+  live: 0
+  invincibility: 0
+  Player: {fileID: 0}
+  useKinematic: 0
+  useYBasedSorting: 1
+  ySortLayerName: World_Dynamic
+  ySortBaseOrder: 1000
+  ySortScale: 10
+  ySortOrderOffset: 0
+  ySortPivot: {fileID: 0}
+  ownerStage: {fileID: 0}
+  useContextSteering: 1
+  steerRayCount: 8
+  steerRayLength: 1.5
+  steerSmoothSpeed: 10
+  steerObstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  weaponDefaultVisual: {fileID: 1000001}
+  weaponWarningVisual: {fileID: 3000001}
+  weaponSwingVisual: {fileID: 0}
+  weaponSpriteAngleOffset: 45
+  swingPivotOffset: 0.4
+  swingRadiusBonus: 0.3
+  thrustPrepOffset: -0.15
+  walkSprites:
+  - {fileID: -2073566385283376946, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  - {fileID: 6822458512010255455, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  - {fileID: 8418071827486537181, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  idleSprite: {fileID: 8418071827486537181, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  walkFrameRate: 0.2
+--- !u!61 &-8044974471678324628
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -392,37 +440,15 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.4
---- !u!114 &5714130217907053548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6646246831167701657}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MainSO: {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f06, type: 2}
-  atk: 0
-  maxHp: 0
-  curHp: 0
-  speed: 0
-  live: 0
-  invincibility: 0
-  Player: {fileID: 0}
-  useKinematic: 0
-  useYBasedSorting: 1
-  ySortLayerName: World_Dynamic
-  ySortBaseOrder: 1000
-  ySortScale: 10
-  ySortOrderOffset: 0
-  ySortPivot: {fileID: 0}
-  ownerStage: {fileID: 0}
-  weaponDefaultVisual: {fileID: 1000001}
-  weaponWarningVisual: {fileID: 3000001}
-  weaponSwingVisual: {fileID: 0}
-  weaponSpriteAngleOffset: 45
+  m_Offset: {x: 0, y: -0.15109715}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.53125, y: 0.921875}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.53125, y: 0.6196807}
+  m_EdgeRadius: 0
