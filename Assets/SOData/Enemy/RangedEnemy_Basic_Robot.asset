@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8cfcbb4684fd1a4694dd32b8b991875, type: 3}
+  m_Name: RangedEnemy_Basic_Robot
+  m_EditorClassIdentifier: 
+  enemyName: "\uAE30\uBCF8 \uC6D0\uAC70\uB9AC \uBAAC\uC2A4\uD130"
+  atk: 6
+  hp: 15
+  speed: 2
+  bossCount: 0
+  IntroAnimationTime: 0
+  bossPatternTime: 0
+  btChaseRange: 100
+  btStopDistance: 0.6
+  btRepathInterval: 0.15
+  btMoveSpeedMultiplier: 1
+  btChaseChance: 1
+  attackRange: 8
+  keepDistance: 4
+  attackCooldown: 2.5
+  projectileCount: 1
+  spreadAngle: 0
+  projectileSpeed: 7
+  projectileLifeTime: 10
+  projectilePrefab: {fileID: 2328932172238596288, guid: f16e02fbee64205c585020ee2c524c70, type: 3}
+  attackWhileFleeing: 0
+  evadeObstaclesWhileFleeing: 0

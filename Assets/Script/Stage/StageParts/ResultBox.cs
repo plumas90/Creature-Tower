@@ -18,7 +18,10 @@ public class ResultBox : MonoBehaviour
     public SpriteRenderer boxSpriteRenderer; // 자식 오브젝트 (Box)의 SpriteRenderer
 
     [Header("Push Back")]
-    public float pushForce = 1.5f;
+    public float pushForce = 5f; // AddForce(Impulse) 크기 (1/3로 조정됨)
+
+    [Header("Reward Probabilities")]
+    public float rareDnaChance = 0.01f; // 일반 상자에서 레어 DNA가 나올 확률 (기본 1%)
 
     private bool isOpened = false;
 
@@ -138,8 +141,8 @@ public class ResultBox : MonoBehaviour
             ResultDNA resultDna = targetDnaObj.GetComponent<ResultDNA>();
             if (resultDna != null)
             {
-                // 일반 상자(isRareBox == false)에서도 5% 확률로 레어 DNA가 나올 수 있음
-                bool spawnRareDna = isRareBox || (Random.value < 0.05f);
+                // isRareBox가 true이거나 설정된 확률(rareDnaChance)에 당첨되었을 때 레어 DNA 소환
+                bool spawnRareDna = isRareBox || (Random.value < rareDnaChance);
                 Debug.Log($"[ResultBox] Initializing ResultDNA. isRare={spawnRareDna}");
                 resultDna.Init(spawnRareDna);
             }

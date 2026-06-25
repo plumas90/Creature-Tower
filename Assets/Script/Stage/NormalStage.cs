@@ -37,7 +37,15 @@ public class NormalStage : Stage
 
     // GameManager나 지도 생성기에서 호출하여 씬 생성 시 활용하는 GET/SET 프로퍼티
     public NormalStageCase GetStageCase() => stageCase;
-    public void SetStageCase(NormalStageCase value) => stageCase = value;
+    public void SetStageCase(NormalStageCase value)
+    {
+        if (monsterTestMode && value == NormalStageCase.ChoiceResult)
+        {
+            Debug.LogWarning("[NormalStage] 몬스터 테스트 모드가 활성화되어 있으므로 stageCase를 ChoiceResult로 변경하려는 요청을 무시합니다.");
+            return;
+        }
+        stageCase = value;
+    }
 
     public RoomTheme GetRoomTheme() => roomTheme;
     public void SetRoomTheme(RoomTheme value) => roomTheme = value;
@@ -51,7 +59,14 @@ public class NormalStage : Stage
         // my_tved 및 순수 전투방 특수 판정
         isMyTvedRoom = false;
         isPureCombatRoom = false;
-        if (roomTheme == RoomTheme.Mystery)
+
+        if (monsterTestMode)
+        {
+            // 테스트 모드 활성화 시 미스터리방 랜덤 이벤트(전투 스킵 등)를 방지하고 전투방으로 고정합니다.
+            stageCase = NormalStageCase.MonsterWithReward;
+            Debug.Log("[NormalStage] 몬스터 테스트 모드 활성화: stageCase를 MonsterWithReward로 강제 고정합니다.");
+        }
+        else if (roomTheme == RoomTheme.Mystery)
         {
             float r = Random.value;
             if (myTvedPrefab != null && r < myTvedChance)
@@ -136,6 +151,9 @@ public class NormalStage : Stage
     private bool isPureCombatRoom = false;
 
     [Header("Monster Wave Spawner")]
+    [SerializeField] private bool monsterTestMode = false;
+    [SerializeField] private MonsterGroupSO testGroup;
+    [SerializeField] private List<GameObject> testMonsterList = new List<GameObject>();
     [SerializeField] private MonsterGroupSO monsterGroup;
     [SerializeField] private List<MonsterGroupSO> availableMonsterGroups = new List<MonsterGroupSO>();
 
@@ -714,6 +732,32 @@ public class NormalStage : Stage
 
     private void PrepareMonsterWaves()
     {
+        // 몬스터 테스트 모드 작동 시 처리
+        if (monsterTestMode)
+        {
+            if (testGroup != null)
+            {
+                monsterGroup = testGroup;
+                Debug.Log($"[NormalStage] 몬스터 테스트 모드 활성화 (그룹): 테스트 그룹 '{monsterGroup.groupName}'을(를) 사용합니다.");
+            }
+            else if (testMonsterList != null && testMonsterList.Count > 0)
+            {
+                monsterGroup = null; // 그룹은 사용하지 않음
+                int validCount = 0;
+                foreach (var prefab in testMonsterList)
+                {
+                    if (prefab != null) validCount++;
+                }
+                SetRequiredMonsterCount(validCount);
+                Debug.Log($"[NormalStage] 몬스터 테스트 모드 활성화 (개별 리스트): {validCount}마리의 몬스터를 스폰 대기 설정합니다.");
+                return; // 이후 그룹 자동 선택 및 카운트 계산 건너뜀
+            }
+            else
+            {
+                Debug.Log("[NormalStage] 몬스터 테스트 모드 활성화 상태이나 testGroup 및 testMonsterList가 비어있어 기본 스폰 목록을 사용합니다.");
+            }
+        }
+
         if (monsterGroup == null && availableMonsterGroups != null && availableMonsterGroups.Count > 0)
         {
             int currentFloor = GetCurrentFloor();
@@ -763,6 +807,30 @@ public class NormalStage : Stage
 
     private System.Collections.IEnumerator SpawnWavesCoroutine()
     {
+        // 몬스터 테스트 모드이면서 개별 몬스터 리스트를 스폰하는 경우
+        if (monsterTestMode && testGroup == null && testMonsterList != null && testMonsterList.Count > 0)
+        {
+            Bounds boundsList = battleZone != null ? battleZone.bounds : new Bounds(transform.position, new Vector3(10, 10, 0));
+            foreach (var prefab in testMonsterList)
+            {
+                if (prefab == null) continue;
+
+                // nxn zone (battleZone) 내에서 무작위 위치 계산
+                float rx = Random.Range(boundsList.min.x + 1f, boundsList.max.x - 1f);
+                float ry = Random.Range(boundsList.min.y + 1f, boundsList.max.y - 1f);
+                Vector3 spawnPos = new Vector3(rx, ry, transform.position.z);
+
+                GameObject monsterObj = Instantiate(prefab, spawnPos, Quaternion.identity, transform);
+                
+                EnemyBase enemy = monsterObj.GetComponent<EnemyBase>();
+                if (enemy != null)
+                {
+                    enemy.ownerStage = this;
+                }
+            }
+            yield break;
+        }
+
         if (monsterGroup == null) yield break;
 
         Bounds bounds = battleZone != null ? battleZone.bounds : new Bounds(transform.position, new Vector3(10, 10, 0));

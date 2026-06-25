@@ -91,6 +91,23 @@ public abstract class CreatureBase : MonoBehaviour
             _rb2d.bodyType = RigidbodyType2D.Kinematic;
             _rb2d.useFullKinematicContacts = true;
         }
+
+        // 박스 콜라이더 마찰 및 높은 질량(10000)으로 인해 벽에 끼어 정지하는 현상 방지를 위해 무마찰 재질 동적 생성 및 할당
+        PhysicsMaterial2D frictionless = new PhysicsMaterial2D("Frictionless")
+        {
+            friction = 0f,
+            bounciness = 0f
+        };
+        _rb2d.sharedMaterial = frictionless;
+
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
+        foreach (var col in colliders)
+        {
+            if (!col.isTrigger)
+            {
+                col.sharedMaterial = frictionless;
+            }
+        }
     }
 
     protected Rigidbody2D Body2D => _rb2d;

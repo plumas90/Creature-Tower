@@ -46,11 +46,12 @@ public class MapRoomNodeUI : MonoBehaviour, IPointerClickHandler
                 nodeButton.onClick.AddListener(HandleClick);
         }
 
-        // 오버레이 (현재 있는 곳 표시 - x_mark_stamp_transparent)
+        // 오버레이 (현재 또는 지나온 곳 표시 - x_mark_stamp_transparent)
         if (activeHighlight != null)
         {
-            activeHighlight.SetActive(isCurrent);
-            if (isCurrent)
+            bool showX = isCurrent || isVisited;
+            activeHighlight.SetActive(showX);
+            if (showX)
             {
                 Image highlightImage = activeHighlight.GetComponent<Image>();
                 if (highlightImage != null)
@@ -79,7 +80,7 @@ public class MapRoomNodeUI : MonoBehaviour, IPointerClickHandler
             }
         }
         if (visitedCheckmark != null)
-            visitedCheckmark.SetActive(isVisited && !isCurrent);
+            visitedCheckmark.SetActive(false);
 
         // 색상 & 심볼
         Color nodeColor = Color.gray;

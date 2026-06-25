@@ -80,7 +80,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 1000
   m_Sprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
-  m_Color: {r: 1, g: 0.2, b: 0.2, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -181,3 +181,10 @@ MonoBehaviour:
   ySortOrderOffset: 0
   ySortPivot: {fileID: 0}
   ownerStage: {fileID: 0}
+  useContextSteering: 1
+  steerRayCount: 8
+  steerRayLength: 1.5
+  steerSmoothSpeed: 10
+  steerObstacleMask:
+    serializedVersion: 2
+    m_Bits: 0

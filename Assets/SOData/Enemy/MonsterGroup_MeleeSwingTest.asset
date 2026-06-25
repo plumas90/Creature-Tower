@@ -12,14 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0bf542d786f89445ad20c45e0dfb365, type: 3}
   m_Name: MonsterGroup_MeleeSwingTest
   m_EditorClassIdentifier: 
-  groupName: "휘두르기 근접 몬스터 테스트 그룹"
+  groupName: "\uD718\uB450\uB974\uAE30 \uADFC\uC811 \uBAAC\uC2A4\uD130 \uD14C\uC2A4\uD2B8
+    \uADF8\uB8F9"
   targetFloorMin: 1
   targetFloorMax: 15
   waves:
-  - waveName: "Swing Melee Wave"
+  - waveName: Swing Melee Wave
     spawnList:
     - monsterPrefab: {fileID: 6646246831167701657, guid: f1e2d3c4b5a69788796a5b4c3d2e1f07, type: 3}
       spawnOffset: {x: -1.5, y: 1.5}
     - monsterPrefab: {fileID: 6646246831167701657, guid: f1e2d3c4b5a69788796a5b4c3d2e1f10, type: 3}
+      spawnOffset: {x: 1.5, y: 1.5}
+    - monsterPrefab: {fileID: 6646246831167701657, guid: 2e2b06db0ed4aee1ca66e7ecc60f6151, type: 3}
+      spawnOffset: {x: 1.5, y: 1.5}
+    - monsterPrefab: {fileID: 6964553681987251415, guid: 9fd4240f827adc097b1cf4aeb1dc6582, type: 3}
       spawnOffset: {x: 1.5, y: 1.5}
     delayBeforeWave: 1

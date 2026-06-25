@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIBossHP : MonoBehaviour
 {
@@ -15,11 +16,30 @@ public class UIBossHP : MonoBehaviour
     private readonly List<BossBase> _aliveBosses = new List<BossBase>();
     private readonly Dictionary<BossBase, float> _lastHitTime = new Dictionary<BossBase, float>();
 
-    private RectTransform _panel;
+    private RectTransform _templatePanel;
     private Image _icon;
     private Slider _hpSlider;
-    private Text _bossName;
-    private Text _hpText;
+    private TextMeshProUGUI _bossName;
+    private TextMeshProUGUI _hpText;
+    private Image _fillImage;
+
+    private readonly List<BossHpPanelInstance> _activePanels = new List<BossHpPanelInstance>();
+
+    private class BossHpPanelInstance
+    {
+        public BossBase boss;
+        public RectTransform panelRt;
+        public Slider hpSlider;
+        public Image fillImage;
+        public TextMeshProUGUI bossName;
+        public Image icon;
+    }
+
+    [Header("New Bar Setup")]
+    [SerializeField] private Sprite barBorderSprite;
+    [SerializeField] private Sprite barFillSprite;
+    [SerializeField] private Sprite bossSymbolSprite;
+    [SerializeField] private TMP_FontAsset customFont;
 
     public static void NotifyBossEngaged(BossBase boss)
     {
@@ -85,6 +105,7 @@ public class UIBossHP : MonoBehaviour
     private void Update()
     {
         RefreshCurrentBoss();
+        UpdateHpPanels();
         RefreshView();
     }
 
@@ -150,31 +171,106 @@ public class UIBossHP : MonoBehaviour
             _currentBoss = _aliveBosses[0];
     }
 
-    private void RefreshView()
+    private void UpdateHpPanels()
     {
-        if (_panel == null || _hpSlider == null || _bossName == null || _hpText == null)
-            return;
-
-        if (_currentBoss == null || !_currentBoss.live || _currentBoss.maxHp <= 0f)
+        // 1. Remove and destroy panels for bosses that are no longer in _aliveBosses or are null
+        for (int i = _activePanels.Count - 1; i >= 0; i--)
         {
-            _panel.gameObject.SetActive(false);
-            return;
+            var panel = _activePanels[i];
+            if (panel.boss == null || !panel.boss.live || !_aliveBosses.Contains(panel.boss))
+            {
+                if (panel.panelRt != null)
+                {
+                    Destroy(panel.panelRt.gameObject);
+                }
+                _activePanels.RemoveAt(i);
+            }
         }
 
-        _panel.gameObject.SetActive(true);
-
-        _hpSlider.minValue = 0f;
-        _hpSlider.maxValue = _currentBoss.maxHp;
-        _hpSlider.value = Mathf.Clamp(_currentBoss.curHp, 0f, _currentBoss.maxHp);
-
-        _bossName.text = _currentBoss.name;
-        _hpText.text = Mathf.CeilToInt(Mathf.Max(0f, _currentBoss.curHp)) + " / " + Mathf.CeilToInt(_currentBoss.maxHp);
-
-        if (_icon != null)
+        // 2. Add new panels for bosses in _aliveBosses that don't have a panel yet
+        for (int i = 0; i < _aliveBosses.Count; i++)
         {
-            SpriteRenderer sr = _currentBoss.GetComponentInChildren<SpriteRenderer>(true);
-            _icon.sprite = sr != null ? sr.sprite : null;
-            _icon.color = _icon.sprite != null ? Color.white : new Color(1f, 1f, 1f, 0f);
+            var boss = _aliveBosses[i];
+            if (boss == null || !boss.live) continue;
+
+            bool hasPanel = false;
+            for (int j = 0; j < _activePanels.Count; j++)
+            {
+                if (_activePanels[j].boss == boss)
+                {
+                    hasPanel = true;
+                    break;
+                }
+            }
+
+            if (!hasPanel && _templatePanel != null)
+            {
+                var clone = Instantiate(_templatePanel, _templatePanel.parent, false);
+                clone.gameObject.SetActive(true);
+
+                var instance = new BossHpPanelInstance();
+                instance.boss = boss;
+                instance.panelRt = clone;
+
+                var iconTrans = clone.Find("BossIcon");
+                if (iconTrans != null) instance.icon = iconTrans.GetComponent<Image>();
+
+                var sliderTrans = clone.Find("BossHPBar");
+                if (sliderTrans != null) instance.hpSlider = sliderTrans.GetComponent<Slider>();
+
+                var nameTrans = clone.Find("BossName");
+                if (nameTrans != null) instance.bossName = nameTrans.GetComponent<TextMeshProUGUI>();
+
+                var fillTrans = clone.Find("BossHPBar/Fill Area/Fill");
+                if (fillTrans != null) instance.fillImage = fillTrans.GetComponent<Image>();
+
+                ConfigureNewUiLayout(instance);
+                _activePanels.Add(instance);
+            }
+        }
+
+        // 3. Position the active panels vertically stacked
+        for (int i = 0; i < _activePanels.Count; i++)
+        {
+            var panel = _activePanels[i];
+            if (panel.panelRt != null)
+            {
+                panel.panelRt.anchorMin = new Vector2(0.5f, 0f);
+                panel.panelRt.anchorMax = new Vector2(0.5f, 0f);
+                panel.panelRt.pivot = new Vector2(0.5f, 0f);
+                panel.panelRt.anchoredPosition = new Vector2(0f, 40f + i * 110f);
+            }
+        }
+    }
+
+    private void RefreshView()
+    {
+        for (int i = 0; i < _activePanels.Count; i++)
+        {
+            var panel = _activePanels[i];
+            if (panel.boss == null || panel.panelRt == null) continue;
+
+            if (panel.hpSlider != null)
+            {
+                panel.hpSlider.minValue = 0f;
+                panel.hpSlider.maxValue = panel.boss.maxHp;
+                panel.hpSlider.value = Mathf.Clamp(panel.boss.curHp, 0f, panel.boss.maxHp);
+            }
+
+            if (panel.fillImage != null && panel.boss.maxHp > 0f)
+            {
+                panel.fillImage.fillAmount = Mathf.Clamp01(panel.boss.curHp / panel.boss.maxHp);
+            }
+
+            if (panel.bossName != null)
+            {
+                panel.bossName.text = panel.boss.name;
+            }
+
+            if (panel.icon != null)
+            {
+                panel.icon.sprite = bossSymbolSprite;
+            }
         }
     }
 
@@ -183,6 +279,8 @@ public class UIBossHP : MonoBehaviour
         if (TryBindExistingUi())
         {
             ApplyUiRuntimeSettings();
+            if (_templatePanel != null)
+                _templatePanel.gameObject.SetActive(false);
             return;
         }
         
@@ -197,9 +295,9 @@ public class UIBossHP : MonoBehaviour
         }
 
         panelObj.transform.SetParent(rootRect, false);
-        _panel = panelObj.GetComponent<RectTransform>();
-        _panel.sizeDelta = new Vector2(420f, 76f);
-        ForcePanelToTopCenter();
+        _templatePanel = panelObj.GetComponent<RectTransform>();
+        _templatePanel.sizeDelta = new Vector2(420f, 76f);
+        ForcePanelToBottomCenter();
 
         Image bg = panelObj.GetComponent<Image>();
         bg.color = new Color(0f, 0f, 0f, 0.65f);
@@ -216,7 +314,7 @@ public class UIBossHP : MonoBehaviour
         _icon.preserveAspect = true;
         _icon.color = new Color(1f, 1f, 1f, 0f);
 
-        GameObject nameObj = new GameObject("BossName", typeof(RectTransform), typeof(Text));
+        GameObject nameObj = new GameObject("BossName", typeof(RectTransform), typeof(TextMeshProUGUI));
         nameObj.transform.SetParent(panelObj.transform, false);
         RectTransform nameRt = nameObj.GetComponent<RectTransform>();
         nameRt.anchorMin = new Vector2(0f, 1f);
@@ -224,10 +322,9 @@ public class UIBossHP : MonoBehaviour
         nameRt.pivot = new Vector2(0f, 1f);
         nameRt.offsetMin = new Vector2(76f, -24f);
         nameRt.offsetMax = new Vector2(-8f, -2f);
-        _bossName = nameObj.GetComponent<Text>();
-        _bossName.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        _bossName = nameObj.GetComponent<TextMeshProUGUI>();
         _bossName.fontSize = 16;
-        _bossName.alignment = TextAnchor.MiddleLeft;
+        _bossName.alignment = TextAlignmentOptions.Left;
         _bossName.color = Color.white;
 
         GameObject sliderObj = new GameObject("BossHPBar", typeof(RectTransform), typeof(Slider));
@@ -273,7 +370,7 @@ public class UIBossHP : MonoBehaviour
         _hpSlider.fillRect = fillRt;
         _hpSlider.direction = Slider.Direction.LeftToRight;
 
-        GameObject valueObj = new GameObject("BossHPText", typeof(RectTransform), typeof(Text));
+        GameObject valueObj = new GameObject("BossHPText", typeof(RectTransform), typeof(TextMeshProUGUI));
         valueObj.transform.SetParent(panelObj.transform, false);
         RectTransform valueRt = valueObj.GetComponent<RectTransform>();
         valueRt.anchorMin = new Vector2(1f, 0f);
@@ -281,37 +378,36 @@ public class UIBossHP : MonoBehaviour
         valueRt.pivot = new Vector2(1f, 0.5f);
         valueRt.offsetMin = new Vector2(-86f, 8f);
         valueRt.offsetMax = new Vector2(-6f, -8f);
-        _hpText = valueObj.GetComponent<Text>();
-        _hpText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        _hpText = valueObj.GetComponent<TextMeshProUGUI>();
         _hpText.fontSize = 14;
-        _hpText.alignment = TextAnchor.MiddleRight;
+        _hpText.alignment = TextAlignmentOptions.Right;
         _hpText.color = Color.white;
 
-        _panel.gameObject.SetActive(false);
+        _templatePanel.gameObject.SetActive(false);
         ApplyUiRuntimeSettings();
     }
 
     private bool TryBindExistingUi()
     {
-        if (_panel == null)
-            _panel = FindRectTransform("Panel");
+        if (_templatePanel == null)
+            _templatePanel = FindRectTransform("Panel");
         if (_icon == null)
             _icon = FindImage("BossIcon");
         if (_hpSlider == null)
             _hpSlider = FindSlider("BossHPBar");
         if (_bossName == null)
-            _bossName = FindText("BossName");
+            _bossName = FindTextMeshPro("BossName");
         if (_hpText == null)
-            _hpText = FindText("BossHPText");
+            _hpText = FindTextMeshPro("BossHPText");
 
-        return _panel != null && _hpSlider != null && _bossName != null && _hpText != null;
+        return _templatePanel != null && _hpSlider != null && _bossName != null && _hpText != null;
     }
 
     private RectTransform FindRectTransform(string name)
     {
         Transform target = transform.Find(name);
-        if (target == null)
-            target = transform.Find("Panel/" + name);
+        if (target == null && _templatePanel != null)
+            target = _templatePanel.Find(name);
         if (target == null)
             return null;
         return target.GetComponent<RectTransform>();
@@ -320,8 +416,8 @@ public class UIBossHP : MonoBehaviour
     private Image FindImage(string name)
     {
         Transform target = transform.Find(name);
-        if (target == null)
-            target = transform.Find("Panel/" + name);
+        if (target == null && _templatePanel != null)
+            target = _templatePanel.Find(name);
         if (target == null)
             return null;
         return target.GetComponent<Image>();
@@ -330,59 +426,176 @@ public class UIBossHP : MonoBehaviour
     private Slider FindSlider(string name)
     {
         Transform target = transform.Find(name);
-        if (target == null)
-            target = transform.Find("Panel/" + name);
+        if (target == null && _templatePanel != null)
+            target = _templatePanel.Find(name);
         if (target == null)
             return null;
         return target.GetComponent<Slider>();
     }
 
-    private Text FindText(string name)
+    private TextMeshProUGUI FindTextMeshPro(string name)
     {
         Transform target = transform.Find(name);
-        if (target == null)
-            target = transform.Find("Panel/" + name);
+        if (target == null && _templatePanel != null)
+            target = _templatePanel.Find(name);
         if (target == null)
             return null;
-        return target.GetComponent<Text>();
+        return target.GetComponent<TextMeshProUGUI>();
     }
 
-    private void ForcePanelToTopCenter()
+    private void ForcePanelToBottomCenter()
     {
-        if (_panel == null)
+        if (_templatePanel == null)
             return;
 
-        _panel.anchorMin = new Vector2(0.5f, 1f);
-        _panel.anchorMax = new Vector2(0.5f, 1f);
-        _panel.pivot = new Vector2(0.5f, 1f);
-        _panel.anchoredPosition = new Vector2(0f, -20f);
+        _templatePanel.anchorMin = new Vector2(0.5f, 0f);
+        _templatePanel.anchorMax = new Vector2(0.5f, 0f);
+        _templatePanel.pivot = new Vector2(0.5f, 0f);
+        _templatePanel.anchoredPosition = new Vector2(0f, 40f);
     }
 
     private void ApplyUiRuntimeSettings()
     {
-        if (_panel == null)
+        if (_templatePanel == null)
             return;
 
         RectTransform container = EnsureUiContainer();
-        if (container != null && _panel.parent != container)
+        if (container != null && _templatePanel.parent != container)
         {
-            Vector2 anchored = _panel.anchoredPosition;
-            _panel.SetParent(container, false);
-            _panel.anchoredPosition = anchored;
+            Vector2 anchored = _templatePanel.anchoredPosition;
+            _templatePanel.SetParent(container, false);
+            _templatePanel.anchoredPosition = anchored;
         }
 
-        // 해상도 변화에도 상단 중앙 고정
-        _panel.anchorMin = new Vector2(0.5f, 1f);
-        _panel.anchorMax = new Vector2(0.5f, 1f);
-        _panel.pivot = new Vector2(0.5f, 1f);
+        _templatePanel.anchorMin = new Vector2(0.5f, 0f);
+        _templatePanel.anchorMax = new Vector2(0.5f, 0f);
+        _templatePanel.pivot = new Vector2(0.5f, 0f);
+        _templatePanel.anchoredPosition = new Vector2(0f, 40f);
 
-        Graphic[] graphics = _panel.GetComponentsInChildren<Graphic>(true);
+        Graphic[] graphics = _templatePanel.GetComponentsInChildren<Graphic>(true);
         for (int i = 0; i < graphics.Length; i++)
             graphics[i].raycastTarget = false;
 
-        Selectable[] selectables = _panel.GetComponentsInChildren<Selectable>(true);
+        Selectable[] selectables = _templatePanel.GetComponentsInChildren<Selectable>(true);
         for (int i = 0; i < selectables.Length; i++)
             selectables[i].interactable = false;
+    }
+
+    private void ConfigureNewUiLayout(BossHpPanelInstance instance)
+    {
+        if (instance == null || instance.panelRt == null) return;
+
+        Sprite inSprite = barFillSprite;
+        Sprite outSprite = barBorderSprite;
+        Sprite symbolSprite = bossSymbolSprite;
+
+        Image panelBg = instance.panelRt.GetComponent<Image>();
+        if (panelBg != null)
+        {
+            panelBg.color = Color.clear;
+        }
+
+        if (instance.hpSlider != null)
+        {
+            RectTransform sliderRt = instance.hpSlider.GetComponent<RectTransform>();
+            sliderRt.anchorMin = new Vector2(0.5f, 0f);
+            sliderRt.anchorMax = new Vector2(0.5f, 0f);
+            sliderRt.pivot = new Vector2(0.5f, 0f);
+            // Sleeker Height: 46f instead of 82.8f
+            sliderRt.sizeDelta = new Vector2(864f, 46f);
+            sliderRt.anchoredPosition = new Vector2(0f, 10f);
+
+            Transform bgTrans = instance.hpSlider.transform.Find("Background");
+            if (bgTrans != null)
+            {
+                Image bgImage = bgTrans.GetComponent<Image>();
+                if (bgImage != null)
+                {
+                    bgImage.sprite = outSprite;
+                    bgImage.type = Image.Type.Simple;
+                    bgImage.color = Color.white;
+                }
+                RectTransform bgRt = bgTrans.GetComponent<RectTransform>();
+                bgRt.anchorMin = Vector2.zero;
+                bgRt.anchorMax = Vector2.one;
+                bgRt.offsetMin = Vector2.zero;
+                bgRt.offsetMax = Vector2.zero;
+            }
+
+            Transform fillAreaTrans = instance.hpSlider.transform.Find("Fill Area");
+            if (fillAreaTrans != null)
+            {
+                RectTransform fillAreaRt = fillAreaTrans.GetComponent<RectTransform>();
+                fillAreaRt.anchorMin = Vector2.zero;
+                fillAreaRt.anchorMax = Vector2.one;
+                // Precise padding with Sleeker height (height scale = 2.0x):
+                // Left/Right: 4 * 5.4 = 21.6f
+                // Bottom/Top: 4 * 2.0 = 8.0f
+                fillAreaRt.offsetMin = new Vector2(21.6f, 8f);
+                fillAreaRt.offsetMax = new Vector2(-21.6f, -8f);
+            }
+
+            Transform fillTrans = instance.hpSlider.transform.Find("Fill Area/Fill");
+            if (fillTrans != null)
+            {
+                instance.fillImage = fillTrans.GetComponent<Image>();
+                if (instance.fillImage != null)
+                {
+                    instance.fillImage.sprite = inSprite;
+                    instance.fillImage.type = Image.Type.Filled;
+                    instance.fillImage.fillMethod = Image.FillMethod.Horizontal;
+                    instance.fillImage.fillOrigin = (int)Image.OriginHorizontal.Left;
+                    instance.fillImage.color = Color.white;
+                }
+                RectTransform fillRt = fillTrans.GetComponent<RectTransform>();
+                fillRt.anchorMin = Vector2.zero;
+                fillRt.anchorMax = Vector2.one;
+                fillRt.offsetMin = Vector2.zero;
+                fillRt.offsetMax = Vector2.zero;
+            }
+
+            instance.hpSlider.fillRect = null;
+        }
+
+        if (instance.bossName != null)
+        {
+            RectTransform nameRt = instance.bossName.GetComponent<RectTransform>();
+            nameRt.anchorMin = new Vector2(0.5f, 0f);
+            nameRt.anchorMax = new Vector2(0.5f, 0f);
+            nameRt.pivot = new Vector2(0f, 0f);
+            nameRt.sizeDelta = new Vector2(350f, 35f);
+            // Position it slightly above the slider (slider top edge is 10 + 46 = 56, so placing it at y=59f)
+            nameRt.anchoredPosition = new Vector2(-432f, 59f);
+            
+            if (customFont != null)
+            {
+                instance.bossName.font = customFont;
+            }
+            instance.bossName.alignment = TextAlignmentOptions.Left;
+            instance.bossName.fontSize = 26;
+            instance.bossName.fontStyle = FontStyles.Bold;
+            instance.bossName.color = Color.black;
+        }
+
+        if (instance.icon != null)
+        {
+            RectTransform symbolRt = instance.icon.GetComponent<RectTransform>();
+            symbolRt.anchorMin = new Vector2(0.5f, 0f);
+            symbolRt.anchorMax = new Vector2(0.5f, 0f);
+            symbolRt.pivot = new Vector2(0.5f, 0.5f);
+            // 1.5x larger Symbol: 72x72
+            symbolRt.sizeDelta = new Vector2(72f, 72f);
+            // Centered on the top edge of the slider: 10 + 46 = 56
+            symbolRt.anchoredPosition = new Vector2(0f, 56f);
+
+            instance.icon.sprite = symbolSprite;
+            instance.icon.preserveAspect = true;
+            instance.icon.color = Color.white;
+
+            symbolRt.SetAsLastSibling();
+        }
+
+        instance.panelRt.sizeDelta = new Vector2(920f, 110f);
     }
 
     private RectTransform EnsureUiContainer()
@@ -410,9 +623,9 @@ public class UIBossHP : MonoBehaviour
             }
         }
 
-        container.anchorMin = new Vector2(0.5f, 1f);
-        container.anchorMax = new Vector2(0.5f, 1f);
-        container.pivot = new Vector2(0.5f, 1f);
+        container.anchorMin = new Vector2(0.5f, 0f);
+        container.anchorMax = new Vector2(0.5f, 0f);
+        container.pivot = new Vector2(0.5f, 0f);
         container.sizeDelta = Vector2.zero;
 
         return container;

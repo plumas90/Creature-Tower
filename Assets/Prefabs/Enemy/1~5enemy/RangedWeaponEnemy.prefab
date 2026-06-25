@@ -25,11 +25,11 @@ Transform:
   m_GameObject: {fileID: 96004053670891470}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.37199998, y: -0.008000001, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5586531244196511384}
+  m_Father: {fileID: 1641743755638294912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4908500272848448836
 GameObject:
@@ -61,7 +61,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1641743755638294912}
-  - {fileID: 272084105559429579}
   m_Father: {fileID: 6478993671785459564}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6316947109278661201
@@ -90,10 +89,11 @@ Transform:
   m_GameObject: {fileID: 6316947109278661201}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.138, y: -0.121, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 272084105559429579}
   m_Father: {fileID: 5586531244196511384}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5929450332037293315
@@ -137,10 +137,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 1065988620, guid: a5849f837cc983643846fae6aef54ff4, type: 3}
+  m_SortingLayerID: 100001
+  m_SortingLayer: 3
+  m_SortingOrder: 10001
+  m_Sprite: {fileID: -159061349682058190, guid: 5ac928fdafe53312b803d27d3e1c0d0a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -162,8 +162,8 @@ GameObject:
   - component: {fileID: 6478993671785459564}
   - component: {fileID: 917862587025586684}
   - component: {fileID: 7329414106487398745}
-  - component: {fileID: 7999803936911302478}
   - component: {fileID: 3048971007337849112}
+  - component: {fileID: 1560183258635258129}
   m_Layer: 9
   m_Name: RangedWeaponEnemy
   m_TagString: Untagged
@@ -231,8 +231,8 @@ SpriteRenderer:
   m_SortingLayerID: 100001
   m_SortingLayer: 3
   m_SortingOrder: 1000
-  m_Sprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
-  m_Color: {r: 0.2, g: 0.4, b: 1, a: 1}
+  m_Sprite: {fileID: -2073566385283376946, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -269,8 +269,46 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!58 &7999803936911302478
-CircleCollider2D:
+--- !u!114 &3048971007337849112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6964553681987251415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f11a592ec6a3f0f49b95699355952de4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MainSO: {fileID: 11400000, guid: be657b9d110dcce4f8d5ec079c5d874a, type: 2}
+  atk: 0
+  maxHp: 0
+  curHp: 0
+  speed: 0
+  live: 0
+  invincibility: 0
+  Player: {fileID: 0}
+  useKinematic: 0
+  useYBasedSorting: 1
+  ySortLayerName: World_Dynamic
+  ySortBaseOrder: 1000
+  ySortScale: 10
+  ySortOrderOffset: 0
+  ySortPivot: {fileID: 0}
+  ownerStage: {fileID: 0}
+  useContextSteering: 1
+  steerRayCount: 8
+  steerRayLength: 1.5
+  steerSmoothSpeed: 10
+  steerObstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  weaponPivot: {fileID: 5586531244196511384}
+  muzzlePoint: {fileID: 272084105559429579}
+  flipWeaponY: 1
+--- !u!70 &1560183258635258129
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -304,35 +342,5 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.4
---- !u!114 &3048971007337849112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6964553681987251415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f11a592ec6a3f0f49b95699355952de4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MainSO: {fileID: 11400000, guid: be657b9d110dcce4f8d5ec079c5d874a, type: 2}
-  atk: 0
-  maxHp: 0
-  curHp: 0
-  speed: 0
-  live: 0
-  invincibility: 0
-  Player: {fileID: 0}
-  useKinematic: 0
-  useYBasedSorting: 1
-  ySortLayerName: World_Dynamic
-  ySortBaseOrder: 1000
-  ySortScale: 10
-  ySortOrderOffset: 0
-  ySortPivot: {fileID: 0}
-  ownerStage: {fileID: 0}
-  weaponPivot: {fileID: 5586531244196511384}
-  muzzlePoint: {fileID: 272084105559429579}
-  flipWeaponY: 1
+  m_Size: {x: 0.5625, y: 0.921875}
+  m_Direction: 0

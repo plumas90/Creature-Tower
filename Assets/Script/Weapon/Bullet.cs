@@ -49,6 +49,11 @@ public class Bullet : MonoBehaviour
     [SerializeField] private int ySortBaseOrder = 1500;
     [SerializeField] private int ySortScale = 10;
     [SerializeField] private int ySortOrderOffset = 2;
+    [Header("Visual Calibration")]
+    [Tooltip("총알 스프라이트의 방향 오프셋입니다. 날아가는 방향(우측) 대비 스프라이트가 틀어져 있는 각도입니다. (우측 하단이면 45 입력)")]
+    [SerializeField] private float spriteAngleOffset = 0f;
+    [Tooltip("왼쪽 조준 시 총알 스프라이트를 상하 반전할지 여부입니다. 회전이 완전히 정방향인 투사체가 아니면 끄는 것이 좋습니다. (기본 true)")]
+    [SerializeField] private bool autoFlipY = true;
     private float spawnedAtTime;
     private SpriteRenderer spriteRenderer;
     private HashSet<int> damagedBossIds = new HashSet<int>();
@@ -70,6 +75,11 @@ public class Bullet : MonoBehaviour
         BulletLifeTime = UnityEngine.Random.Range(BulletLifeTime * 0.15f, BulletLifeTime * 0.2f);
         _direction = transform.right;
         layerMask = 1 << LayerMask.NameToLayer("Wall");
+
+        if (spriteAngleOffset != 0f && spriteRenderer != null)
+        {
+            spriteRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, spriteAngleOffset);
+        }
     }
 
     public void MissileFire(int i) 
@@ -83,12 +93,14 @@ public class Bullet : MonoBehaviour
         transform.Translate(Vector3.right * BulletSpeed * Time.deltaTime);
         ApplyYBasedSorting();
         
-        if (spriteRenderer != null)
+        if (autoFlipY && spriteRenderer != null)
         {
             float zRot = transform.eulerAngles.z;
             spriteRenderer.flipY = (zRot > 90f && zRot < 270f);
         }
-
+ 
+        _direction = transform.right;
+ 
         time += Time.deltaTime;
         if (time>= BulletLifeTime) 
         {
@@ -168,18 +180,19 @@ public class Bullet : MonoBehaviour
         {
             if (canAngle)
             {
-                hit = Physics2D.Raycast(this.transform.position, _direction, BulletSpeed * BulletLifeTime, layerMask);
-                Debug.DrawRay(this.transform.position, _direction, UnityEngine.Color.red, 3f);
-
+                Vector3 curDir = transform.right;
+                hit = Physics2D.Raycast(this.transform.position, curDir, BulletSpeed * BulletLifeTime, layerMask);
+                Debug.DrawRay(this.transform.position, curDir, UnityEngine.Color.red, 3f);
+ 
                 if (!hit)
                 {
                     Destroy();
                     return;
                 }
-
-                Vector3 reflectVector = Vector3.Reflect(_direction, hit.normal).normalized;
+ 
+                Vector3 reflectVector = Vector3.Reflect(curDir, hit.normal).normalized;
                 float angle = Mathf.Atan2(reflectVector.y, reflectVector.x) * Mathf.Rad2Deg;
-
+ 
                 Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angle));
                 this.transform.rotation = rotation;
                 _direction = reflectVector;

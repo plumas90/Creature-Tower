@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f04, type: 3}
   m_Name: MeleeSwingEnemy_Swing
   m_EditorClassIdentifier: 
-  enemyName: "휘두르기 근접 몬스터"
+  enemyName: "\uD718\uB450\uB974\uAE30 \uADFC\uC811 \uBAAC\uC2A4\uD130"
   atk: 12
   hp: 30
   speed: 2.1
@@ -25,6 +25,9 @@ MonoBehaviour:
   btMoveSpeedMultiplier: 1
   btChaseChance: 1
   attackType: 1
-  attackRange: 1.8
+  attackRange: 2
   attackCooldown: 2.2
   attackWarningTime: 0.8
+  swingPivotOffset: 0.4
+  swingRadiusBonus: 0.3
+  thrustPrepOffset: -0.15

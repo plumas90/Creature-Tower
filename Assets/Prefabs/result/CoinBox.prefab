@@ -150,7 +150,7 @@ MonoBehaviour:
   isRareBox: 0
   forceDNA: 0
   coinDropChance: 1
-  dnaPrefab: {fileID: 8072521910227601270, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
+  dnaPrefab: {fileID: 262557969461933222, guid: 98d18797b3622b74e87d56210881ec5f, type: 3}
   closedSprite: {fileID: 3293191984190381418, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
   openedSprite: {fileID: 7303948099301513097, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
   openingSprites:
@@ -163,4 +163,5 @@ MonoBehaviour:
   - {fileID: 4662789991513717789, guid: 180ba744459d68c908b702cd5074ac29, type: 3}
   animationFps: 12
   boxSpriteRenderer: {fileID: 2271506146400865569}
-  pushForce: 1
+  pushForce: 5
+  rareDnaChance: 0.01

@@ -54,6 +54,7 @@ public class MonkeyPart : BossBase
         // StatSet 경로를 타지 않는 분리 보스는 Init 시점에 BT를 직접 준비/시작해야 이동한다.
         behaviorTreeRoot = CreateBehaviorTree();
         StartBrain();
+        UIBossHP.NotifyBossEngaged(this);
 
         // 끼임 감지 시작
         StartStuckDetection();

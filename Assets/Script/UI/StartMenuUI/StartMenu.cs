@@ -12,6 +12,16 @@ public class StartMenu : MonoBehaviour
     [Tooltip("StartMenu UI GameObject (게임 시작 시 비활성화됨)")]
     public GameObject startMenuUI;
 
+    private void Awake()
+    {
+        Texture2D cursorTexture = Resources.Load<Texture2D>("Images/MouseCursor_ver1");
+        if (cursorTexture != null)
+        {
+            Vector2 hotspot = new Vector2(cursorTexture.width / 2f, cursorTexture.height / 2f);
+            Cursor.SetCursor(cursorTexture, hotspot, CursorMode.Auto);
+        }
+    }
+
     public void StartBtn() 
     {
         if (GameManager.Instance == null)

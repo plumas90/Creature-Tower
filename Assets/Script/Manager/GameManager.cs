@@ -143,6 +143,18 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        SetCustomCursor();
+    }
+
+    private void SetCustomCursor()
+    {
+        Texture2D cursorTexture = Resources.Load<Texture2D>("Images/MouseCursor_ver1");
+        if (cursorTexture != null)
+        {
+            Vector2 hotspot = new Vector2(cursorTexture.width / 2f, cursorTexture.height / 2f);
+            Cursor.SetCursor(cursorTexture, hotspot, CursorMode.Auto);
+        }
     }
 
     private void OnDestroy()
