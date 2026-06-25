@@ -197,4 +197,36 @@ public class RangedWeaponEnemy : NormalRangedEnemy
         }
         return base.GetBulletSpawnPosition();
     }
+
+    protected override void SpawnBullet(float angleDeg, float damage, float projSpeed, float lifeTime)
+    {
+        var rangedSO = MainSO as RangedEnemySO;
+        if (rangedSO == null || rangedSO.projectilePrefab == null)
+        {
+            Debug.LogWarning($"[RangedWeaponEnemy] projectilePrefab이 RangedEnemySO에 설정되지 않았습니다: {name}");
+            return;
+        }
+
+        Quaternion rot = Quaternion.Euler(0f, 0f, angleDeg);
+        GameObject obj = Object.Instantiate(rangedSO.projectilePrefab, GetBulletSpawnPosition(), rot);
+
+        Bullet bullet = obj.GetComponent<Bullet>();
+        if (bullet == null)
+        {
+            Debug.LogWarning($"[RangedWeaponEnemy] projectilePrefab에 Bullet 컴포넌트가 없습니다.");
+            Object.Destroy(obj);
+            return;
+        }
+
+        bullet.ATK            = damage;
+        bullet.BulletSpeed    = projSpeed;
+        bullet.BulletLifeTime = lifeTime;
+        bullet.targets        = new Dictionary<string, int> { { "Player", (int)BulletTarget.Player } };
+        bullet.IsDamage       = true;
+        bullet.useWorldDirectionMovement = true;
+
+        bullet.Init();
+
+        obj.SetActive(true);
+    }
 }

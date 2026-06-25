@@ -58,6 +58,7 @@ public class Bullet : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private HashSet<int> damagedBossIds = new HashSet<int>();
     public bool isPooled = false;
+    public bool useWorldDirectionMovement = false;
 
     private void Awake()
     {
@@ -76,9 +77,26 @@ public class Bullet : MonoBehaviour
         _direction = transform.right;
         layerMask = 1 << LayerMask.NameToLayer("Wall");
 
-        if (spriteAngleOffset != 0f && spriteRenderer != null)
+        if (useWorldDirectionMovement)
         {
-            spriteRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, spriteAngleOffset);
+            if (spriteAngleOffset != 0f)
+            {
+                transform.rotation = Quaternion.Euler(0f, 0f, transform.eulerAngles.z + spriteAngleOffset);
+            }
+        }
+        else
+        {
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+                if (spriteRenderer == null)
+                    spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
+            }
+
+            if (spriteAngleOffset != 0f && spriteRenderer != null)
+            {
+                spriteRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, spriteAngleOffset);
+            }
         }
     }
 
@@ -90,7 +108,15 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector3.right * BulletSpeed * Time.deltaTime);
+        if (useWorldDirectionMovement)
+        {
+            transform.Translate(_direction * BulletSpeed * Time.deltaTime, Space.World);
+        }
+        else
+        {
+            transform.Translate(Vector3.right * BulletSpeed * Time.deltaTime);
+            _direction = transform.right;
+        }
         ApplyYBasedSorting();
         
         if (autoFlipY && spriteRenderer != null)
@@ -98,8 +124,6 @@ public class Bullet : MonoBehaviour
             float zRot = transform.eulerAngles.z;
             spriteRenderer.flipY = (zRot > 90f && zRot < 270f);
         }
- 
-        _direction = transform.right;
  
         time += Time.deltaTime;
         if (time>= BulletLifeTime) 
@@ -180,7 +204,7 @@ public class Bullet : MonoBehaviour
         {
             if (canAngle)
             {
-                Vector3 curDir = transform.right;
+                Vector3 curDir = useWorldDirectionMovement ? _direction : transform.right;
                 hit = Physics2D.Raycast(this.transform.position, curDir, BulletSpeed * BulletLifeTime, layerMask);
                 Debug.DrawRay(this.transform.position, curDir, UnityEngine.Color.red, 3f);
  
@@ -193,8 +217,16 @@ public class Bullet : MonoBehaviour
                 Vector3 reflectVector = Vector3.Reflect(curDir, hit.normal).normalized;
                 float angle = Mathf.Atan2(reflectVector.y, reflectVector.x) * Mathf.Rad2Deg;
  
-                Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-                this.transform.rotation = rotation;
+                if (useWorldDirectionMovement)
+                {
+                    Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angle + spriteAngleOffset));
+                    this.transform.rotation = rotation;
+                }
+                else
+                {
+                    Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+                    this.transform.rotation = rotation;
+                }
                 _direction = reflectVector;
             }
             else 
