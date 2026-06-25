@@ -230,7 +230,7 @@ public class MeleeSwingEnemySetupTool
                     walkField.SetValue(enemy, walkSprites.ToArray());
                     idleField.SetValue(enemy, idleSprite);
                     rateField.SetValue(enemy, 0.2f); // 프레임 재생 간격 0.2초로 설정
-                    scaleYField.SetValue(enemy, 0.5f); // 기본 스케일 Y 크기 보정 0.5f 주입
+                    scaleYField.SetValue(enemy, 1.0f); // 기본 스케일 Y 크기 보정 1.0f 주입
  
                     // 스프라이트 렌더러 기본 스프라이트도 3번 스프라이트로 직접 갱신
                     SpriteRenderer sr = prefab.GetComponentInChildren<SpriteRenderer>();

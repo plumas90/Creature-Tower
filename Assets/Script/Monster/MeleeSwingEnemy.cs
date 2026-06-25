@@ -56,6 +56,7 @@ public class MeleeSwingEnemy : EnemyBase
     // 평상시 무기 트랜스폼 캐싱
     private Vector3 _originalWeaponLocalPos;
     private Quaternion _originalWeaponLocalRot;
+    private Vector3 _originalWeaponLocalScale;
     private bool _hasCachedOriginalTransform = false;
 
     // 2D 무기 콜라이더 감지 제어
@@ -64,39 +65,39 @@ public class MeleeSwingEnemy : EnemyBase
 
     // 최적화된 사거리 캐시
     private float _optimizedRange = 1.6f;
-
+ 
     protected override void Start()
     {
         base.Start();
         _animator = GetComponentInChildren<Animator>();
         _sr       = GetComponentInChildren<SpriteRenderer>();
-
+ 
         CacheOriginalWeaponTransform();
         InitializeWeaponBoundsAndCollider();
         ResetVisuals();
         InitWeaponTrigger();
-
+ 
         if (idleSprite == null && _sr != null)
         {
             idleSprite = _sr.sprite;
         }
     }
-
+ 
     public override void StatSet(EnemySO so = null)
     {
         base.StatSet(so);
         _swingSO = MainSO as MeleeSwingEnemySO;
         if (_swingSO == null)
             Debug.LogWarning($"[MeleeSwingEnemy] MainSO is not MeleeSwingEnemySO: {name}");
-
+ 
         _cooldownTimer = 0f;
         _isAttacking = false;
-
+ 
         CacheOriginalWeaponTransform();
         InitializeWeaponBoundsAndCollider();
         ResetVisuals();
         InitWeaponTrigger();
-
+ 
         if (idleSprite == null && _sr != null)
         {
             idleSprite = _sr.sprite;
@@ -110,6 +111,7 @@ public class MeleeSwingEnemy : EnemyBase
         {
             _originalWeaponLocalPos = weaponDefaultVisual.transform.localPosition;
             _originalWeaponLocalRot = weaponDefaultVisual.transform.localRotation;
+            _originalWeaponLocalScale = weaponDefaultVisual.transform.localScale;
             _hasCachedOriginalTransform = true;
         }
     }
@@ -179,11 +181,12 @@ public class MeleeSwingEnemy : EnemyBase
             {
                 weaponDefaultVisual.transform.localPosition = _originalWeaponLocalPos;
                 weaponDefaultVisual.transform.localRotation = _originalWeaponLocalRot;
+                weaponDefaultVisual.transform.localScale = _originalWeaponLocalScale;
             }
         }
         if (weaponWarningVisual != null) weaponWarningVisual.SetActive(false);
         if (weaponSwingVisual != null) weaponSwingVisual.SetActive(false);
-
+ 
         if (_weaponTrigger != null)
         {
             _weaponTrigger.SetActiveTrigger(false);
@@ -198,7 +201,7 @@ public class MeleeSwingEnemy : EnemyBase
         {
             Debug.Log($"[MeleeSwingEnemy] {name} OnTick() - live: {live}, isDead: {isDead}, player: {(Player != null ? Player.name : "null")}, isAttacking: {_isAttacking}, cooldownTimer: {_cooldownTimer}, speed: {speed}");
         }
-
+ 
         if (Player == null)
         {
             ResolvePlayer();
@@ -206,15 +209,15 @@ public class MeleeSwingEnemy : EnemyBase
             SetWalk(false);
             return;
         }
-
-        // 공격 액션(코루틴) 진행 중에는 OnTick 로직 차단
+ 
+        // 1. 공격 액션(코루틴) 진행 중에는 OnTick 로직 차단
         if (_isAttacking)
         {
             if (shouldLog) Debug.Log($"[MeleeSwingEnemy] {name} OnTick() blocked because _isAttacking is true.");
             return;
         }
-
-        // 쿨타임 타이머 연산
+ 
+        // 2. 쿨타임 타이머 연산 (여기서 멈춤 - 쿨타임 동안은 플립 연산을 하지 않고 대기)
         if (_cooldownTimer > 0f)
         {
             _cooldownTimer -= Time.deltaTime;
@@ -223,34 +226,36 @@ public class MeleeSwingEnemy : EnemyBase
             if (shouldLog) Debug.Log($"[MeleeSwingEnemy] {name} OnTick() blocked by cooldown. Remaining: {_cooldownTimer}");
             return;
         }
-
-        float dist = Vector2.Distance(transform.position, Player.transform.position);
+ 
+        // 3. 방향 및 스프라이트 플립 & 무기 반전 보정
         Vector2 toPlayer = (Player.transform.position - transform.position).normalized;
-
+ 
         // 스프라이트 좌우 반전
         if (_sr != null && Mathf.Abs(toPlayer.x) > 0.01f)
             _sr.flipX = toPlayer.x < 0f;
-
+ 
         // 평상시 무기 위치 및 좌우 플립 보정
         if (weaponDefaultVisual != null && _sr != null)
         {
             Vector3 pos = weaponDefaultVisual.transform.localPosition;
             pos.x = _sr.flipX ? -Mathf.Abs(pos.x) : Mathf.Abs(pos.x);
             weaponDefaultVisual.transform.localPosition = pos;
-
+ 
             SpriteRenderer defaultSr = weaponDefaultVisual.GetComponent<SpriteRenderer>();
             if (defaultSr != null)
             {
                 defaultSr.flipX = _sr.flipX;
             }
         }
-
+ 
+        // 4. 사거리 내 접근 및 공격 수행
+        float dist = Vector2.Distance(transform.position, Player.transform.position);
         float range = _optimizedRange;
         if (shouldLog)
         {
             Debug.Log($"[MeleeSwingEnemy] {name} - Distance to player: {dist}, Attack Range: {range}");
         }
-
+ 
         if (dist > range)
         {
             // 사거리 밖: Context Steering으로 주변 몬스터를 피해 자연스럽게 접근
@@ -295,14 +300,14 @@ public class MeleeSwingEnemy : EnemyBase
         {
             dir = (Player.transform.position - transform.position).normalized;
             angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
+ 
             // 공격 시작 직전, 플레이어를 바라보도록 몬스터 스프라이트 플립 고정
             if (_sr != null && Mathf.Abs(dir.x) > 0.01f)
             {
                 _sr.flipX = dir.x < 0f;
             }
         }
-
+ 
         // 조준 진행 각도에서 무기 자체의 스프라이트 기울기 오프셋을 빼서 보정
         float adjustedAngle = angle - weaponSpriteAngleOffset;
 

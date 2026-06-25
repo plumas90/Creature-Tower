@@ -221,6 +221,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: normal_walk_enemy_hand
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 35
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e500de90d07d1f938ee023008a0f006
+      internalID: -990273631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -235,6 +257,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      normal_walk_enemy_hand: -990273631
       walk_robot_walk1: -2073566385283376946
       walk_robot_walk2: 6822458512010255455
       walk_robot_walk3: 8418071827486537181
