@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3511116445718640128}
   - component: {fileID: 5714130217907053548}
   m_Layer: 9
-  m_Name: MeleeEnemy_Basic
+  m_Name: MeleeEnemy_Basic_robot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 100001
   m_SortingLayer: 3
   m_SortingOrder: 1000
-  m_Sprite: {fileID: 7482667652216324306, guid: f0d63412235b4934cb4dc52c9d3f3e5e, type: 3}
+  m_Sprite: {fileID: 714521895434628548, guid: 9958884c57b46fc9593640e8d4e93354, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -151,7 +151,7 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.1}
   m_Radius: 0.4
 --- !u!114 &5714130217907053548
 MonoBehaviour:
@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b729b58938366438e5a4d2691e5ab7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainSO: {fileID: 11400000, guid: 22de92a11d423bb4aa0bff9d973a0dc1, type: 2}
+  MainSO: {fileID: 11400000, guid: 4001b0b478051d768bd23edd3fb2005e, type: 2}
   atk: 0
   maxHp: 0
   curHp: 0
@@ -173,7 +173,7 @@ MonoBehaviour:
   live: 0
   invincibility: 0
   Player: {fileID: 0}
-  useKinematic: 0
+  useKinematic: 1
   useYBasedSorting: 1
   ySortLayerName: World_Dynamic
   ySortBaseOrder: 1000
@@ -188,3 +188,12 @@ MonoBehaviour:
   steerObstacleMask:
     serializedVersion: 2
     m_Bits: 0
+  walkSprites:
+  - {fileID: 714521895434628548, guid: 9958884c57b46fc9593640e8d4e93354, type: 3}
+  - {fileID: 1659042133054248795, guid: 9958884c57b46fc9593640e8d4e93354, type: 3}
+  - {fileID: -2321260939320113645, guid: 9958884c57b46fc9593640e8d4e93354, type: 3}
+  - {fileID: -5002027373153976027, guid: 9958884c57b46fc9593640e8d4e93354, type: 3}
+  - {fileID: -7327405028821389972, guid: 9958884c57b46fc9593640e8d4e93354, type: 3}
+  - {fileID: 1837088542803804514, guid: 9958884c57b46fc9593640e8d4e93354, type: 3}
+  idleSprite: {fileID: 714521895434628548, guid: 9958884c57b46fc9593640e8d4e93354, type: 3}
+  walkFrameRate: 0.2
