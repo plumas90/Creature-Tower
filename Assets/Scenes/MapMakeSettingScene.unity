@@ -9029,17 +9029,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 988671322}
   m_CullTransparentMesh: 1
---- !u!114 &999821009 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4112344016895769303, guid: b0365f5d377e17318ac45d928212da56, type: 3}
-  m_PrefabInstance: {fileID: 9105855734474012175}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 520d6ad644d05124392e9c9e23a20782, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1195360115
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9650,6 +9639,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56582e1fd921b2448a6dc87521f5f27a, type: 3}
+--- !u!114 &1782228572 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+  m_PrefabInstance: {fileID: 6211075140964707677}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0355c21d0cb4a2e4d81a9492ef644381, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2002470812
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10468,6 +10468,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: testMonsterList.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
+      propertyPath: 'testMonsterList.Array.data[0]'
+      value: 
+      objectReference: {fileID: 6646246831167701657, guid: 03877c22e0ff6db48b2847e73048474a, type: 3}
+    - target: {fileID: 5812925621529886611, guid: 1e53d9628c0d2e149b2168c1802f88d8, type: 3}
       propertyPath: availableMonsterGroups.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -10555,7 +10563,7 @@ PrefabInstance:
     - target: {fileID: 5332037947132965561, guid: 0c7305a89b5a8874f85dcca5711051ff, type: 3}
       propertyPath: stage
       value: 
-      objectReference: {fileID: 999821009}
+      objectReference: {fileID: 1782228572}
     - target: {fileID: 5332037947132965561, guid: 0c7305a89b5a8874f85dcca5711051ff, type: 3}
       propertyPath: coinPrefab
       value: 

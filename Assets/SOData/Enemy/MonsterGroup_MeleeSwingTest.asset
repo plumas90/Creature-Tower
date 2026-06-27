@@ -23,8 +23,6 @@ MonoBehaviour:
       spawnOffset: {x: -1.5, y: 1.5}
     - monsterPrefab: {fileID: 6646246831167701657, guid: f1e2d3c4b5a69788796a5b4c3d2e1f10, type: 3}
       spawnOffset: {x: 1.5, y: 1.5}
-    - monsterPrefab: {fileID: 6646246831167701657, guid: 2e2b06db0ed4aee1ca66e7ecc60f6151, type: 3}
-      spawnOffset: {x: 1.5, y: 1.5}
-    - monsterPrefab: {fileID: 6964553681987251415, guid: 9fd4240f827adc097b1cf4aeb1dc6582, type: 3}
+    - monsterPrefab: {fileID: 6646246831167701657, guid: 03877c22e0ff6db48b2847e73048474a, type: 3}
       spawnOffset: {x: 1.5, y: 1.5}
     delayBeforeWave: 1

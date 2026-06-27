@@ -15,7 +15,7 @@ using UnityEngine;
 public class DashEnemy : EnemyBase
 {
     // ─── 상태 정의 ────────────────────────────────────────────
-    private enum DashState { Chase, Windup, Dashing, Cooldown }
+    protected enum DashState { Chase, Windup, Dashing, Cooldown }
 
     // ─── 인스펙터 참조 ────────────────────────────────────────
     [Header("시각적 연출 설정")]
@@ -29,7 +29,7 @@ public class DashEnemy : EnemyBase
     private static readonly int AnimIsWalk = Animator.StringToHash("IsWalking");
 
     // ─── 상태 제어 ────────────────────────────────────────────
-    private DashState _state = DashState.Chase;
+    protected DashState _state = DashState.Chase;
     private bool      _routineRunning = false;
 
     // 돌진 방향 (Windup 종료 직전에 최종 확정됨)
@@ -40,6 +40,7 @@ public class DashEnemy : EnemyBase
 
     // ─── 스프라이트 예고선 스케일 기준 ────────────────────────
     private float _warningBaseScaleX = 1f; // 예고선 오브젝트 원본 X 스케일
+    private float _warningBaseScaleY = 1f; // 예고선 오브젝트 원본 Y 스케일
 
     // =========================================================
     // 초기화
@@ -54,6 +55,7 @@ public class DashEnemy : EnemyBase
         if (windupWarningVisual != null)
         {
             _warningBaseScaleX = windupWarningVisual.transform.localScale.x;
+            _warningBaseScaleY = windupWarningVisual.transform.localScale.y;
             windupWarningVisual.SetActive(false);
         }
     }
@@ -93,7 +95,7 @@ public class DashEnemy : EnemyBase
                 break;
 
             case DashState.Windup:
-                UpdateWindup(); // 빨간선 방향을 실시간으로 플레이어 추적
+                // Windup 상태에서는 대기하며 플레이어 추적을 멈춤
                 break;
 
             case DashState.Dashing:
@@ -123,6 +125,7 @@ public class DashEnemy : EnemyBase
             _rb2d.linearVelocity = Vector2.zero;
             SetWalk(false);
             TransitionTo(DashState.Windup);
+            _dashDir = dir; // 윈드업 돌입 당시 방향 고정
             StartCoroutine(WindupRoutine());
         }
         else
@@ -135,47 +138,53 @@ public class DashEnemy : EnemyBase
 
     // ─── Windup ───────────────────────────────────────────────
 
-    /// <summary>
-    /// Windup 상태에서 매 프레임 예고선 방향을 플레이어 쪽으로 실시간 회전시킨다.
-    /// </summary>
-    private void UpdateWindup()
-    {
-        if (Player == null) return;
-
-        Vector2 dir = (Player.transform.position - transform.position).normalized;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-        FlipSprite(dir);
-
-        // 예고선: 플레이어 방향으로 실시간 회전 + 길이 조정
-        if (windupWarningVisual != null && windupWarningVisual.activeSelf)
-        {
-            float range = _dashSO != null ? _dashSO.dashRange : 3.5f;
-
-            windupWarningVisual.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
-
-            // 예고선 길이를 dashRange에 비례하여 늘림
-            Vector3 s = windupWarningVisual.transform.localScale;
-            s.x = _warningBaseScaleX * (range / 1.6f);
-            windupWarningVisual.transform.localScale = s;
-
-            // 예고선 위치: 몬스터 중심에서 플레이어 방향 절반 지점으로 오프셋
-            windupWarningVisual.transform.localPosition = (Vector3)(dir * (range * 0.5f));
-        }
-    }
-
     private IEnumerator WindupRoutine()
     {
         _routineRunning = true;
 
         float windupTime = _dashSO != null ? _dashSO.windupTime : 1.2f;
 
-        // 예고선 활성화
+        // 예고선 활성화 및 설정
         if (windupWarningVisual != null)
+        {
+            // Sorting Layer를 WORLD_GROUNDFX로 설정
+            SpriteRenderer warningSr = windupWarningVisual.GetComponent<SpriteRenderer>();
+            if (warningSr == null)
+                warningSr = windupWarningVisual.GetComponentInChildren<SpriteRenderer>(true);
+            if (warningSr != null)
+            {
+                warningSr.sortingLayerName = "WORLD_GROUNDFX";
+            }
+
             windupWarningVisual.SetActive(true);
 
-        // Windup 대기 (이 동안 OnTick의 UpdateWindup이 방향을 실시간 추적)
-        yield return new WaitForSeconds(windupTime);
+            // 초기 방향과 위치 설정
+            float angle = Mathf.Atan2(_dashDir.y, _dashDir.x) * Mathf.Rad2Deg;
+            windupWarningVisual.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
+
+            float range = _dashSO != null ? _dashSO.dashRange : 3.5f;
+            windupWarningVisual.transform.localPosition = (Vector3)(_dashDir * (range * 0.5f));
+        }
+
+        // Windup 대기하며 스케일 보간 (1.0 -> 0.5)
+        float elapsed = 0f;
+        float rangeVal = _dashSO != null ? _dashSO.dashRange : 3.5f;
+        while (elapsed < windupTime)
+        {
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / windupTime);
+            float scaleFactor = Mathf.Lerp(1.0f, 0.5f, progress);
+
+            if (windupWarningVisual != null)
+            {
+                Vector3 s = windupWarningVisual.transform.localScale;
+                s.x = _warningBaseScaleX * (rangeVal / 1.6f);
+                s.y = _warningBaseScaleY * scaleFactor;
+                windupWarningVisual.transform.localScale = s;
+            }
+
+            yield return null;
+        }
 
         // 예고선 비활성화 + 돌진 직전 짧은 텀(긴장감 연출)
         if (windupWarningVisual != null)
@@ -183,12 +192,7 @@ public class DashEnemy : EnemyBase
 
         yield return new WaitForSeconds(0.2f);
 
-        // 최종 돌진 방향 확정 (이 순간의 플레이어 방향)
-        if (Player != null)
-            _dashDir = (Player.transform.position - transform.position).normalized;
-        else
-            _dashDir = _sr != null && _sr.flipX ? Vector2.left : Vector2.right;
-
+        // _dashDir는 윈드업 진입 당시 고정한 방향을 그대로 사용하므로 여기서 덮어쓰지 않음
         _dashStartPos = transform.position;
         TransitionTo(DashState.Dashing);
 
@@ -227,7 +231,7 @@ public class DashEnemy : EnemyBase
 
     // ─── 상태 전환 헬퍼 ───────────────────────────────────────
 
-    private void TransitionTo(DashState next)
+    protected virtual void TransitionTo(DashState next)
     {
         _state = next;
     }

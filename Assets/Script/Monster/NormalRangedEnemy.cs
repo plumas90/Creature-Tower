@@ -12,6 +12,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class NormalRangedEnemy : EnemyBase
 {
+    [Header("Spawn Configurations")]
+    [Tooltip("총알이 생성될 위치를 지정하는 Transform입니다. 지정하지 않으면 몬스터의 중심에서 생성됩니다.")]
+    [SerializeField] private Transform bulletSpawnPoint;
+
     // SO 캐스팅 캐시
     private RangedEnemySO _rangedSO;
 
@@ -148,6 +152,16 @@ public class NormalRangedEnemy : EnemyBase
     // ─── 투사체 발사 ──────────────────────────────────────────
     protected virtual Vector3 GetBulletSpawnPosition()
     {
+        if (bulletSpawnPoint != null)
+        {
+            if (_sr != null && _sr.flipX)
+            {
+                Vector3 offset = bulletSpawnPoint.position - transform.position;
+                offset.x = -offset.x;
+                return transform.position + offset;
+            }
+            return bulletSpawnPoint.position;
+        }
         return transform.position;
     }
 

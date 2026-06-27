@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcfb11a922342a9439e6b7bab1b811de, type: 3}
+  m_Name: DashEnemy_robot
+  m_EditorClassIdentifier: 
+  enemyName: "\uB3CC\uC9C4\uD615 \uBAAC\uC2A4\uD130"
+  atk: 20
+  hp: 50
+  speed: 1
+  bossCount: 0
+  IntroAnimationTime: 0
+  bossPatternTime: 0
+  btChaseRange: 100
+  btStopDistance: 0.6
+  btRepathInterval: 0.15
+  btMoveSpeedMultiplier: 1
+  btChaseChance: 1
+  dashRange: 4
+  windupTime: 1.2
+  dashSpeed: 14
+  dashMaxDistance: 15
+  dashCooldown: 2
