@@ -70,6 +70,14 @@ public class BossStage : Stage
         if (PlayerSpawnPointSprite != null)
             PlayerSpawnPointSprite.color = new Color(0f, 0f, 0f, 0f);
 
+        if (spawnPointStairs != null)
+        {
+            var sr = spawnPointStairs.GetComponentInChildren<SpriteRenderer>();
+            if (sr != null)
+                sr.color = new Color(0f, 0f, 0f, 0f);
+        }
+
+
         if (resultBox != null)
         {
             defaultResultPosition = resultBox.transform.position;
