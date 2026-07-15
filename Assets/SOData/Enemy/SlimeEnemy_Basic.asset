@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: SlimeEnemy_Basic
   m_EditorClassIdentifier: 
   enemyName: "\uC2AC\uB77C\uC784 (\uD50C\uB85C\uC5B4 1~5)"
-  atk: 6
-  hp: 25
-  speed: 2.0
+  atk: 5
+  hp: 20
+  speed: 2
   bossCount: 0
   IntroAnimationTime: 0
   bossPatternTime: 0

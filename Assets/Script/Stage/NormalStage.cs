@@ -164,6 +164,16 @@ public class NormalStage : Stage
     [SerializeField] private MonsterGroupSO monsterGroup;
     [SerializeField] private List<MonsterGroupSO> availableMonsterGroups = new List<MonsterGroupSO>();
 
+    [Header("Dynamic Enemy Spawner Configs")]
+    [SerializeField] private List<GameObject> enemyPool1to5 = new List<GameObject>();
+    [SerializeField] private List<GameObject> enemyPool3to8 = new List<GameObject>();
+
+    [SerializeField] private GameObject meleeEnemyRobotPrefab;
+    [SerializeField] private GameObject slimeEnemyBasicPrefab;
+    [SerializeField] private GameObject dashEnemyRobotPrefab;
+    [SerializeField] private GameObject meleeSwingEnemySpearPrefab;
+    [SerializeField] private GameObject meleeSwingEnemySwingPrefab;
+
     private int remainingMonsterCount;
     private bool monsterGateActive;
     private List<GameObject> spawnedRewards = new List<GameObject>();

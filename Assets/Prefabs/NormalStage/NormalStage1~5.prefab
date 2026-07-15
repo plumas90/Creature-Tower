@@ -6154,6 +6154,22 @@ MonoBehaviour:
   monsterGroup: {fileID: 11400000, guid: 5b206c3a8c8e404b9c1d10200e4c0001, type: 2}
   availableMonsterGroups:
   - {fileID: 11400000, guid: 5b206c3a8c8e404b9c1d10200e4c0001, type: 2}
+  enemyPool1to5:
+  - {fileID: 100100000, guid: 2e2b06db0ed4aee1ca66e7ecc60f6151, type: 3}
+  - {fileID: 100100000, guid: b80c04a48c8d048ff97b95e01813e779, type: 3}
+  - {fileID: 100100000, guid: 9fd4240f827adc097b1cf4aeb1dc6582, type: 3}
+  - {fileID: 100100000, guid: b65c2637a892404e9c1dbf50be4c1002, type: 3}
+  enemyPool3to8:
+  - {fileID: 100100000, guid: 03877c22e0ff6db48b2847e73048474a, type: 3}
+  - {fileID: 100100000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f07, type: 3}
+  - {fileID: 100100000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f10, type: 3}
+  - {fileID: 100100000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f01, type: 3}
+  - {fileID: 100100000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f02, type: 3}
+  meleeEnemyRobotPrefab: {fileID: 100100000, guid: 2e2b06db0ed4aee1ca66e7ecc60f6151, type: 3}
+  slimeEnemyBasicPrefab: {fileID: 100100000, guid: b65c2637a892404e9c1dbf50be4c1002, type: 3}
+  dashEnemyRobotPrefab: {fileID: 100100000, guid: 03877c22e0ff6db48b2847e73048474a, type: 3}
+  meleeSwingEnemySpearPrefab: {fileID: 100100000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f07, type: 3}
+  meleeSwingEnemySwingPrefab: {fileID: 100100000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f10, type: 3}
 --- !u!1 &7409947402209049791
 GameObject:
   m_ObjectHideFlags: 0

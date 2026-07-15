@@ -11,10 +11,10 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8cfcbb4684fd1a4694dd32b8b991875, type: 3}
   m_Name: RangedWeaponEnemy_FleeAttack
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   enemyName: "\uB3C4\uB9DD\uC0AC\uACA9\uD615 \uC6D0\uAC70\uB9AC \uBAAC\uC2A4\uD130"
-  atk: 6
-  hp: 15
+  atk: 10
+  hp: 60
   speed: 2
   bossCount: 0
   IntroAnimationTime: 0
@@ -26,7 +26,7 @@ MonoBehaviour:
   btChaseChance: 1
   attackRange: 8
   keepDistance: 4
-  attackCooldown: 2.5
+  attackCooldown: 2
   projectileCount: 1
   spreadAngle: 0
   projectileSpeed: 7

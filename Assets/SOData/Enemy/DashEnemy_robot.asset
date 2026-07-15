@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: "\uB3CC\uC9C4\uD615 \uBAAC\uC2A4\uD130"
   atk: 20
-  hp: 50
+  hp: 55
   speed: 1
   bossCount: 0
   IntroAnimationTime: 0

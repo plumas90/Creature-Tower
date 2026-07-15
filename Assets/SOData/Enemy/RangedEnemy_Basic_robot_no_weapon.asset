@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RangedEnemy_Basic_robot_no_weapon
   m_EditorClassIdentifier: 
   enemyName: "\uAE30\uBCF8 \uC6D0\uAC70\uB9AC \uBAAC\uC2A4\uD130"
-  atk: 3
-  hp: 15
+  atk: 5
+  hp: 18
   speed: 2
   bossCount: 0
   IntroAnimationTime: 0

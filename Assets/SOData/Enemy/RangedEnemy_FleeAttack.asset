@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RangedEnemy_FleeAttack
   m_EditorClassIdentifier: 
   enemyName: "\uB3C4\uB9DD\uC0AC\uACA9\uD615 \uC6D0\uAC70\uB9AC \uBAAC\uC2A4\uD130"
-  atk: 6
-  hp: 15
+  atk: 12
+  hp: 40
   speed: 2
   bossCount: 0
   IntroAnimationTime: 0

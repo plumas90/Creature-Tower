@@ -3824,6 +3824,13 @@ MonoBehaviour:
   monsterGroup: {fileID: 0}
   availableMonsterGroups:
   - {fileID: 11400000, guid: f1e2d3c4b5a69788796a5b4c3d2e1f08, type: 2}
+  enemyPool1to5: []
+  enemyPool3to8: []
+  meleeEnemyRobotPrefab: {fileID: 0}
+  slimeEnemyBasicPrefab: {fileID: 0}
+  dashEnemyRobotPrefab: {fileID: 0}
+  meleeSwingEnemySpearPrefab: {fileID: 0}
+  meleeSwingEnemySwingPrefab: {fileID: 0}
 --- !u!1 &7775634567717313354
 GameObject:
   m_ObjectHideFlags: 0
