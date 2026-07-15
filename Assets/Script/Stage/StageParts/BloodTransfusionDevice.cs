@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+// #TODO 수혈기 %의 성장량을 테스트 후 소모 성장량 0.5% 에서 0.25%를 고려하기
 // 플레이어가 접촉하면 체력 10% 소모로 스탯 구매 UI를 연다.
 // 같은 스테이지의 같은 장치는 취소 후 재진입해도 동일 목록을 유지한다.
 // 다음 스테이지로 넘어가면 Stage.Init()에서 목록 캐시가 초기화된다.
@@ -14,9 +15,9 @@ public class BloodTransfusionDevice : MonoBehaviour
 
     [Header("Transfusion Cost")]
     [SerializeField] private TransfusionCostType costType = TransfusionCostType.Percent;
-    [SerializeField] private int baseMinCost = 5;
-    [SerializeField] private int baseMaxCost = 10;
-    [SerializeField] private int increasePerPurchase = 1;
+    [SerializeField] private float baseMinCost = 12f;
+    [SerializeField] private float baseMaxCost = 18f;
+    [SerializeField] private float increasePerPurchase = 1f;
 
     [Header("Animation")]
     [SerializeField] private SpriteRenderer sr;
@@ -32,17 +33,16 @@ public class BloodTransfusionDevice : MonoBehaviour
 
     private void OnValidate()
     {
-        baseMinCost = Mathf.Max(1, baseMinCost);
-        increasePerPurchase = Mathf.Max(0, increasePerPurchase);
+        baseMinCost = Mathf.Max(0.1f, baseMinCost);
+        increasePerPurchase = Mathf.Max(0f, increasePerPurchase);
 
         if (costType == TransfusionCostType.Percent)
         {
-            baseMaxCost = Mathf.Clamp(baseMaxCost, baseMinCost, 100);
+            baseMaxCost = Mathf.Clamp(baseMaxCost, baseMinCost, 100f);
         }
         else
         {
-            // 상수 타입은 항상 범위 폭 15 유지
-            baseMaxCost = baseMinCost + 15;
+            baseMaxCost = Mathf.Max(baseMinCost, baseMaxCost);
         }
     }
 

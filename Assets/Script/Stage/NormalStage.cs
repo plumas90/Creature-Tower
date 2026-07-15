@@ -102,6 +102,13 @@ public class NormalStage : Stage
         hasExecutedWaves = false;
     }
 
+    public void ConfigureTestMonsterList(List<GameObject> customList)
+    {
+        monsterTestMode = true;
+        testGroup = null;
+        testMonsterList = customList;
+    }
+
     public void SetRequiredMonsterCount(int count)
     {
         remainingMonsterCount = count;

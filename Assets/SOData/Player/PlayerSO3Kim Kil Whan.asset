@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9665af843a0dad74283ab1755e3bc56e, type: 3}
   m_Name: PlayerSO3Kim Kil Whan
   m_EditorClassIdentifier: 
+  atkScale: 0.4
+  hpScale: 1
+  atkSpeedScale: 1
   atk: 5
   hp: 120
   unitSpeed: 2.3
-  atkSpeed: 5
+  atkSpeed: 3
   unitScale: 1
   launchVolume: 3
   bulletSpread: 20

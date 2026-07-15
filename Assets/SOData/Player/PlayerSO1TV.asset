@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9665af843a0dad74283ab1755e3bc56e, type: 3}
   m_Name: PlayerSO1TV
   m_EditorClassIdentifier: 
+  atkScale: 1
+  hpScale: 1
+  atkSpeedScale: 1
   atk: 50
   hp: 1000
   unitSpeed: 2.5

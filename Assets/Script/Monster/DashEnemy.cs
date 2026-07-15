@@ -22,6 +22,9 @@ public class DashEnemy : EnemyBase
     [Tooltip("Windup 중 표시되는 빨간 방향 예고 실선 오브젝트")]
     public GameObject windupWarningVisual;
 
+    [Tooltip("위협선 Y축 시작 높이 보정값 (로컬 좌표계 Y 오프셋)")]
+    [SerializeField] private float warningLineYOffset = 0f;
+
     // ─── 내부 캐시 ────────────────────────────────────────────
     private DashEnemySO   _dashSO;
     private Animator      _animator;
@@ -163,7 +166,14 @@ public class DashEnemy : EnemyBase
             windupWarningVisual.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
 
             float range = _dashSO != null ? _dashSO.dashRange : 3.5f;
-            windupWarningVisual.transform.localPosition = (Vector3)(_dashDir * (range * 0.5f));
+            float targetScaleX = _warningBaseScaleX * (range / 1.6f);
+
+            Vector3 s = windupWarningVisual.transform.localScale;
+            s.x = targetScaleX;
+            windupWarningVisual.transform.localScale = s;
+
+            Vector3 centerOffset = Vector3.up * warningLineYOffset;
+            windupWarningVisual.transform.localPosition = (Vector3)(_dashDir * (targetScaleX * 0.5f)) + centerOffset;
         }
 
         // Windup 대기하며 스케일 보간 (1.0 -> 0.5)

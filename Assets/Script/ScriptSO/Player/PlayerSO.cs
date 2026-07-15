@@ -16,22 +16,28 @@ public class PlayerSO : RangedUnitSO
 {
     [Header("PlayerSO")]
     public string CharaterName;
-    public float reloadCoolTime;         // ÀåÀü ÄğÅ¸ÀÔ
-    public int skillCoolTime;            // ½ºÅ³ ÄğÅ¸ÀÔ
-    public int rollCoolTime;             // ±¸¸£±â ÄğÅ¸ÀÔ
-    public int ammoMax;                  // ÀåÅº¼ö
-    public int CharacterClass;           // Á÷¾÷
-    public int critical;                    // Å©¸®Æ¼ÄÃ
-    public SpriteLibraryAsset playerSprite;// ÇÃ·¹ÀÌ¾î ½ºÇÁ¶óÀÌÆ®
-    public SpriteLibraryAsset weaponSprite;// ¹«±â ½ºÇÁ¶óÀÌÆ®
-    //public Sprite indicatorSprite; //ui ÃÑ¾Ë ÀÌ¹ÌÁö
+    public float reloadCoolTime;         // ì¥ì „ ì¿¨íƒ€ì…
+    public int skillCoolTime;            // ìŠ¤í‚¬ ì¿¨íƒ€ì…
+    public int rollCoolTime;             // êµ¬ë¥´ê¸° ì¿¨íƒ€ì…
+    public int ammoMax;                  // ì¥íƒ„ìˆ˜
+    public int CharacterClass;           // ì§ì—…
+    public int critical;                    // í¬ë¦¬í‹°ì»¬
+
+    [Header("ìŠ¤íƒ¯ ê³„ìˆ˜ (Stat Scales)")]
+    public float atkScale = 1.0f;
+    public float hpScale = 1.0f;
+    public float atkSpeedScale = 1.0f;
+
+    public SpriteLibraryAsset playerSprite;// í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸
+    public SpriteLibraryAsset weaponSprite;// ë¬´ê¸° ìŠ¤í”„ë¼ì´íŠ¸
+    //public Sprite indicatorSprite; //ui ì´ì•Œ ì´ë¯¸ì§€
     public AudioClip atkClip;
     public AudioClip[] reloadClip;
 }
 
 enum characterClass
 {
-    rifle,       // ¶óÀÌÇÃ
-    shotgun,     // ¼¦°Ç
-    sniper       // ½º³ªÀÌÆÛ
+    rifle,       // ë¼ì´í”Œ
+    shotgun,     // ìƒ·ê±´
+    pistol       // í”¼ìŠ¤í†¨
 }

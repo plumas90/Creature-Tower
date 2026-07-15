@@ -62,12 +62,12 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
     [SerializeField] private Color transfusionSelectedColor = Color.white;
     [SerializeField] private Color transfusionUnselectedColor = new Color(0.65f, 0.65f, 0.65f, 1f);
     private readonly Dictionary<string, List<IAugment>> transfusionOptionCache = new Dictionary<string, List<IAugment>>();
-    private readonly Dictionary<string, int> transfusionCostCache = new Dictionary<string, int>();
+    private readonly Dictionary<string, float> transfusionCostCache = new Dictionary<string, float>();
     private string currentTransfusionCacheKey;
     private bool currentTransfusionCostIsPercent;
-    private int currentTransfusionCostMin;
-    private int currentTransfusionCostMax;
-    private int currentTransfusionCostValue;
+    private float currentTransfusionCostMin;
+    private float currentTransfusionCostMax;
+    private float currentTransfusionCostValue;
 
     public void OpenSpecialResult(GameObject playerObj, bool isRare = false)
     {
@@ -95,9 +95,9 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         GameObject playerObj,
         string cacheKey,
         bool usePercentCost,
-        int baseMinCost,
-        int baseMaxCost,
-        int increasePerPurchase,
+        float baseMinCost,
+        float baseMaxCost,
+        float increasePerPurchase,
         int confirmedPurchaseCount,
         Action<bool, int> onClosed)
     {
@@ -738,26 +738,32 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         
         if (confirmedPurchaseCount == 0)
         {
-            if (randomVal < 55) commonTier = 1;
-            else if (randomVal < 85) commonTier = 2;
+            if (randomVal < 70) commonTier = 1;
+            else if (randomVal < 95) commonTier = 2;
             else commonTier = 3;
         }
         else if (confirmedPurchaseCount == 1)
         {
-            if (randomVal < 45) commonTier = 1;
-            else if (randomVal < 85) commonTier = 2;
+            if (randomVal < 55) commonTier = 1;
+            else if (randomVal < 90) commonTier = 2;
             else commonTier = 3;
         }
         else if (confirmedPurchaseCount == 2)
         {
+            if (randomVal < 40) commonTier = 1;
+            else if (randomVal < 80) commonTier = 2;
+            else commonTier = 3;
+        }
+        else if (confirmedPurchaseCount == 3)
+        {
             if (randomVal < 25) commonTier = 1;
-            else if (randomVal < 70) commonTier = 2;
+            else if (randomVal < 75) commonTier = 2;
             else commonTier = 3;
         }
         else
         {
-            if (randomVal < 30) commonTier = 1;
-            else if (randomVal < 80) commonTier = 2;
+            if (randomVal < 15) commonTier = 1;
+            else if (randomVal < 65) commonTier = 2;
             else commonTier = 3;
         }
 
@@ -926,7 +932,7 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
             return;
 
         string unit = currentTransfusionCostIsPercent ? "%" : "";
-        transfusionCostText.text = $"HP {currentTransfusionCostValue}{unit}";
+        transfusionCostText.text = $"HP {currentTransfusionCostValue:F0}{unit}";
     }
 
     private void UpdateTransfusionConfirmInteractable()
@@ -950,25 +956,30 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         if (playerStat == null)
             return 0f;
 
+        float rawCost = 0f;
         if (currentTransfusionCostIsPercent)
         {
             float maxHp = playerStat.HP != null ? playerStat.HP.total : 0f;
-            return Mathf.Max(1f, maxHp * (currentTransfusionCostValue / 100f));
+            rawCost = maxHp * (currentTransfusionCostValue / 100f);
+        }
+        else
+        {
+            rawCost = currentTransfusionCostValue;
         }
 
-        return Mathf.Max(1f, currentTransfusionCostValue);
+        return Mathf.Max(1f, Mathf.Round(rawCost));
     }
 
     private void BuildCurrentTransfusionCost(
         bool usePercentCost,
-        int baseMinCost,
-        int baseMaxCost,
-        int increasePerPurchase,
+        float baseMinCost,
+        float baseMaxCost,
+        float increasePerPurchase,
         int confirmedPurchaseCount)
     {
-        int minCost = Mathf.Max(1, baseMinCost);
-        int maxCost = Mathf.Max(minCost, baseMaxCost);
-        int increase = Mathf.Max(0, increasePerPurchase);
+        float minCost = Mathf.Max(0.1f, baseMinCost);
+        float maxCost = Mathf.Max(minCost, baseMaxCost);
+        float increase = Mathf.Max(0f, increasePerPurchase);
         int purchaseCount = Mathf.Max(0, confirmedPurchaseCount);
 
         minCost += increase * purchaseCount;
@@ -976,13 +987,8 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
 
         if (usePercentCost)
         {
-            minCost = Mathf.Min(100, minCost);
-            maxCost = Mathf.Min(100, maxCost);
-        }
-        else
-        {
-            // 고정 코스트 타입은 항상 폭 15를 유지한다.
-            maxCost = minCost + 15;
+            minCost = Mathf.Min(100f, minCost);
+            maxCost = Mathf.Min(100f, maxCost);
         }
 
         if (maxCost < minCost)
@@ -992,13 +998,13 @@ public class ResultManager : MonoBehaviour//vs�ڵ�
         currentTransfusionCostMin = minCost;
         currentTransfusionCostMax = maxCost;
 
-        if (!string.IsNullOrEmpty(currentTransfusionCacheKey) && transfusionCostCache.TryGetValue(currentTransfusionCacheKey, out int cachedCost))
+        if (!string.IsNullOrEmpty(currentTransfusionCacheKey) && transfusionCostCache.TryGetValue(currentTransfusionCacheKey, out float cachedCost))
         {
             currentTransfusionCostValue = cachedCost;
         }
         else
         {
-            currentTransfusionCostValue = Random.Range(currentTransfusionCostMin, currentTransfusionCostMax + 1);
+            currentTransfusionCostValue = Mathf.Round(Random.Range(currentTransfusionCostMin, currentTransfusionCostMax));
             if (!string.IsNullOrEmpty(currentTransfusionCacheKey))
             {
                 transfusionCostCache[currentTransfusionCacheKey] = currentTransfusionCostValue;

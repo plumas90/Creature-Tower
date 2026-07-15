@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -183,6 +184,16 @@ public class TestGameManager : MonoBehaviour
         {
             if (stage is NormalStage normalStage)
             {
+#if UNITY_EDITOR
+                GameObject flee1 = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Enemy/6~10enemy/RangedEnemy_FleeAttack.prefab");
+                GameObject flee2 = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Enemy/6~10enemy/RangedWeaponEnemy_FleeAttack.prefab");
+                if (flee1 != null && flee2 != null)
+                {
+                    List<GameObject> testList = new List<GameObject> { flee1, flee2 };
+                    normalStage.ConfigureTestMonsterList(testList);
+                    Debug.Log("[TestGameManager] RangedEnemy_FleeAttack & RangedWeaponEnemy_FleeAttack 테스트 프리팹을 주입했습니다!");
+                }
+#endif
                 if (simulateMysteryRoom)
                 {
                     normalStage.InitStage(testRoomNumber, NormalStage.NormalStageCase.MonsterWithReward, NormalStage.RoomTheme.Mystery);

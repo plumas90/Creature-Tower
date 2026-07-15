@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9665af843a0dad74283ab1755e3bc56e, type: 3}
   m_Name: PlayerSO2Charlie
   m_EditorClassIdentifier: 
+  atkScale: 0.8
+  hpScale: 1
+  atkSpeedScale: 0.9
   atk: 3
   hp: 100
   unitSpeed: 2.7

@@ -16,15 +16,18 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
     public PlayerInput playerInput;//이것도 사실 타켓플레이어 인풋 잘안쓰기에 함수가 따로 만들지 않음
     public WeaponSystem playerWeapon;//
 
+    [Header("스탯 1당 상승치 데이터 SO")]
+    [SerializeField] private StatIncrementSO statIncrementSO;
+
     //아래 힘/체/스피드/공속/탄퍼짐/쿨타임/크리/총알을 so로 만들어서 대체할것
-    int atk = 5;
-    int hp = 5;
-    float speed = 0.05f;
-    float atkspeed = 0.05f;
-    float bulletSpread = -1f;
-    float cooltime = -0.25f;
-    int critical = 5;
-    int AmmoMax = 2;
+    private float atk = 5f;
+    private float hp = 5f;
+    private float speed = 0.05f;
+    private float atkspeed = 0.05f;
+    private float bulletSpread = -1f;
+    private float cooltime = -0.25f;
+    private float critical = 5f;
+    private float AmmoMax = 2f;
 
 
     // 현재 "소환형"  타입은 소환 개념을 수정해야 되는데 우선 전체적인 수정이 우선임 소환형으로 주석을 달아놧으니 컨트롤f로 언젠가 수정할것
@@ -42,10 +45,26 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
             Instance = this;
 
             //DontDestroyOnLoad(this.gameObject);
+            InitializeStatIncrements();
         }
         else
         {
             Destroy(this.gameObject);
+        }
+    }
+
+    private void InitializeStatIncrements()
+    {
+        if (statIncrementSO != null)
+        {
+            atk = statIncrementSO.atk;
+            hp = statIncrementSO.hp;
+            speed = statIncrementSO.speed;
+            atkspeed = statIncrementSO.atkSpeed;
+            bulletSpread = statIncrementSO.bulletSpread;
+            cooltime = statIncrementSO.skillCoolTime;
+            critical = statIncrementSO.critical;
+            AmmoMax = statIncrementSO.ammoMax;
         }
     }
     public void startset(GameObject PlayerObj)//스타트세팅 메인게임매니저 게임 처음 시작부분에 호출되면 값셋팅 해줌
@@ -158,7 +177,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
 
     private void A912()//스탯 체 티어 2
     {
-        int hpUp = hp * 2;
+        float hpUp = hp * 2;
         playerstatHandler.HP.added += hpUp;
         playerstatHandler.HPadd(hpUp);
     }
@@ -201,7 +220,7 @@ public class AugmentManager : MonoBehaviour //실질적으로 증강을 불러�
 
     private void A922()//스탯 체 티어 3
     {
-        int hpUp = hp * 3;
+        float hpUp = hp * 3;
         playerstatHandler.HP.added += hpUp;
         playerstatHandler.HPadd(hpUp);
     }

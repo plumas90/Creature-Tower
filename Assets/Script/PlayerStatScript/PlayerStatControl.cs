@@ -200,10 +200,10 @@ public class PlayerStatControl : MonoBehaviour
         EnsurePlayerYSortController();
 
         //anime = GetComponent<PlayerAnimatorController>();
-        ATK = new Stats(playerStats.atk);
-        HP = new Stats(playerStats.hp);
+        ATK = new Stats(playerStats.atk, playerStats.atkScale);
+        HP = new Stats(playerStats.hp, playerStats.hpScale);
         Speed = new Stats(playerStats.unitSpeed);
-        AtkSpeed = new Stats(playerStats.atkSpeed);
+        AtkSpeed = new AtkSpeedStats(playerStats.atkSpeed, playerStats.atkSpeedScale);
         ReloadCoolTime = new Stats(playerStats.reloadCoolTime);
         SkillCoolTime = new Stats(playerStats.skillCoolTime);
         RollCoolTime = new Stats(playerStats.rollCoolTime);

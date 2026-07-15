@@ -30,6 +30,10 @@ public class NormalRangedEnemy : EnemyBase
     // 공격 쿨타임 타이머
     private float _atkTimer;
 
+    // 벽 우회 회피용 관성 타이머 및 방향 캐시
+    private Vector2 _currentEvadeDir = Vector2.zero;
+    private float _evadeTimer = 0f;
+
     // ─── 초기화 ───────────────────────────────────────────────
     public override void StatSet(EnemySO so = null)
     {
@@ -91,30 +95,54 @@ public class NormalRangedEnemy : EnemyBase
             {
                 int wallMask = 1 << LayerMask.NameToLayer("Wall");
                 float detectDist = 1.0f; // 감지할 벽 거리
-                
-                // 도망 방향에 벽이 있는지 Raycast 검사
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, fleeDir, detectDist, wallMask);
-                if (hit.collider != null)
+
+                // 이전에 결정한 우회 회피 방향과 타이머가 유효한 경우
+                if (_evadeTimer > 0f)
                 {
-                    // 수직인 양옆 방향 계산
-                    Vector2 leftDir = new Vector2(-fleeDir.y, fleeDir.x).normalized;
-                    Vector2 rightDir = new Vector2(fleeDir.y, -fleeDir.x).normalized;
-
-                    // 양옆 방향의 장애물 감지 거리 측정
-                    RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, leftDir, detectDist, wallMask);
-                    RaycastHit2D hitRight = Physics2D.Raycast(transform.position, rightDir, detectDist, wallMask);
-
-                    float leftDist = hitLeft.collider != null ? hitLeft.distance : detectDist;
-                    float rightDist = hitRight.collider != null ? hitRight.distance : detectDist;
-
-                    // 덜 막혀있는(거리가 더 먼) 쪽으로 방향 선택
-                    if (leftDist >= rightDist && leftDist > 0.1f)
+                    _evadeTimer -= Time.deltaTime;
+                    
+                    // 유지하던 우회 방향이 벽에 막혔는지 추가 검사
+                    RaycastHit2D evHit = Physics2D.Raycast(transform.position, _currentEvadeDir, detectDist, wallMask);
+                    if (evHit.collider == null || evHit.distance > 0.3f)
                     {
-                        fleeDir = leftDir;
+                        fleeDir = _currentEvadeDir;
                     }
-                    else if (rightDist > leftDist && rightDist > 0.1f)
+                    else
                     {
-                        fleeDir = rightDir;
+                        _evadeTimer = 0f; // 막혔다면 타이머를 강제 만료하여 재결정하게 함
+                    }
+                }
+
+                if (_evadeTimer <= 0f)
+                {
+                    // 도망 방향에 벽이 있는지 Raycast 검사
+                    RaycastHit2D hit = Physics2D.Raycast(transform.position, fleeDir, detectDist, wallMask);
+                    if (hit.collider != null)
+                    {
+                        // 수직인 양옆 방향 계산
+                        Vector2 leftDir = new Vector2(-fleeDir.y, fleeDir.x).normalized;
+                        Vector2 rightDir = new Vector2(fleeDir.y, -fleeDir.x).normalized;
+
+                        // 양옆 방향의 장애물 감지 거리 측정
+                        RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, leftDir, detectDist, wallMask);
+                        RaycastHit2D hitRight = Physics2D.Raycast(transform.position, rightDir, detectDist, wallMask);
+
+                        float leftDist = hitLeft.collider != null ? hitLeft.distance : detectDist;
+                        float rightDist = hitRight.collider != null ? hitRight.distance : detectDist;
+
+                        // 덜 막혀있는(거리가 더 먼) 쪽으로 방향 선택
+                        if (leftDist >= rightDist && leftDist > 0.1f)
+                        {
+                            fleeDir = leftDir;
+                            _currentEvadeDir = leftDir;
+                            _evadeTimer = 0.35f; // 0.35초 동안 우회 방향 유지
+                        }
+                        else if (rightDist > leftDist && rightDist > 0.1f)
+                        {
+                            fleeDir = rightDir;
+                              _currentEvadeDir = rightDir;
+                            _evadeTimer = 0.35f; // 0.35초 동안 우회 방향 유지
+                        }
                     }
                 }
             }

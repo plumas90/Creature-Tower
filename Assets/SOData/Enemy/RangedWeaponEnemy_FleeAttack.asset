@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8cfcbb4684fd1a4694dd32b8b991875, type: 3}
-  m_Name: RangedEnemy_FleeAttack
-  m_EditorClassIdentifier: 
+  m_Name: RangedWeaponEnemy_FleeAttack
+  m_EditorClassIdentifier:
   enemyName: "\uB3C4\uB9DD\uC0AC\uACA9\uD615 \uC6D0\uAC70\uB9AC \uBAAC\uC2A4\uD130"
   atk: 6
   hp: 15
@@ -31,6 +31,6 @@ MonoBehaviour:
   spreadAngle: 0
   projectileSpeed: 7
   projectileLifeTime: 10
-  projectilePrefab: {fileID: 2328932172238596288, guid: 77dcc39634081593e9387cd7acda2dce, type: 3}
+  projectilePrefab: {fileID: 2328932172238596288, guid: f16e02fbee64205c585020ee2c524c70, type: 3}
   attackWhileFleeing: 1
   evadeObstaclesWhileFleeing: 1

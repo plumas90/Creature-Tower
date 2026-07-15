@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7ca792e568acd84f96a14c3b1400c05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  statIncrementSO: {fileID: 11400000, guid: c7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2, type: 2}
   playerstatHandler: {fileID: 0}
   player: {fileID: 0}
   PV: {fileID: 5425636141434892210}

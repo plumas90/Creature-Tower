@@ -4,20 +4,48 @@ using UnityEngine;
 
 public class Stats
 {
-    public float total // °è¼ö °è»ê½Ä ¿Ï·á
+    private float _added = 0f;
+
+    public float added
+    {
+        get => _added;
+        set
+        {
+            float diff = value - _added;
+            _added += diff * scale;
+        }
+    }
+
+    public virtual float total
     {
         get
         {
-            if ((basic + added) * coefficient <= 0) { return 0.1f; }
-            else { return (basic + added) * coefficient; }
+            if ((basic + _added) * coefficient <= 0) { return 0.1f; }
+            else { return (basic + _added) * coefficient; }
         }
-    }  //  ÃÑ ½ºÅÈ °ª
-    public float basic { get; private set; }                               //±âº» ½ºÅÈ °ª
-    public float added { get; set; } = 0;                                  //Ãß°¡ ½ºÅÈ °ª ÇÕ¿¬»ê
-    public float coefficient { get; set; } = 1;                                  //½ºÅÈ °è¼ö °ª °ö¿¬»ê
+    }
 
-    public Stats(float basic)
+    public float basic { get; private set; }
+    public float coefficient { get; set; } = 1;
+    public float scale { get; set; } = 1.0f; // ìºë¦­í„°ë³„ ìŠ¤íƒ¯ ê³„ìˆ˜
+
+    public Stats(float basic, float scale = 1.0f)
     {
         this.basic = basic;
+        this.scale = scale;
+    }
+}
+
+public class AtkSpeedStats : Stats
+{
+    public AtkSpeedStats(float basic, float scale = 1.0f) : base(basic, scale) { }
+
+    public override float total
+    {
+        get
+        {
+            float calculated = basic * (1f + added) * coefficient;
+            return calculated <= 0f ? 0.1f : calculated;
+        }
     }
 }
