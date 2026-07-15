@@ -6,12 +6,12 @@ using UnityEngine;
 public class UnitSO : ScriptableObject
 {
     [Header("UnitSO")]
-    public int atk;         // °ø°İ·Â
-    public int hp;          // Ã¼·Â
-    public float unitSpeed;   // ÀÌµ¿ ¼Óµµ
-    public float atkSpeed;    // °ø°İ ¼Óµµ
-    public int unitScale;   // À¯´Ö Å©±â
+    public float atk;         // ê³µê²©ë ¥
+    public float hp;          // ì²´ë ¥
+    public float unitSpeed;   // ì´ë™ ì†ë„
+    public float atkSpeed;    // ê³µê²© ì†ë„
+    public int unitScale;   // ìœ ë‹› í¬ê¸°
 
-    //Å½Áö ¹üÀ§, °ø°İ ¹üÀ§
-    //ÆĞÆ®·Ñ ¹üÀ§
+    //íƒì§€ ë²”ìœ„, ê³µê²© ë²”ìœ„
+    //íŒ¨íŠ¸ë¡¤ ë²”ìœ„
 }
