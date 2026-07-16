@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: WormSO
   m_EditorClassIdentifier: 
   enemyName: The Worm
-  atk: 5
-  hp: 250
+  atk: 10
+  hp: 180
   speed: 0
   bossCount: 0
   IntroAnimationTime: 0

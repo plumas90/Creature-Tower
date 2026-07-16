@@ -281,7 +281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f11a592ec6a3f0f49b95699355952de4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainSO: {fileID: 11400000, guid: be657b9d110dcce4f8d5ec079c5d874a, type: 2}
+  MainSO: {fileID: 11400000, guid: 9c538a17c64bedc98ae9a44588943778, type: 2}
   atk: 0
   maxHp: 0
   curHp: 0
@@ -307,6 +307,14 @@ MonoBehaviour:
   weaponPivot: {fileID: 5586531244196511384}
   muzzlePoint: {fileID: 272084105559429579}
   flipWeaponY: 1
+  weaponAngleOffset: 0
+  weaponBaseScaleY: 1
+  walkSprites:
+  - {fileID: -2073566385283376946, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  - {fileID: 6822458512010255455, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  - {fileID: 8418071827486537181, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  idleSprite: {fileID: 8418071827486537181, guid: 2c0430e9e50bd81e9b8f4a91720a4e71, type: 3}
+  walkFrameRate: 0.2
 --- !u!70 &1560183258635258129
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

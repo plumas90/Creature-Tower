@@ -155,6 +155,11 @@ public class PeaPodBoss : BossBase
         return 2f; // 인트로 2초
     }
 
+    protected override float ResolvePostIntroDelay()
+    {
+        return 1f; // 인트로 애니메이션 후 1초간 휴식
+    }
+
     public override void OnBossActivatedBeforeIntro()
     {
         base.OnBossActivatedBeforeIntro();
